@@ -8,6 +8,7 @@ cd uni-traffic-backend
 
 ## 2. Install Required Tools
 Before proceeding, ensure you have the following tools installed:
+
 • [Postman](https://www.postman.com/downloads/) (for API testing) - After installation, sign in using "Continue with Google".
 • [Docker Desktop](https://www.docker.com/products/docker-desktop/) (for containerized database)
 
