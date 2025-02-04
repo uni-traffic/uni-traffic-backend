@@ -12,16 +12,16 @@ Before proceeding, ensure you have the following tools installed:
 • [Docker Desktop](https://www.docker.com/products/docker-desktop/) (for containerized database)
 
 If you encounter the following error in Docker:
-```
+```bash
 WSL update failed: update failed: updating WSL: exit code: 1: running WSL command wsl.exe C:\WINDOWS\System32\wsl.exe --update --web-download: exit status 1
 ```
 Resolve it by running the following command in Command Prompt (CMD): 
-```
+```bash
 wsl --update
 ```
 ## 3. Verify Docker Installation
 After installing Docker, open VS Code and check if Docker is installed correctly:
-```
+```bash
 docker -v
 ```
 
@@ -41,7 +41,7 @@ To check the database status:
 pnpm db:status  
 ```
 To stop the database:
-```
+```bash
 pnpm db:stop  
 ```
 
@@ -66,17 +66,22 @@ Edit the .env file and update the required variables (e.g., API keys, database c
 2. Create a new project.
 3. Navigate to Database > Connect > URI and copy your database URL.
 4. Update the .env file with your Supabase database credentials:
-```
+```env
 DATABASE_URL="postgresql://postgres:[USERNAME]:[YOUR-PASSWORD]@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
 ```
 
-## 8. Run the Development Server
-Start the development server:
+### 8. Push Database Schema to your Database
+```bash
+pnpm db:push
 ```
+
+## 9. Run the Development Server
+Start the development server:
+```bash
 pnpm dev  
 ```
 
-## 9. Test the API with Postman
+## 10. Test the API with Postman
 1. Open Postman.
 2. Click the send api request
 3. Enter the following URL in the request bar:
