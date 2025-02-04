@@ -48,6 +48,7 @@ pnpm db:stop
 ## 6. Set Up Environment Variables
 You need to configure environment variables for the project.
 Copy the example .env file:
+
 `bash`
 ```bash
 cp .env.example .env
