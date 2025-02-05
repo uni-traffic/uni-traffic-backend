@@ -12,3 +12,102 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id               String         @id @default(uuid())
+  username         String         @unique
+  email            String         @unique
+  password         String
+  role             Role           @default(STUDENT)
+  isDeleted        Boolean        @default(false)
+  deletedAt        DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  vehicles         Vehicle[]
+  scanLogs         ScanLog[]
+  violations       Violation[]
+  sessions         Session[]
+  accounts         Account[]
+  auditLog         UserAuditLog[]
+}
+
+enum Role {
+  ADMIN
+  SECURITY
+  STUDENT
+  STAFF
+}
+
+model Vehicle {
+  id             String   @id @default(uuid())
+  ownerId        String
+  licenseNumber  String   @unique
+  stickerNumber  String   @unique
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  owner          User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  scanLogs       ScanLog[]
+  violations     Violation[]
+}
+
+model ScanLog {
+  id         String   @id @default(uuid())
+  vehicleId  String
+  scannedBy  String
+  location   String
+  timestamp  DateTime @default(now())
+  vehicle    Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [scannedBy], references: [id], onDelete: Cascade)
+}
+
+model Violation {
+  id             String   @id @default(uuid())
+  vehicleId      String
+  reportedBy     String
+  violationType  String
+  status         ViolationStatus @default(PENDING)
+  timestamp      DateTime @default(now())
+  vehicle        Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  reporter      User     @relation(fields: [reportedBy], references: [id], onDelete: Cascade)
+}
+
+enum ViolationStatus {
+  PENDING
+  RESOLVED
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model UserAuditLog {
+  id          String   @id @default(uuid())
+  type        String
+  description String
+  createdAt   DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
