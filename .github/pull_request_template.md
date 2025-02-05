@@ -8,7 +8,7 @@
 ## PR/Code Author Checklist
 **Note:** please write "x" within the brackets if item applies e.g. [x]
 
-- [ ] I set the PR title based on the following format: [{task_type}] {task_id}: {task_name} . e.g. [feat] TV-X: add-new-functionality (camelCase)
+- [ ] I set the PR title based on the following format: {branch_type}/{task_id}-{task_name}. e.g feat/LM-X-add-new-functionality
 
 - [ ] I set the branch name based on the following format: {branch_type}/{task_id}-{task_name}. e.g feat/LM-X-add-new-functionality
 
