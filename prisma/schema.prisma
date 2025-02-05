@@ -18,7 +18,11 @@ model User {
   username         String         @unique
   email            String         @unique
   password         String
-  role             Role           @default(STUDENT)
+  isSuperAdmin     Boolean        @default(false)
+  allowPermissions Int            @default(0)
+  denyPermissions  Int            @default(0)
+  roleId           String?
+  role             Role?          @relation(fields: [roleId], references: [id])
   isDeleted        Boolean        @default(false)
   deletedAt        DateTime?
   createdAt        DateTime       @default(now())
@@ -29,14 +33,34 @@ model User {
   sessions         Session[]
   accounts         Account[]
   auditLog         UserAuditLog[]
+  roleAuditLog     RoleAuditLog[]
 }
 
-enum Role {
-  ADMIN
-  SECURITY
-  STUDENT
-  STAFF
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  permissions Int      // Bitwise permissions (e.g., Read = 1, Write = 2, Delete = 4)
+  color       String   @default("#FFFFFF")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isDeleted   Boolean  @default(false)
+  deletedAt   DateTime?
+  users       User[]
+  auditLog    RoleAuditLog[]
 }
+
+model RoleAuditLog {
+  id          String   @id @default(uuid())
+  type        String
+  description String
+  createdAt   DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roleId      String
+  role        Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+}
+
 
 model Vehicle {
   id             String   @id @default(uuid())
@@ -109,5 +133,6 @@ model UserAuditLog {
   description String
   createdAt   DateTime @default(now())
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id])
 }
+
