@@ -32,8 +32,6 @@ model User {
   violations       Violation[]
   sessions         Session[]
   accounts         Account[]
-  auditLog         UserAuditLog[]
-  roleAuditLog     RoleAuditLog[]
 }
 
 
@@ -47,20 +45,7 @@ model Role {
   isDeleted   Boolean  @default(false)
   deletedAt   DateTime?
   users       User[]
-  auditLog    RoleAuditLog[]
 }
-
-model RoleAuditLog {
-  id          String   @id @default(uuid())
-  type        String
-  description String
-  createdAt   DateTime @default(now())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  roleId      String
-  role        Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
-}
-
 
 model Vehicle {
   id             String   @id @default(uuid())
@@ -127,12 +112,4 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
-model UserAuditLog {
-  id          String   @id @default(uuid())
-  type        String
-  description String
-  createdAt   DateTime @default(now())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-}
 
