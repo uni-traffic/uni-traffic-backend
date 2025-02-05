@@ -4,6 +4,7 @@
 		"outDir": "build",
 		"allowJs": true,
 		"sourceMap": true,
+		"baseUrl": ".",
 		"paths": {
 			"@/*": [
 				"./src/*"
