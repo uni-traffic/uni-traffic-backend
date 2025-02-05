@@ -1,8 +1,7 @@
-import "module-alias/register";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
-import { v1Router } from "@/shared/infrastructure/http/api/versions/v1";
+import { v1Router } from "../src/shared/infrastructure/http/api/versions/v1";
 
 dotenv.config();
 

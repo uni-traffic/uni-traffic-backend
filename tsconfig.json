@@ -3,13 +3,7 @@
 	"compilerOptions": {
 		"outDir": "build",
 		"allowJs": true,
-		"sourceMap": true,
-		"baseUrl": ".",
-		"paths": {
-			"@/*": [
-				"./src/*"
-			]
-		}
+		"sourceMap": true
 	},
 	"include": [
 		"src/**/*",
