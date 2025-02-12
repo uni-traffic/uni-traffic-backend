@@ -1,5 +1,5 @@
-export interface IMapper<IDomain, IPersistenceModel, IDomainDTO> {
-  toDomain(rawData: IPersistenceModel): IDomain;
-  toPersistence(domain: IDomain): IPersistenceModel;
+export interface IMapper<IDomain, ISchemaModel, ISchemaCreateInput, IDomainDTO> {
+  toDomain(rawData: ISchemaModel): IDomain;
+  toPersistence(domain: IDomain): ISchemaCreateInput;
   toDTO(domain: IDomain): IDomainDTO;
 }
