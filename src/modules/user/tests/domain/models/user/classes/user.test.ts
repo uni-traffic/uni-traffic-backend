@@ -2,11 +2,14 @@ import { User } from "../../../../../src/domain/models/user/classes/user";
 import { UserEmail } from "../../../../../src/domain/models/user/classes/userEmail";
 import { Role } from "@prisma/client";
 import { faker } from "@faker-js/faker";
+import { UserName } from "../../../../../src/domain/models/user/classes/userName";
 
 describe("User", () => {
     const mockUserData: {
         id: string;
-        username: string;
+        username: UserName;
+        firstName: string;
+        lastName: string;
         email: UserEmail;
         password: string;
         isSuperAdmin: boolean;
@@ -17,7 +20,9 @@ describe("User", () => {
         updatedAt: Date;
     } = {
         id: faker.string.uuid(),
-        username: faker.person.firstName(),
+        username: UserName.create(faker.person.fullName()).getValue(),
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
         email: UserEmail.create(faker.internet.email()).getValue(),
         password: faker.internet.password(),
         role: faker.helpers.arrayElement(["STUDENT", "SECURITY", "ADMIN", "STAFF"]),
@@ -33,7 +38,9 @@ describe("User", () => {
 
         expect(user).toBeInstanceOf(User);
         expect(user.id).toBe(mockUserData.id);
-        expect(user.username).toBe(mockUserData.username);
+        expect(user.usernameValue).toBe(mockUserData.username.value);
+        expect(user.firstName).toBe(mockUserData.firstName);
+        expect(user.lastName).toBe(mockUserData.lastName);
         expect(user.emailValue).toBe(mockUserData.email.value);
         expect(user.password).toBe(mockUserData.password);
         expect(user.role).toBe(mockUserData.role);

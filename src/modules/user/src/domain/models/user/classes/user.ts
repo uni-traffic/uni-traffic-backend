@@ -1,9 +1,13 @@
 import { Role } from "@prisma/client";
 import { UserEmail } from "../classes/userEmail";
+import { UserName } from "./userName";
 
 export interface IUser {
 	id: string;
-	username: string;
+	username: UserName;
+	usernameValue: string;
+	firstName: string;
+	lastName: string;
 	email: UserEmail;
 	emailValue: string;
 	password: string;
@@ -17,7 +21,9 @@ export interface IUser {
 
 export class User implements IUser {
 	private readonly _id: string;
-	private readonly _username: string;
+	private readonly _username: UserName;
+	private readonly _firstName: string;
+	private readonly _lastName: string;
 	private readonly _email: UserEmail;
 	private readonly _password: string;
 	private readonly _isSuperAdmin: boolean;
@@ -30,6 +36,8 @@ export class User implements IUser {
 	private constructor({
 		id,
 		username,
+		firstName,
+		lastName,
 		email,
 		password,
 		isSuperAdmin,
@@ -40,7 +48,9 @@ export class User implements IUser {
 		updatedAt,
 	}: {
 		id: string;
-		username: string;
+		username: UserName;
+		firstName: string;
+		lastName: string;
 		email: UserEmail;
 		password: string;
 		isSuperAdmin: boolean;
@@ -52,6 +62,8 @@ export class User implements IUser {
 	}) {
 		this._id = id;
 		this._username = username;
+		this._firstName = firstName;
+		this._lastName = lastName;
 		this._email = email;
 		this._password = password;
 		this._isSuperAdmin = isSuperAdmin;
@@ -66,8 +78,20 @@ export class User implements IUser {
 		return this._id;
 	}
 
-	get username(): string {
+	get username(): UserName {
 		return this._username;
+	}
+
+	get usernameValue(): string {
+		return this._username.value;
+	}
+
+	get firstName(): string {
+		return this._firstName;
+	}
+
+	get lastName(): string {
+		return this._lastName;
 	}
 
 	get email(): UserEmail {
@@ -81,7 +105,6 @@ export class User implements IUser {
 	get password(): string {
 		return this._password;
 	}
-
 
 	get isSuperAdmin(): boolean {
 		return this._isSuperAdmin;
@@ -110,6 +133,8 @@ export class User implements IUser {
 	public static create({
 		id,
 		username,
+		firstName,
+		lastName,
 		email,
 		password,
 		isSuperAdmin,
@@ -120,7 +145,9 @@ export class User implements IUser {
 		updatedAt,
 	}: {
 		id: string;
-		username: string;
+		username: UserName;
+		firstName: string;
+		lastName: string;
 		email: UserEmail;
 		password: string;
 		isSuperAdmin: boolean;
@@ -133,6 +160,8 @@ export class User implements IUser {
 		return new User({
 			id,
 			username,
+			firstName,
+			lastName,
 			email,
 			password,
 			isSuperAdmin,

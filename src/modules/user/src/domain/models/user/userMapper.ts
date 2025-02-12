@@ -11,7 +11,9 @@ export class UserMapper implements IMapper<IUser, IUserSchema, IUserDTO> {
     public toPersistence(user: IUser): IUserSchema {
         return {
             id: user.id,
-            username: user.username,
+            username: user.usernameValue,
+            firstName: user.firstName,
+            lastName: user.lastName,
             email: user.emailValue,
             password: user.password,
             isSuperAdmin: user.isSuperAdmin,
@@ -27,6 +29,8 @@ export class UserMapper implements IMapper<IUser, IUserSchema, IUserDTO> {
         const userOrError = UserFactory.create({
             id: raw.id,
             username: raw.username,
+            firstName: raw.firstName,
+            lastName: raw.lastName,
             email: raw.email,
             password: raw.password,
             isSuperAdmin: raw.isSuperAdmin,
@@ -43,10 +47,10 @@ export class UserMapper implements IMapper<IUser, IUserSchema, IUserDTO> {
     public toDTO(user: IUser): IUserDTO {
         return {
             id: user.id,
-            username: user.username,
+            username: user.usernameValue,
             email: user.emailValue,
-            role: user.role,
-            isSuperAdmin: user.isSuperAdmin,
+            firstName: user.firstName,
+            lastName: user.lastName,
         };
     }
 }

@@ -8,7 +8,9 @@ describe("UserMapper", () => {
 
 	const userSchemaObject = {
 		id: faker.string.uuid(),
-		username: faker.person.firstName(),
+		username: "Teejeks",
+		firstName: faker.person.firstName(),
+		lastName: faker.person.lastName(),
 		email: faker.internet.email(),
 		password: faker.internet.password(),
 		role: faker.helpers.arrayElement(["STUDENT", "SECURITY", "ADMIN", "STAFF"]),
@@ -24,7 +26,9 @@ describe("UserMapper", () => {
 
 		expect(userDomainObject).toBeInstanceOf(User);
 		expect(userDomainObject.id).toBe(userSchemaObject.id);
-		expect(userDomainObject.username).toBe(userSchemaObject.username);
+		expect(userDomainObject.usernameValue).toBe(userSchemaObject.username);
+		expect(userDomainObject.firstName).toBe(userSchemaObject.firstName);
+		expect(userDomainObject.lastName).toBe(userSchemaObject.lastName);
 		expect(userDomainObject.emailValue).toBe(userSchemaObject.email);
 		expect(userDomainObject.role).toBe(userSchemaObject.role);
 		expect(userDomainObject.isSuperAdmin).toBe(userSchemaObject.isSuperAdmin);
@@ -36,7 +40,9 @@ describe("UserMapper", () => {
 		const userSchemaObject = userMapper.toPersistence(userDomainObject);
 
 		expect(userSchemaObject.id).toBe(userDomainObject.id);
-		expect(userSchemaObject.username).toBe(userDomainObject.username);
+		expect(userSchemaObject.username).toBe(userDomainObject.usernameValue);
+		expect(userDomainObject.firstName).toBe(userSchemaObject.firstName);
+		expect(userDomainObject.lastName).toBe(userSchemaObject.lastName);
 		expect(userSchemaObject.email).toBe(userDomainObject.emailValue);
 		expect(userSchemaObject.role).toBe(userDomainObject.role);
 		expect(userSchemaObject.isSuperAdmin).toBe(userDomainObject.isSuperAdmin);
@@ -48,9 +54,9 @@ describe("UserMapper", () => {
 		const userDTO = userMapper.toDTO(userDomainObject);
 
 		expect(userDTO.id).toBe(userDomainObject.id);
-		expect(userDTO.username).toBe(userDomainObject.username);
+		expect(userDTO.username).toBe(userDomainObject.usernameValue);
 		expect(userDTO.email).toBe(userDomainObject.emailValue);
-		expect(userDTO.role).toBe(userDomainObject.role);
-		expect(userDTO.isSuperAdmin).toBe(userDomainObject.isSuperAdmin);
+		expect(userDTO.firstName).toBe(userDomainObject.firstName);
+		expect(userDTO.lastName).toBe(userDomainObject.lastName);
 	});
 });

@@ -8,7 +8,9 @@ describe("UserFactory", () => {
     beforeEach(() => {
         mockUserData = {
             id: faker.string.uuid(),
-            username: faker.person.firstName(),
+            username: faker.person.fullName(),
+            firstName: faker.person.firstName(),
+            lastName: faker.person.lastName(),
             email: faker.internet.email(),
             password: faker.internet.password(),
             role: faker.helpers.arrayElement(["STUDENT", "SECURITY", "ADMIN", "STAFF"]),
@@ -28,12 +30,34 @@ describe("UserFactory", () => {
 
         const user = result.getValue();
         expect(user.id).toBe(mockUserData.id);
-        expect(user.username).toBe(mockUserData.username);
+        expect(user.usernameValue).toBe(mockUserData.username);
+        expect(user.firstName).toBe(mockUserData.firstName);
+        expect(user.lastName).toBe(mockUserData.lastName);
         expect(user.emailValue).toBe(mockUserData.email);
         expect(user.password).toBe(mockUserData.password);
         expect(user.role).toBe(mockUserData.role);
         expect(user.isSuperAdmin).toBe(mockUserData.isSuperAdmin);
         expect(user.createdAt).toBe(mockUserData.createdAt);
         expect(user.updatedAt).toBe(mockUserData.updatedAt);
+    });
+
+    it("should fail to create a User when email format is invalid", () => {
+        mockUserData.email = faker.string.alpha({ length: 10 });
+
+        const result = UserFactory.create(mockUserData);
+
+        expect(result.isFailure).toBe(true);
+        expect(result.getErrorMessage()).toBe(`${mockUserData.email} is not a valid email address`);
+    });
+
+    it("should fail to create a User when username exceeds the character limit", () => {
+        mockUserData.username = "a".repeat(16);
+
+        const result = UserFactory.create(mockUserData);
+
+        expect(result.isFailure).toBe(true);
+        expect(result.getErrorMessage()).toBe(
+            `Username is limited to 15 characters long`
+        );
     });
 });

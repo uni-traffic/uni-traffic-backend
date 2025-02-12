@@ -3,6 +3,8 @@ import type { Role } from "@prisma/client";
 export type IUserRawObject = {
   id: string;
   username: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   isSuperAdmin: boolean;
@@ -16,6 +18,8 @@ export type IUserRawObject = {
 export type IUserSchema = {
   id: string;
   username: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   isSuperAdmin: boolean;

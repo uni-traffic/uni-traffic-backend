@@ -6,8 +6,10 @@ import { IUser } from "../../../src/domain/models/user/classes/user";
 
 export const createUserDomainObject = ({
     id = uuid(),
-    username = faker.person.firstName(),
-    email = faker.internet.email(),
+    username = "arvyx",
+    firstName = faker.person.firstName(),
+    lastName = faker.person.lastName(),
+    email = "tjyumul@gmail.com",
     password = faker.internet.password(),
     role = faker.helpers.arrayElement(["STUDENT", "SECURITY", "ADMIN", "STAFF"]),
     isSuperAdmin = false,
@@ -19,6 +21,8 @@ export const createUserDomainObject = ({
     const userOrError = UserFactory.create({
         id,
         username,
+        firstName,
+        lastName,
         email,
         password,
         isSuperAdmin,
