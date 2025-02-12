@@ -8,7 +8,7 @@ describe("UserFactory", () => {
     beforeEach(() => {
         mockUserData = {
             id: faker.string.uuid(),
-            username: faker.person.fullName(),
+            username: faker.word.sample({ length: 15 }),
             firstName: faker.person.firstName(),
             lastName: faker.person.lastName(),
             email: faker.internet.email(),
@@ -57,7 +57,7 @@ describe("UserFactory", () => {
 
         expect(result.isFailure).toBe(true);
         expect(result.getErrorMessage()).toBe(
-            `Username is limited to 15 characters long`
+            "Username is limited to 15 characters long"
         );
     });
 });

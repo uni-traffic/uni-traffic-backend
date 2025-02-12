@@ -1,14 +1,12 @@
-import { User, type IUser } from "../user/classes/user";
-import type {
-    IUserRawObject,
-    IUserSchema
-} from "../user/constant";
-import { UserFactory } from "../user/factory";
+import type { IUser } from "./classes/user";
+import type { IUserRawObject, IUserSchema } from "./constant";
+import { UserFactory } from "./factory";
 import type { IUserDTO } from "../../../dtos/userDTO";
 import type { IMapper } from "../../../../../../shared/domain/mapper";
 
-export class UserMapper implements IMapper<IUser, IUserSchema, IUserDTO> {
-    public toPersistence(user: IUser): IUserSchema {
+export interface IUserMapper extends IMapper<IUser, IUserSchema, IUserRawObject, IUserDTO> {}
+export class UserMapper implements IUserMapper {
+    public toPersistence(user: IUser): IUserRawObject {
         return {
             id: user.id,
             username: user.usernameValue,
@@ -21,11 +19,11 @@ export class UserMapper implements IMapper<IUser, IUserSchema, IUserDTO> {
             isDeleted: user.isDeleted,
             deletedAt: user.deletedAt,
             createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
+            updatedAt: user.updatedAt
         };
     }
 
-    public toDomain(raw: IUserSchema): IUser {
+    public toDomain(raw: IUserRawObject): IUser {
         const userOrError = UserFactory.create({
             id: raw.id,
             username: raw.username,
@@ -54,5 +52,3 @@ export class UserMapper implements IMapper<IUser, IUserSchema, IUserDTO> {
         };
     }
 }
-
-

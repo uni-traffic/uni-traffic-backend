@@ -1,10 +1,14 @@
 import { User } from "../../src/domain/models/user/classes/user";
-import { UserMapper } from "../../../../../src/modules/user/src/domain/models/user/userMapper";
+import { type IUserMapper, UserMapper } from "../../src/domain/models/user/mapper";
 import { createUserDomainObject } from "../utils/user/createUserDomainObject";
 import { faker } from "@faker-js/faker";
 
 describe("UserMapper", () => {
-	const userMapper = new UserMapper();
+	let userMapper: IUserMapper;
+
+	beforeAll(() => {
+		userMapper = new UserMapper()
+	})
 
 	const userSchemaObject = {
 		id: faker.string.uuid(),

@@ -14,22 +14,21 @@ datasource db {
 }
 
 model User {
-  id               String         @id @default(uuid())
-  username         String         @unique
-  firstName        String         
-  lastName         String         
-  email            String         @unique
-  password         String
-  isSuperAdmin     Boolean        @default(false)
-  role             Role           @default(STUDENT)
-  isDeleted        Boolean        @default(false)
-  deletedAt        DateTime?
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  vehicles         Vehicle[]
-  violations       Violation[]
+  id           String      @id @default(uuid())
+  username     String      @unique
+  firstName    String
+  lastName     String
+  email        String      @unique
+  password     String
+  isSuperAdmin Boolean     @default(false)
+  role         Role        @default(STUDENT)
+  isDeleted    Boolean     @default(false)
+  deletedAt    DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  vehicles     Vehicle[]
+  violations   Violation[]
 }
-
 
 enum Role {
   ADMIN
@@ -39,33 +38,29 @@ enum Role {
 }
 
 model Vehicle {
-  id             String   @id @default(uuid())
-  ownerId        String
-  licenseNumber  String   @unique
-  stickerNumber  String   @unique
-  isActive       Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  owner          User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  violations     Violation[]
+  id            String      @id @default(uuid())
+  ownerId       String
+  licenseNumber String      @unique
+  stickerNumber String      @unique
+  isActive      Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  owner         User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  violations    Violation[]
 }
 
 model Violation {
-  id             String   @id @default(uuid())
-  vehicleId      String
-  reportedBy     String
-  violationType  String
-  status         ViolationStatus @default(PENDING)
-  timestamp      DateTime @default(now())
-  vehicle        Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
-  reporter       User     @relation(fields: [reportedBy], references: [id], onDelete: Cascade)
+  id            String          @id @default(uuid())
+  vehicleId     String
+  reportedBy    String
+  violationType String
+  status        ViolationStatus @default(PENDING)
+  timestamp     DateTime        @default(now())
+  vehicle       Vehicle         @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  reporter      User            @relation(fields: [reportedBy], references: [id], onDelete: Cascade)
 }
 
 enum ViolationStatus {
   PENDING
   RESOLVED
 }
-
-
-
-

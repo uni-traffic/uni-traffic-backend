@@ -1,6 +1,6 @@
 import type { Role } from "@prisma/client";
-import { User, type IUser } from "../user/classes/user";
-import { UserEmail } from "../user/classes/userEmail";
+import { User, type IUser } from "./classes/user";
+import { UserEmail } from "./classes/userEmail";
 import { Result } from "../../../../../../shared/core/result";
 import { defaultTo } from "rambda";
 import { v4 as uuid } from "uuid";

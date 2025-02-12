@@ -1,15 +1,15 @@
-import type { IUserRawObject } from "../../../../../modules/user/src/domain/models/user/constant";
-import { UserFactory } from "../../../../../modules/user/src/domain/models/user/factory";
+import type { IUserRawObject } from "../../../src/domain/models/user/constant";
+import { UserFactory } from "../../../src/domain/models/user/factory";
 import { faker } from "@faker-js/faker";
 import { v4 as uuid } from "uuid";
-import { IUser } from "../../../src/domain/models/user/classes/user";
+import type { IUser } from "../../../src/domain/models/user/classes/user";
 
 export const createUserDomainObject = ({
     id = uuid(),
-    username = "arvyx",
+    username = faker.word.sample({ length: 15 }),
     firstName = faker.person.firstName(),
     lastName = faker.person.lastName(),
-    email = "tjyumul@gmail.com",
+    email = faker.internet.email(),
     password = faker.internet.password(),
     role = faker.helpers.arrayElement(["STUDENT", "SECURITY", "ADMIN", "STAFF"]),
     isSuperAdmin = false,

@@ -1,6 +1,6 @@
 import { User } from "../../../../../src/domain/models/user/classes/user";
 import { UserEmail } from "../../../../../src/domain/models/user/classes/userEmail";
-import { Role } from "@prisma/client";
+import type { Role } from "@prisma/client";
 import { faker } from "@faker-js/faker";
 import { UserName } from "../../../../../src/domain/models/user/classes/userName";
 
@@ -20,7 +20,7 @@ describe("User", () => {
         updatedAt: Date;
     } = {
         id: faker.string.uuid(),
-        username: UserName.create(faker.person.fullName()).getValue(),
+        username: UserName.create(faker.word.sample({ length: 15 })).getValue(),
         firstName: faker.person.firstName(),
         lastName: faker.person.lastName(),
         email: UserEmail.create(faker.internet.email()).getValue(),
@@ -50,4 +50,3 @@ describe("User", () => {
         expect(user.updatedAt.toString()).toBe(mockUserData.updatedAt.toString());
     });
 });
-
