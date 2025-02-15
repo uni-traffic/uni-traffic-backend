@@ -1,13 +1,10 @@
 {
-	"extends": "@tsconfig/node22/tsconfig.json",
-	"compilerOptions": {
-		"outDir": "build",
-		"allowJs": true,
-		"sourceMap": true
-	},
-	"include": [
-		"src/**/*",
-		"./api/*.ts"
-	],
-	"exclude": ["node_modules"]
+  "extends": "@tsconfig/node22/tsconfig.json",
+  "compilerOptions": {
+    "outDir": "build",
+    "allowJs": true,
+    "sourceMap": true
+  },
+  "include": ["src/**/*", "./api/*.ts"],
+  "exclude": ["node_modules"]
 }

@@ -6,17 +6,17 @@ export class BadRequest extends Error {
 }
 
 export class ForbiddenError extends Error {
-  constructor() {
+  constructor(message: string) {
     super();
-    this.message = "You do not have permission to access this resource.";
+    this.message = message ?? "You do not have permission to access this resource.";
     this.name = "ForbiddenError";
   }
 }
 
 export class UnauthorizedError extends Error {
-  constructor() {
+  constructor(message: string) {
     super();
-    this.message = "Authentication is required to access this resource.";
+    this.message = message ?? "Authentication is required to access this resource.";
     this.name = "UnauthorizedError";
   }
 }
@@ -32,5 +32,19 @@ export class NotFoundError extends Error {
   constructor(message: string) {
     super(message);
     this.name = "NotFoundError";
+  }
+}
+
+export class ConflictError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ConflictError";
+  }
+}
+
+export class AppError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "AppError";
   }
 }
