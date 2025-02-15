@@ -24,6 +24,8 @@
 
 - [ ] I have performed a self-review of my code
 
+- [ ] I run `pnpm format` before pushing
+
 ## **Note:** Rebase your branch before pushing
 
 1. git stash -u
