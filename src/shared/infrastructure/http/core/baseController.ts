@@ -1,67 +1,76 @@
-import type { Request, Response } from 'express'
+import type { Request, Response } from "express";
+import {
+  BadRequest,
+  ConflictError,
+  ForbiddenError,
+  NotFoundError,
+  UnauthorizedError
+} from "../../../core/errors";
 
 export abstract class BaseController {
-  protected abstract executeImpl (req: Request, res: Response): Promise<void>;
+  protected abstract executeImpl(req: Request, res: Response): Promise<void>;
 
-  public async execute (req: Request, res: Response): Promise<void> {
+  public async execute(req: Request, res: Response): Promise<void> {
     try {
       await this.executeImpl(req, res);
     } catch (err) {
-      console.log("[BaseController]: Uncaught controller error");
-      console.log(err);
-      this.fail(res, 'An unexpected error occurred')
+      this.fail(res, err as Error);
     }
   }
 
-  public static jsonResponse (res: Response, code: number, message: string) {
-    return res.status(code).json({ message })
-  }
-
-  public ok<T> (res: Response, dto?: T) {
+  protected ok<T>(res: Response, dto?: T) {
     if (dto) {
-      res.type('application/json');
       return res.status(200).json(dto);
     }
 
     return res.sendStatus(200);
   }
 
-  public created (res: Response) {
-    return res.sendStatus(201);
+  protected created<T>(res: Response, message: string, dto?: T) {
+    if (dto) {
+      return res.status(201).json({
+        ...dto,
+        message: message
+      });
+    }
+
+    return res.sendStatus(201).json(message);
   }
 
-  public clientError (res: Response, message?: string) {
-    return BaseController.jsonResponse(res, 400, message ? message : 'Unauthorized');
+  protected fail(res: Response, error: Error) {
+    if (error instanceof BadRequest) {
+      return this.jsonResponse(res, 400, error.message);
+    }
+
+    if (error instanceof UnauthorizedError) {
+      return this.jsonResponse(res, 401, error.message);
+    }
+
+    if (error instanceof ForbiddenError) {
+      return this.jsonResponse(res, 403, error.message);
+    }
+
+    if (error instanceof NotFoundError) {
+      return this.jsonResponse(res, 404, error.message);
+    }
+
+    if (error instanceof ConflictError) {
+      return this.jsonResponse(res, 409, error.message);
+    }
+
+    this.jsonResponse(res, 500, error.message);
   }
 
-  public unauthorized (res: Response, message?: string) {
-    return BaseController.jsonResponse(res, 401, message ? message : 'Unauthorized');
+  protected jsonResponse(res: Response, code: number, message: string) {
+    return res.status(code).json({ message });
   }
 
-  public forbidden (res: Response, message?: string) {
-    return BaseController.jsonResponse(res, 403, message ? message : 'Forbidden');
-  }
+  protected _getAccessToken(req: Request) {
+    const accessToken = req.headers["authorization"];
+    if (!accessToken || !accessToken.includes("Bearer")) {
+      throw new UnauthorizedError('Access token is required "Bearer {token}"');
+    }
 
-  public notFound (res: Response, message?: string) {
-    return BaseController.jsonResponse(res, 404, message ? message : 'Not found');
-  }
-
-  public conflict (res: Response, message?: string) {
-    return BaseController.jsonResponse(res, 409, message ? message : 'Conflict');
-  }
-
-  public tooMany (res: Response, message?: string) {
-    return BaseController.jsonResponse(res, 429, message ? message : 'Too many requests');
-  }
-
-  public todo (res: Response) {
-    return BaseController.jsonResponse(res, 400, 'TODO');
-  }
-
-  public fail (res: Response, error: Error | string) {
-    console.log(error);
-    return res.status(500).json({
-      message: error.toString()
-    })
+    return accessToken.replace("Bearer ", "");
   }
 }

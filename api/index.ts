@@ -9,12 +9,12 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
-app.use('/api/v1', v1Router);
+app.use("/api/v1", v1Router);
 app.get("/", (req, res) => {
-  res.status(200).json({ message: 'Uni-traffic Backend API' });
+  res.status(200).json({ message: "Uni-traffic Backend API" });
 });
 
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "test") {
   app.listen(3000, () => {
     console.log("Server started on port 3000");
   });
