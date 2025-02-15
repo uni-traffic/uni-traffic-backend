@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { ForbiddenError, UnauthorizedError } from "../../../../../../shared/core/errors";
+import { ForbiddenError } from "../../../../../../shared/core/errors";
 import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
 import { type IJSONWebToken, JSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
 import type { IUserDTO } from "../../../dtos/userDTO";
