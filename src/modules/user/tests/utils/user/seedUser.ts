@@ -1,10 +1,10 @@
 import { faker } from "@faker-js/faker";
 import { v4 as uuid } from "uuid";
-import type { IUser } from "../../../src/domain/models/user/classes/user";
+import { db } from "../../../../../shared/infrastructure/database/prisma";
+import { BycryptPassword } from "../../../../../shared/lib/bycrypt";
 import type { IUserRawObject } from "../../../src/domain/models/user/constant";
-import { UserFactory } from "../../../src/domain/models/user/factory";
 
-export const createUserDomainObject = ({
+export const seedUser = async ({
   id = uuid(),
   username = faker.word.sample({
     length: {
@@ -22,21 +22,24 @@ export const createUserDomainObject = ({
   deletedAt = isDeleted ? new Date() : null,
   createdAt = new Date(),
   updatedAt = new Date()
-}: Partial<IUserRawObject>): IUser => {
-  const userOrError = UserFactory.create({
-    id,
-    username,
-    firstName,
-    lastName,
-    email,
-    password,
-    isSuperAdmin,
-    role,
-    isDeleted,
-    deletedAt,
-    createdAt,
-    updatedAt
-  });
+}: Partial<IUserRawObject>): Promise<IUserRawObject> => {
+  const bycryptPassword = new BycryptPassword();
+  const hashedPassword = await bycryptPassword.generateHash(password);
 
-  return userOrError.getValue();
+  return db.user.create({
+    data: {
+      id,
+      username,
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      isSuperAdmin,
+      role,
+      isDeleted,
+      deletedAt,
+      createdAt,
+      updatedAt
+    }
+  });
 };
