@@ -28,7 +28,7 @@ describe("User", () => {
       password: faker.internet.password(),
       role: faker.helpers.arrayElement(["STUDENT", "SECURITY", "ADMIN", "STAFF"]),
       isSuperAdmin: false,
-      userDeletionStatus: UserDeletionStatus.create(false, new Date()).getValue(),
+      userDeletionStatus: UserDeletionStatus.create(false, null).getValue(),
       createdAt: faker.date.past(),
       updatedAt: faker.date.past()
     };

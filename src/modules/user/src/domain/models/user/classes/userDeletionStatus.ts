@@ -30,7 +30,7 @@ export class UserDeletionStatus implements IUserDeletionStatus {
   }
 
   public static create(isDeleted: boolean, deletedAt: Date | null): Result<UserDeletionStatus> {
-    if (isDeleted && !deletedAt) {
+    if ((isDeleted && !deletedAt) || (!isDeleted && deletedAt)) {
       return Result.fail("Deleted users must have a deletedAt timestamp.");
     }
 

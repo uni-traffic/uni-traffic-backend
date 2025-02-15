@@ -11,13 +11,6 @@ describe("UserDeletionStatus", () => {
       expect(result.getValue().deletedAt).toBe(deletedAt);
     });
 
-    it("should return a failed result when isDeleted is true but deletedAt is not provided", () => {
-      const result = UserDeletionStatus.create(true, null);
-
-      expect(result.isFailure).toBe(true);
-      expect(result.getErrorMessage()).toBe("Deleted users must have a deletedAt timestamp.");
-    });
-
     it("should return a successful result when isDeleted is false and deletedAt is null", () => {
       const result = UserDeletionStatus.create(false, null);
 
@@ -26,13 +19,18 @@ describe("UserDeletionStatus", () => {
       expect(result.getValue().deletedAt).toBe(null);
     });
 
-    it("should return a successful result when isDeleted is false and deletedAt is provided (but is ignored)", () => {
+    it("should return a failed result when isDeleted is true but deletedAt is not provided", () => {
+      const result = UserDeletionStatus.create(true, null);
+
+      expect(result.isFailure).toBe(true);
+      expect(result.getErrorMessage()).toBe("Deleted users must have a deletedAt timestamp.");
+    });
+
+    it("should return a failed result when isDeleted is false and deletedAt is provided", () => {
       const deletedAt = new Date();
       const result = UserDeletionStatus.create(false, deletedAt);
 
-      expect(result.isSuccess).toBe(true);
-      expect(result.getValue().isDeleted).toBe(false);
-      expect(result.getValue().deletedAt).toBe(deletedAt);
+      expect(result.isSuccess).toBe(false);
     });
   });
 
