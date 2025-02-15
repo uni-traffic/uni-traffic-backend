@@ -19,7 +19,8 @@
     "db:studio": "prisma studio",
     "db:gen": "prisma generate",
     "db:push": "prisma db push",
-    "db:status": "docker ps"
+    "db:status": "docker ps",
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
