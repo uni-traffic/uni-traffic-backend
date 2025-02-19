@@ -20,7 +20,8 @@
     "db:gen": "prisma generate",
     "db:push": "prisma db push",
     "db:status": "docker ps",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "db:seed": "tsx scripts/seedUsers.ts"
   },
   "keywords": [],
   "author": "",
