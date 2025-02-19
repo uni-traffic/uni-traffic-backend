@@ -1,11 +1,15 @@
-import type { IMapper } from "../../../../../../shared/domain/mapper";
 import type { IUserDTO } from "../../../dtos/userDTO";
 import type { IUser } from "./classes/user";
-import type { IUserRawObject, IUserSchema } from "./constant";
+import type { IUserRawObject } from "./constant";
 import { UserFactory } from "./factory";
 
-export interface IUserMapper extends IMapper<IUser, IUserSchema, IUserRawObject, IUserDTO> {}
-export class UserMapper implements IUserMapper {
+export interface IUserMapper {
+  toPersistence(user: IUser): IUserRawObject
+  toDomain(raw: IUserRawObject): IUser
+  toDTO(user: IUser): IUserDTO
+}
+
+export class UserMapper {
   public toPersistence(user: IUser): IUserRawObject {
     return {
       id: user.id,
