@@ -32,7 +32,8 @@ export class VehicleMapper {
       ownerId: vehicle.ownerId,
       licenseNumber: vehicle.licenseNumber.value,
       stickerNumber: vehicle.stickerNumber.value,
-      isActive: vehicle.isActive
+      isActive: vehicle.isActive,
+      owner: vehicle.owner
     };
   }
 }
