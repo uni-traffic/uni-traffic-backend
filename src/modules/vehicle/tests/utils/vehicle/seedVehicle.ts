@@ -7,7 +7,7 @@ import type { IUserRawObject } from "../../../../user/src/domain/models/user/con
 
 export const seedVehicle = async ({
   id = uuid(),
-  owner, 
+  owner,
   licenseNumber = faker.vehicle.vrm(),
   stickerNumber = faker.number.bigInt({ min: 10_000_000, max: 99_999_999 }).toString(),
   isActive = faker.datatype.boolean(),

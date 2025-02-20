@@ -4,9 +4,9 @@ import type { IUserRawObject } from "./constant";
 import { UserFactory } from "./factory";
 
 export interface IUserMapper {
-  toPersistence(user: IUser): IUserRawObject
-  toDomain(raw: IUserRawObject): IUser
-  toDTO(user: IUser): IUserDTO
+  toPersistence(user: IUser): IUserRawObject;
+  toDomain(raw: IUserRawObject): IUser;
+  toDTO(user: IUser): IUserDTO;
 }
 
 export class UserMapper {

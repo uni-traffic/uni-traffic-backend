@@ -7,7 +7,7 @@ const vehicleRouter = Router();
 
 vehicleRouter.get(
   "/:vehicleId",
-  validateRequest({ params: VehicleIdSchema }), 
+  validateRequest({ params: VehicleIdSchema }),
   (req: Request, res: Response) => {
     new GetVehicleInformationController().execute(req, res);
   }

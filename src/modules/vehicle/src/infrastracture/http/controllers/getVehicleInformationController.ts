@@ -23,7 +23,7 @@ export class GetVehicleInformationController extends BaseController {
   }
 
   protected async executeImpl(req: Request, res: Response) {
-    const userId = await this._verifyPermission(req); 
+    const userId = await this._verifyPermission(req);
     const vehicleId = req.params.vehicleId;
 
     const vehicleDTO = await this._getVehicleInformationUseCase.execute(vehicleId, userId);
@@ -39,9 +39,11 @@ export class GetVehicleInformationController extends BaseController {
     const hasSecurityRole = await this._userRoleService.hasSecurityRole(userId);
 
     if (!hasAdminRole && !hasSecurityRole) {
-      throw new ForbiddenError("You do not have the required permissions to access vehicle information.");
+      throw new ForbiddenError(
+        "You do not have the required permissions to access vehicle information."
+      );
     }
 
-    return userId; 
+    return userId;
   }
 }

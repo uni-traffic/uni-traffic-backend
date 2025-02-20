@@ -28,9 +28,10 @@ export class GetVehicleInformationUseCase {
     }
 
     // 🔹 Check if user has either ADMIN or SECURITY role
-    const hasPermission = await this._userRoleService.hasAdminRole(userId) || 
-                          await this._userRoleService.hasSecurityRole(userId);
-    
+    const hasPermission =
+      (await this._userRoleService.hasAdminRole(userId)) ||
+      (await this._userRoleService.hasSecurityRole(userId));
+
     if (!hasPermission) {
       throw new ForbiddenError("You do not have the required permissions to view this vehicle.");
     }

@@ -2,7 +2,7 @@ import { NotFoundError, ForbiddenError } from "../../../../shared/core/errors";
 import { GetVehicleInformationUseCase } from "../../src/useCases/getVehicleInformationUseCase";
 import { db } from "../../../../shared/infrastructure/database/prisma";
 import { seedVehicle } from "../utils/vehicle/seedVehicle";
-import { seedAuthenticatedUser } from "../../../user/tests/utils/user/seedAuthenticatedUser"; 
+import { seedAuthenticatedUser } from "../../../user/tests/utils/user/seedAuthenticatedUser";
 
 describe("GetVehicleInformationUseCase", () => {
   let getVehicleInformationUseCase: GetVehicleInformationUseCase;
@@ -51,6 +51,8 @@ describe("GetVehicleInformationUseCase", () => {
 
     await expect(
       getVehicleInformationUseCase.execute(seededVehicle.id, unauthorizedUser.id)
-    ).rejects.toThrow(new ForbiddenError("You do not have the required permissions to view this vehicle."));
+    ).rejects.toThrow(
+      new ForbiddenError("You do not have the required permissions to view this vehicle.")
+    );
   });
 });

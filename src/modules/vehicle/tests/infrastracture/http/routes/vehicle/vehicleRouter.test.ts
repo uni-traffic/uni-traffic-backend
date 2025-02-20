@@ -29,8 +29,8 @@ describe("GET /api/v1/vehicle/:vehicleId", () => {
 
   it("should return a 403 status code when the user does not have ADMIN or SECURITY role", async () => {
     const seededUser = await seedAuthenticatedUser({
-      role: "STUDENT", 
-      expiration: "1h",
+      role: "STUDENT",
+      expiration: "1h"
     });
 
     const seededVehicle = await seedVehicle({});
@@ -40,13 +40,15 @@ describe("GET /api/v1/vehicle/:vehicleId", () => {
       .set("Authorization", `Bearer ${seededUser.accessToken}`);
 
     expect(response.status).toBe(403);
-    expect(response.body.message).toBe("You do not have the required permissions to access vehicle information.");
+    expect(response.body.message).toBe(
+      "You do not have the required permissions to access vehicle information."
+    );
   });
 
   it("should return a 200 status code and vehicle information for an ADMIN user", async () => {
     const adminUser = await seedAuthenticatedUser({
       role: "ADMIN",
-      expiration: "1h",
+      expiration: "1h"
     });
 
     const seededVehicle = await seedVehicle({});
@@ -68,7 +70,7 @@ describe("GET /api/v1/vehicle/:vehicleId", () => {
   it("should return a 200 status code and vehicle information for a SECURITY user", async () => {
     const securityUser = await seedAuthenticatedUser({
       role: "SECURITY",
-      expiration: "1h",
+      expiration: "1h"
     });
 
     const seededVehicle = await seedVehicle({});
@@ -90,7 +92,7 @@ describe("GET /api/v1/vehicle/:vehicleId", () => {
   it("should return a 404 status code when provided with a non-existing vehicleId", async () => {
     const adminUser = await seedAuthenticatedUser({
       role: "ADMIN",
-      expiration: "1h",
+      expiration: "1h"
     });
 
     const nonExistentVehicleId = faker.string.uuid();
