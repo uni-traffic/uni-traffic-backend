@@ -7,7 +7,13 @@ import { seedVehicle } from "../utils/vehicle/seedVehicle";
 const assertVehicle = (received: IVehicleDTO, expected: IVehicleDTO) => {
   expect(received!.id).toBe(expected.id);
   expect(received!.isActive).toBe(expected.isActive);
-  expect(received!.licenseNumber).toBe(expected.licenseNumber);
+  expect(received!.licensePlate).toBe(expected.licensePlate);
+  expect(received.make).toBe(expected.make);
+  expect(received.model).toBe(expected.model);
+  expect(received.series).toBe(expected.series);
+  expect(received.color).toBe(expected.color);
+  expect(received.type).toBe(expected.type);
+  expect(received.images).toStrictEqual(expected.images);
   expect(received!.stickerNumber).toBe(expected.stickerNumber);
   expect(received!.ownerId).toBe(expected.ownerId);
   expect(received!.owner.id).toBe(expected.owner.id);
@@ -19,10 +25,10 @@ const assertVehicle = (received: IVehicleDTO, expected: IVehicleDTO) => {
 };
 
 describe("GetVehicleInformationUseCase", () => {
-  let getVehicleByLicensePlateOrStickerUseCase: GetVehicleInformationUseCase;
+  let getVehicleInformationUseCase: GetVehicleInformationUseCase;
 
   beforeAll(() => {
-    getVehicleByLicensePlateOrStickerUseCase = new GetVehicleInformationUseCase();
+    getVehicleInformationUseCase = new GetVehicleInformationUseCase();
   });
 
   it("should return VehicleDTO when id is provided", async () => {
@@ -31,7 +37,7 @@ describe("GetVehicleInformationUseCase", () => {
       id: seededVehicle.id
     };
 
-    const vehicleDTO = await getVehicleByLicensePlateOrStickerUseCase.execute(mockRequest);
+    const vehicleDTO = await getVehicleInformationUseCase.execute(mockRequest);
 
     expect(vehicleDTO).toBeDefined();
     assertVehicle(vehicleDTO, seededVehicle);
@@ -40,10 +46,10 @@ describe("GetVehicleInformationUseCase", () => {
   it("should return VehicleDTO when licensePlate is provided", async () => {
     const seededVehicle = await seedVehicle({});
     const mockRequest: VehicleRequest = {
-      licensePlate: seededVehicle.licenseNumber
+      licensePlate: seededVehicle.licensePlate
     };
 
-    const vehicleDTO = await getVehicleByLicensePlateOrStickerUseCase.execute(mockRequest);
+    const vehicleDTO = await getVehicleInformationUseCase.execute(mockRequest);
 
     expect(vehicleDTO).toBeDefined();
     assertVehicle(vehicleDTO, seededVehicle);
@@ -55,7 +61,7 @@ describe("GetVehicleInformationUseCase", () => {
       stickerNumber: seededVehicle.stickerNumber
     };
 
-    const vehicleDTO = await getVehicleByLicensePlateOrStickerUseCase.execute(mockRequest);
+    const vehicleDTO = await getVehicleInformationUseCase.execute(mockRequest);
 
     expect(vehicleDTO).toBeDefined();
     assertVehicle(vehicleDTO, seededVehicle);
@@ -63,10 +69,10 @@ describe("GetVehicleInformationUseCase", () => {
 
   it("should throw NotFoundError when provided un-existing id", async () => {
     const mockRequest: VehicleRequest = {
-      stickerNumber: "non-existing-id"
+      id: "non-existing-id"
     };
 
-    await expect(getVehicleByLicensePlateOrStickerUseCase.execute(mockRequest)).rejects.toThrow(
+    await expect(getVehicleInformationUseCase.execute(mockRequest)).rejects.toThrow(
       new NotFoundError("Vehicle not found.")
     );
   });

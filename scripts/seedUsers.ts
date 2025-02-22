@@ -60,7 +60,16 @@ const seedVehicleAndOwnerData = async () => {
   };
 
   const VEHICLE_DATA = {
-    licenseNumber: "959CIP",
+    licensePlate: "959CIP",
+    make: "YAMAHA",
+    model: "2020",
+    series: "MIO SPORTY",
+    color: "MATTE BLACK",
+    images: [
+      "https://imgur.com/a/4RBvnfb",
+      "https://imgur.com/iNjIPto",
+      "https://imgur.com/FWm1zVe"
+    ],
     stickerNumber: "20250125"
   };
 
@@ -74,7 +83,7 @@ const seedVehicleAndOwnerData = async () => {
       where: {
         OR: [
           {
-            licenseNumber: VEHICLE_DATA.licenseNumber
+            licensePlate: VEHICLE_DATA.licensePlate
           },
           {
             stickerNumber: VEHICLE_DATA.stickerNumber
@@ -82,7 +91,11 @@ const seedVehicleAndOwnerData = async () => {
         ]
       }
     });
+  } catch (error) {
+    console.log(error);
+  }
 
+  try {
     const seededUser = await seedUser({
       ...OWNER_DATA,
       role: OWNER_DATA.role as Role
@@ -94,7 +107,7 @@ const seedVehicleAndOwnerData = async () => {
 
     console.table({
       id: seededVehicle.id,
-      licensePlate: seededVehicle.licenseNumber,
+      licensePlate: seededVehicle.licensePlate,
       stickerNumber: seededVehicle.stickerNumber
     });
   } catch (error) {

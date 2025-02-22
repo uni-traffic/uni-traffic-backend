@@ -1,18 +1,25 @@
-import { Vehicle, type IVehicle } from "./classes/vehicle";
-import { VehicleLicensePlateNumber } from "./classes/vehicleLicenseNumber";
-import { VehicleStickerNumber } from "./classes/vehicleStickerNumber";
-import { Result } from "../../../../../../shared/core/result";
 import { defaultTo } from "rambda";
 import { v4 as uuid } from "uuid";
-import type {} from "../../../../../user/src/domain/models/user/classes/user";
+import { Result } from "../../../../../../shared/core/result";
 import type { IUserRawObject } from "../../../../../user/src/domain/models/user/constant";
 import { UserFactory } from "../../../../../user/src/domain/models/user/factory";
 import { UserMapper } from "../../../../../user/src/domain/models/user/mapper";
+import { type IVehicle, Vehicle } from "./classes/vehicle";
+import { VehicleImages } from "./classes/vehicleImages";
+import { VehicleLicensePlateNumber } from "./classes/vehicleLicensePlate";
+import { VehicleStickerNumber } from "./classes/vehicleStickerNumber";
+import { VehicleType } from "./classes/vehicleType";
 
 export interface IVehicleFactoryProps {
   id?: string;
   ownerId: string;
-  licenseNumber: string;
+  licensePlate: string;
+  make: string;
+  model: string;
+  series: string;
+  color: string;
+  type: string;
+  images: string[];
   stickerNumber: string;
   isActive: boolean;
   createdAt?: Date;
@@ -22,11 +29,19 @@ export interface IVehicleFactoryProps {
 
 export class VehicleFactory {
   public static create(vehicleFactoryProps: IVehicleFactoryProps): Result<IVehicle> {
-    const licenseNumberOrError = VehicleLicensePlateNumber.create(
-      vehicleFactoryProps.licenseNumber
-    );
+    const licenseNumberOrError = VehicleLicensePlateNumber.create(vehicleFactoryProps.licensePlate);
     if (licenseNumberOrError.isFailure) {
       return Result.fail<IVehicle>(licenseNumberOrError.getErrorMessage()!);
+    }
+
+    const vehicleTypeOrError = VehicleType.create(vehicleFactoryProps.type);
+    if (vehicleTypeOrError.isFailure) {
+      return Result.fail<IVehicle>(vehicleTypeOrError.getErrorMessage()!);
+    }
+
+    const vehicleImagesOrError = VehicleImages.create(vehicleFactoryProps.images);
+    if (vehicleImagesOrError.isFailure) {
+      return Result.fail<IVehicle>(vehicleImagesOrError.getErrorMessage()!);
     }
 
     const stickerNumberOrError = VehicleStickerNumber.create(vehicleFactoryProps.stickerNumber);
@@ -43,7 +58,9 @@ export class VehicleFactory {
       Vehicle.create({
         ...vehicleFactoryProps,
         id: defaultTo(uuid(), vehicleFactoryProps.id),
-        licenseNumber: licenseNumberOrError.getValue(),
+        licensePlate: licenseNumberOrError.getValue(),
+        type: vehicleTypeOrError.getValue(),
+        images: vehicleImagesOrError.getValue(),
         stickerNumber: stickerNumberOrError.getValue(),
         createdAt: defaultTo(new Date(), vehicleFactoryProps.createdAt),
         updatedAt: defaultTo(new Date(), vehicleFactoryProps.updatedAt),

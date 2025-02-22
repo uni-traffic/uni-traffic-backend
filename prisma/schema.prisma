@@ -40,13 +40,24 @@ enum Role {
 model Vehicle {
   id            String      @id @default(uuid())
   ownerId       String
-  licenseNumber String      @unique
+  licensePlate  String      @unique
+  color         String
+  make          String
+  series        String
+  model         String
+  images        String[]
   stickerNumber String      @unique
   isActive      Boolean     @default(true)
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+  type          VehicleType
   owner         User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   violations    Violation[]
+}
+
+enum VehicleType {
+  CAR
+  MOTORCYCLE
 }
 
 model Violation {

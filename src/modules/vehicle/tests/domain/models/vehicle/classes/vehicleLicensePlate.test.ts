@@ -1,4 +1,4 @@
-import { VehicleLicensePlateNumber } from "../../../../../src/domain/models/vehicle/classes/vehicleLicenseNumber";
+import { VehicleLicensePlateNumber } from "../../../../../src/domain/models/vehicle/classes/vehicleLicensePlate";
 
 describe("VehicleLicensePlateNumber", () => {
   it("should match valid diplomatic corps plate", () => {

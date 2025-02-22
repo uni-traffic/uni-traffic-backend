@@ -1,15 +1,21 @@
 import { faker } from "@faker-js/faker";
 import { v4 as uuid } from "uuid";
-import {
-  VehicleFactory,
-  type IVehicleFactoryProps
-} from "../../../src/domain/models/vehicle/factory";
 import type { IVehicle } from "../../../src/domain/models/vehicle/classes/vehicle";
+import {
+  type IVehicleFactoryProps,
+  VehicleFactory
+} from "../../../src/domain/models/vehicle/factory";
 
 export const createVehicleDomainObject = ({
   id = uuid(),
   ownerId = uuid(),
-  licenseNumber = faker.vehicle.vrm(),
+  licensePlate = faker.vehicle.vrm(),
+  make = faker.vehicle.manufacturer(),
+  model = faker.date.past().getFullYear().toString(),
+  series = faker.vehicle.model(),
+  color = faker.vehicle.color(),
+  type = faker.helpers.arrayElement(["CAR", "MOTORCYCLE"]),
+  images = Array.from({ length: 3 }).map(() => faker.image.url()),
   stickerNumber = faker.number.bigInt({ min: 10_000_000, max: 99_999_999 }).toString(),
   isActive = faker.datatype.boolean(),
   createdAt = faker.date.past(),
@@ -18,7 +24,13 @@ export const createVehicleDomainObject = ({
   const vehicleOrError = VehicleFactory.create({
     id,
     ownerId,
-    licenseNumber,
+    licensePlate,
+    make,
+    model,
+    series,
+    color,
+    type,
+    images,
     stickerNumber,
     isActive,
     createdAt,

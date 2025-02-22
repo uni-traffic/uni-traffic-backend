@@ -11,7 +11,13 @@ import { seedVehicle } from "../../../../utils/vehicle/seedVehicle";
 const assertVehicle = (received: IVehicleDTO, expected: IVehicleDTO) => {
   expect(received!.id).toBe(expected.id);
   expect(received!.isActive).toBe(expected.isActive);
-  expect(received!.licenseNumber).toBe(expected.licenseNumber);
+  expect(received!.licensePlate).toBe(expected.licensePlate);
+  expect(received.make).toBe(expected.make);
+  expect(received.model).toBe(expected.model);
+  expect(received.series).toBe(expected.series);
+  expect(received.color).toBe(expected.color);
+  expect(received.type).toBe(expected.type);
+  expect(received.images).toStrictEqual(expected.images);
   expect(received!.stickerNumber).toBe(expected.stickerNumber);
   expect(received!.ownerId).toBe(expected.ownerId);
   expect(received!.owner.id).toBe(expected.owner.id);
@@ -61,7 +67,7 @@ describe("GET /api/v1/vehicle", () => {
     });
     const seededVehicle = await seedVehicle({});
     const mockRequestData: VehicleRequest = {
-      licensePlate: seededVehicle.licenseNumber
+      licensePlate: seededVehicle.licensePlate
     };
 
     const response = await requestAPI

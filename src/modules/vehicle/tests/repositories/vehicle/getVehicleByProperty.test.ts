@@ -11,7 +11,13 @@ const assertVehicle = (received: IVehicle, expected: IVehicleDTO) => {
   expect(received).toBeInstanceOf(Vehicle);
   expect(received!.id).toBe(expected.id);
   expect(received!.isActive).toBe(expected.isActive);
-  expect(received!.licenseNumber.value).toBe(expected.licenseNumber);
+  expect(received!.licensePlate.value).toBe(expected.licensePlate);
+  expect(received.make).toBe(expected.make);
+  expect(received.model).toBe(expected.model);
+  expect(received.series).toBe(expected.series);
+  expect(received.color).toBe(expected.color);
+  expect(received.type.value).toBe(expected.type);
+  expect(received.images.value).toStrictEqual(expected.images);
   expect(received!.stickerNumber.value).toBe(expected.stickerNumber);
   expect(received!.ownerId).toBe(expected.ownerId);
   expect(received!.owner.id).toBe(expected.owner.id);
@@ -44,7 +50,7 @@ describe("VehicleRepository.getVehicleByProperty", () => {
   it("should return Vehicle when the parameter is licensePlate", async () => {
     const seededVehicle = await seedVehicle({});
     const mockRequest: VehicleRequest = {
-      licensePlate: seededVehicle.licenseNumber
+      licensePlate: seededVehicle.licensePlate
     };
 
     const vehicle = await vehicleRepository.getVehicleByProperty(mockRequest);

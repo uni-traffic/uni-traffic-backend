@@ -53,7 +53,7 @@ export class VehicleRepository implements IVehicleRepository {
         where: {
           ...{ id: id || undefined },
           ...{ stickerNumber: stickerNumber || undefined },
-          ...{ licenseNumber: licensePlate || undefined }
+          ...{ licensePlate: licensePlate || undefined }
         },
         include: {
           owner: true
