@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
+import type { IUserLoginResponse } from "../../../dtos/userDTO";
 import type { LoginRequest } from "../../../dtos/userRequestSchema";
 import { LoginUserUseCase } from "../../../useCases/auth/loginUserUseCase";
 
@@ -15,6 +16,6 @@ export class LoginUserController extends BaseController {
     const requestBody: LoginRequest = req.body;
     const accessToken = await this._userLoginUseCase.execute(requestBody);
 
-    this.ok<{ accessToken: string; role: string }>(res, accessToken);
+    this.ok<IUserLoginResponse>(res, accessToken);
   }
 }

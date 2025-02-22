@@ -6,3 +6,9 @@ export interface IUserDTO {
   lastName: string;
   role: string;
 }
+
+export interface IUserLoginResponse {
+  user: IUserDTO;
+  appKey: string;
+  accessToken: string;
+}

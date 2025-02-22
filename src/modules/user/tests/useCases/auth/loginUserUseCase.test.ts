@@ -32,13 +32,14 @@ describe("LoginUserUseCase", () => {
       password: credentials.password
     });
 
-    const { accessToken, role } = await loginUserUseCase.execute({
+    const { accessToken, user, appKey } = await loginUserUseCase.execute({
       username: credentials.username,
       password: credentials.password
     });
 
-    expect(role).toBeDefined();
+    expect(user).toBeDefined();
     expect(accessToken).toBeDefined();
+    expect(appKey).toBeDefined();
   });
 
   it("should throw UnauthorizedError when provided with wrong password", async () => {

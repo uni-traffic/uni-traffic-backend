@@ -18,15 +18,26 @@ export class GetVehicleInformationUseCase {
   }
 
   public async execute(payload: VehicleRequest): Promise<IVehicleDTO> {
-    const vehicle = await this._getVehicleByProperty(payload);
-    if (!vehicle) {
-      throw new NotFoundError("Vehicle not found.");
-    }
+    const refinedPayload = this._refinePayload(payload);
+    const vehicle = await this._getVehicleDetails(refinedPayload);
 
     return this._vehicleMapper.toDTO(vehicle);
   }
 
-  private async _getVehicleByProperty(payload: VehicleRequest): Promise<IVehicle | null> {
-    return await this._vehicleRepository.getVehicleByProperty(payload);
+  private _refinePayload(payload: VehicleRequest): VehicleRequest {
+    return {
+      id: payload.id || undefined,
+      licensePlate: payload.licensePlate?.toUpperCase().replace(" ", "") || undefined,
+      stickerNumber: payload.stickerNumber || undefined
+    };
+  }
+
+  private async _getVehicleDetails(payload: VehicleRequest): Promise<IVehicle> {
+    const vehicle = await this._vehicleRepository.getVehicleByProperty(payload);
+    if (!vehicle) {
+      throw new NotFoundError("Vehicle not found.");
+    }
+
+    return vehicle;
   }
 }
