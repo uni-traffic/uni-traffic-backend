@@ -6,7 +6,12 @@ const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({
     errorFormat: "pretty",
-    log: process.env.NODE_ENV === "development" ? ["query", "warn", "error"] : ["error"]
+    log:
+      process.env.NODE_ENV === "development"
+        ? ["query", "warn", "error"]
+        : process.env.NODE_ENV === "test"
+          ? undefined
+          : ["error"]
   });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;

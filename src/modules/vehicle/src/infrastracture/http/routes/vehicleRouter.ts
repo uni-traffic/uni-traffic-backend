@@ -1,13 +1,13 @@
-import { Router, type Request, type Response } from "express";
+import { type Request, type Response, Router } from "express";
 import { validateRequest } from "zod-express-middleware";
-import { VehicleIdSchema } from "../../../dtos/vehicleIdSchema";
+import { VehicleGetRequestSchema } from "../../../dtos/vehicleRequestSchema";
 import { GetVehicleInformationController } from "../controllers/getVehicleInformationController";
 
 const vehicleRouter = Router();
 
 vehicleRouter.get(
-  "/:vehicleId",
-  validateRequest({ params: VehicleIdSchema }),
+  "/",
+  validateRequest({ query: VehicleGetRequestSchema }),
   (req: Request, res: Response) => {
     new GetVehicleInformationController().execute(req, res);
   }

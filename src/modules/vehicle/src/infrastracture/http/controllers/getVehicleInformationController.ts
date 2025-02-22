@@ -1,10 +1,10 @@
 import type { Request, Response } from "express";
-import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
-import { GetVehicleInformationUseCase } from "../../../useCases/getVehicleInformationUseCase";
-import type { IVehicleDTO } from "../../../dtos/vehicleDTO";
 import { ForbiddenError } from "../../../../../../shared/core/errors";
+import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
 import { type IJSONWebToken, JSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
 import { UserRoleService } from "../../../../../user/src/shared/service/userRoleService";
+import type { IVehicleDTO } from "../../../dtos/vehicleDTO";
+import { GetVehicleInformationUseCase } from "../../../useCases/getVehicleInformationUseCase";
 
 export class GetVehicleInformationController extends BaseController {
   private _getVehicleInformationUseCase: GetVehicleInformationUseCase;
@@ -23,10 +23,9 @@ export class GetVehicleInformationController extends BaseController {
   }
 
   protected async executeImpl(req: Request, res: Response) {
-    const userId = await this._verifyPermission(req);
-    const vehicleId = req.params.vehicleId;
+    await this._verifyPermission(req);
 
-    const vehicleDTO = await this._getVehicleInformationUseCase.execute(vehicleId, userId);
+    const vehicleDTO = await this._getVehicleInformationUseCase.execute(req.query);
 
     this.ok<IVehicleDTO>(res, vehicleDTO);
   }
@@ -37,11 +36,8 @@ export class GetVehicleInformationController extends BaseController {
 
     const hasAdminRole = await this._userRoleService.hasAdminRole(userId);
     const hasSecurityRole = await this._userRoleService.hasSecurityRole(userId);
-
     if (!hasAdminRole && !hasSecurityRole) {
-      throw new ForbiddenError(
-        "You do not have the required permissions to access vehicle information."
-      );
+      throw new ForbiddenError("You do not have the required permissions to perform this action.");
     }
 
     return userId;

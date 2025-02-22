@@ -1,41 +1,32 @@
-import { NotFoundError, ForbiddenError } from "../../../../shared/core/errors";
-import type { IVehicleRepository } from "../repositories/vehicleRepository";
-import { VehicleRepository } from "../repositories/vehicleRepository";
+import { NotFoundError } from "../../../../shared/core/errors";
+import type { IVehicle } from "../domain/models/vehicle/classes/vehicle";
+import { type IVehicleMapper, VehicleMapper } from "../domain/models/vehicle/mapper";
 import type { IVehicleDTO } from "../dtos/vehicleDTO";
-import { VehicleMapper } from "../domain/models/vehicle/mapper";
-import type { IUserRoleService } from "../../../user/src/shared/service/userRoleService";
-import { UserRoleService } from "../../../user/src/shared/service/userRoleService";
+import type { VehicleRequest } from "../dtos/vehicleRequestSchema";
+import { type IVehicleRepository, VehicleRepository } from "../repositories/vehicleRepository";
 
 export class GetVehicleInformationUseCase {
   private _vehicleRepository: IVehicleRepository;
-  private _vehicleMapper: VehicleMapper;
-  private _userRoleService: IUserRoleService;
+  private _vehicleMapper: IVehicleMapper;
 
   public constructor(
     vehicleRepository: IVehicleRepository = new VehicleRepository(),
-    vehicleMapper: VehicleMapper = new VehicleMapper(),
-    userRoleService: IUserRoleService = new UserRoleService()
+    vehicleMapper: IVehicleMapper = new VehicleMapper()
   ) {
     this._vehicleRepository = vehicleRepository;
     this._vehicleMapper = vehicleMapper;
-    this._userRoleService = userRoleService;
   }
 
-  public async execute(vehicleId: string, userId: string): Promise<IVehicleDTO> {
-    const vehicleOrNull = await this._vehicleRepository.getVehicleById(vehicleId);
-    if (!vehicleOrNull) {
+  public async execute(payload: VehicleRequest): Promise<IVehicleDTO> {
+    const vehicle = await this._getVehicleByProperty(payload);
+    if (!vehicle) {
       throw new NotFoundError("Vehicle not found.");
     }
 
-    // 🔹 Check if user has either ADMIN or SECURITY role
-    const hasPermission =
-      (await this._userRoleService.hasAdminRole(userId)) ||
-      (await this._userRoleService.hasSecurityRole(userId));
+    return this._vehicleMapper.toDTO(vehicle);
+  }
 
-    if (!hasPermission) {
-      throw new ForbiddenError("You do not have the required permissions to view this vehicle.");
-    }
-
-    return this._vehicleMapper.toDTO(vehicleOrNull);
+  private async _getVehicleByProperty(payload: VehicleRequest): Promise<IVehicle | null> {
+    return await this._vehicleRepository.getVehicleByProperty(payload);
   }
 }
