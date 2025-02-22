@@ -6,7 +6,13 @@ import type { IUserDTO } from "../../../user/src/dtos/userDTO";
 export interface IVehicleDTO {
   id: string;
   ownerId: string;
-  licenseNumber: string;
+  licensePlate: string;
+  make: string;
+  model: string;
+  series: string;
+  color: string;
+  type: string;
+  images: string[];
   stickerNumber: string;
   isActive: boolean;
   owner: IUserDTO;

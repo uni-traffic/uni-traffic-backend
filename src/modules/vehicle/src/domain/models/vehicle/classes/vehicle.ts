@@ -1,11 +1,19 @@
-import type { VehicleLicensePlateNumber } from "./vehicleLicenseNumber";
-import type { VehicleStickerNumber } from "./vehicleStickerNumber";
 import type { IUserDTO } from "../../../../../../user/src/dtos/userDTO";
+import type { VehicleImages } from "./vehicleImages";
+import type { VehicleLicensePlateNumber } from "./vehicleLicensePlate";
+import type { VehicleStickerNumber } from "./vehicleStickerNumber";
+import type { VehicleType } from "./vehicleType";
 
 export interface IVehicle {
   id: string;
   ownerId: string;
-  licenseNumber: VehicleLicensePlateNumber;
+  licensePlate: VehicleLicensePlateNumber;
+  make: string;
+  model: string;
+  series: string;
+  color: string;
+  type: VehicleType;
+  images: VehicleImages;
   stickerNumber: VehicleStickerNumber;
   isActive: boolean;
   createdAt: Date;
@@ -16,7 +24,13 @@ export interface IVehicle {
 export class Vehicle implements IVehicle {
   private readonly _id: string;
   private readonly _ownerId: string;
-  private readonly _licenseNumber: VehicleLicensePlateNumber;
+  private readonly _licensePlate: VehicleLicensePlateNumber;
+  private readonly _make: string;
+  private readonly _model: string;
+  private readonly _series: string;
+  private readonly _color: string;
+  private readonly _type: VehicleType;
+  private readonly _images: VehicleImages;
   private readonly _stickerNumber: VehicleStickerNumber;
   private readonly _isActive: boolean;
   private readonly _createdAt: Date;
@@ -26,8 +40,14 @@ export class Vehicle implements IVehicle {
   private constructor({
     id,
     ownerId,
-    licenseNumber,
+    licensePlate,
+    make,
+    model,
+    series,
+    color,
+    type,
     stickerNumber,
+    images,
     isActive,
     createdAt,
     updatedAt,
@@ -35,7 +55,13 @@ export class Vehicle implements IVehicle {
   }: {
     id: string;
     ownerId: string;
-    licenseNumber: VehicleLicensePlateNumber;
+    licensePlate: VehicleLicensePlateNumber;
+    make: string;
+    model: string;
+    series: string;
+    color: string;
+    type: VehicleType;
+    images: VehicleImages;
     stickerNumber: VehicleStickerNumber;
     isActive: boolean;
     createdAt: Date;
@@ -44,7 +70,13 @@ export class Vehicle implements IVehicle {
   }) {
     this._id = id;
     this._ownerId = ownerId;
-    this._licenseNumber = licenseNumber;
+    this._licensePlate = licensePlate;
+    this._make = make;
+    this._model = model;
+    this._series = series;
+    this._color = color;
+    this._type = type;
+    this._images = images;
     this._stickerNumber = stickerNumber;
     this._isActive = isActive;
     this._createdAt = createdAt;
@@ -60,8 +92,32 @@ export class Vehicle implements IVehicle {
     return this._ownerId;
   }
 
-  get licenseNumber(): VehicleLicensePlateNumber {
-    return this._licenseNumber;
+  get licensePlate(): VehicleLicensePlateNumber {
+    return this._licensePlate;
+  }
+
+  get make(): string {
+    return this._make;
+  }
+
+  get model(): string {
+    return this._model;
+  }
+
+  get series(): string {
+    return this._series;
+  }
+
+  get color(): string {
+    return this._color;
+  }
+
+  get type(): VehicleType {
+    return this._type;
+  }
+
+  get images(): VehicleImages {
+    return this._images;
   }
 
   get stickerNumber(): VehicleStickerNumber {
@@ -87,7 +143,13 @@ export class Vehicle implements IVehicle {
   public static create({
     id,
     ownerId,
-    licenseNumber,
+    licensePlate,
+    make,
+    model,
+    series,
+    color,
+    type,
+    images,
     stickerNumber,
     isActive,
     createdAt,
@@ -96,7 +158,13 @@ export class Vehicle implements IVehicle {
   }: {
     id: string;
     ownerId: string;
-    licenseNumber: VehicleLicensePlateNumber;
+    licensePlate: VehicleLicensePlateNumber;
+    make: string;
+    model: string;
+    series: string;
+    color: string;
+    type: VehicleType;
+    images: VehicleImages;
     stickerNumber: VehicleStickerNumber;
     isActive: boolean;
     createdAt: Date;
@@ -106,7 +174,13 @@ export class Vehicle implements IVehicle {
     return new Vehicle({
       id,
       ownerId,
-      licenseNumber,
+      licensePlate,
+      make,
+      model,
+      series,
+      color,
+      type,
+      images,
       stickerNumber,
       isActive,
       createdAt,

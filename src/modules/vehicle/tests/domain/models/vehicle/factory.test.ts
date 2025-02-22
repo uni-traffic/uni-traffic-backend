@@ -28,7 +28,13 @@ describe("VehicleFactory", () => {
     mockVehicleData = {
       id: faker.string.uuid(),
       ownerId: mockUserData.id,
-      licenseNumber: "abcd 1234",
+      licensePlate: faker.vehicle.vrm().toUpperCase(),
+      make: faker.vehicle.manufacturer(),
+      model: faker.date.past().getFullYear().toString(),
+      series: faker.vehicle.model(),
+      color: faker.vehicle.color(),
+      type: faker.helpers.arrayElement(["CAR", "MOTORCYCLE"]),
+      images: [faker.image.url(), faker.image.url(), faker.image.url()],
       stickerNumber: "12345678",
       isActive: faker.datatype.boolean(),
       createdAt: faker.date.past(),
@@ -44,9 +50,15 @@ describe("VehicleFactory", () => {
     expect(result.getValue()).toBeInstanceOf(Vehicle);
 
     const vehicle = result.getValue();
+
     expect(vehicle.id).toBe(mockVehicleData.id);
     expect(vehicle.ownerId).toBe(mockVehicleData.ownerId);
-    expect(vehicle.licenseNumber.value).toBe(mockVehicleData.licenseNumber);
+    expect(vehicle.licensePlate.value).toBe(mockVehicleData.licensePlate);
+    expect(vehicle.make).toBe(mockVehicleData.make);
+    expect(vehicle.model).toBe(mockVehicleData.model);
+    expect(vehicle.series).toBe(mockVehicleData.series);
+    expect(vehicle.color).toBe(mockVehicleData.color);
+    expect(vehicle.type.value).toBe(mockVehicleData.type);
     expect(vehicle.stickerNumber.value).toBe(mockVehicleData.stickerNumber);
     expect(vehicle.isActive).toBe(mockVehicleData.isActive);
     expect(vehicle.createdAt).toBe(mockVehicleData.createdAt);
@@ -62,7 +74,7 @@ describe("VehicleFactory", () => {
   it("should not create a Vehicle when license plate is invalid", () => {
     const mockVehicleDataWithInvalidLicense = {
       ...mockVehicleData,
-      licenseNumber: ""
+      licensePlate: ""
     };
     const result = VehicleFactory.create(mockVehicleDataWithInvalidLicense);
 

@@ -1,7 +1,7 @@
-import { db } from "../../../../shared/infrastructure/database/prisma";
-import type { IVehicleRepository } from "../../src/repositories/vehicleRepository";
-import { VehicleRepository } from "../../src/repositories/vehicleRepository";
-import { seedVehicle } from "../utils/vehicle/seedVehicle";
+import { db } from "../../../../../shared/infrastructure/database/prisma";
+import type { IVehicleRepository } from "../../../src/repositories/vehicleRepository";
+import { VehicleRepository } from "../../../src/repositories/vehicleRepository";
+import { seedVehicle } from "../../utils/vehicle/seedVehicle";
 
 describe("VehicleRepository.getVehiclesByIds", () => {
   let vehicleRepository: IVehicleRepository;

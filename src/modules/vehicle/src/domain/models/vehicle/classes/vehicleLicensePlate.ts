@@ -14,7 +14,7 @@ export class VehicleLicensePlateNumber {
       return Result.fail<VehicleLicensePlateNumber>(`${value} is not a valid license plate number`);
     }
 
-    return Result.ok<VehicleLicensePlateNumber>(new VehicleLicensePlateNumber(value));
+    return Result.ok<VehicleLicensePlateNumber>(new VehicleLicensePlateNumber(value.toUpperCase()));
   }
 
   public get value(): string {

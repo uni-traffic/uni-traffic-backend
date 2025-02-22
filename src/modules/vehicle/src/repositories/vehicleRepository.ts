@@ -1,11 +1,13 @@
-import type { IVehicle } from "../domain/models/vehicle/classes/vehicle";
 import { db } from "../../../../shared/infrastructure/database/prisma";
+import type { IVehicle } from "../domain/models/vehicle/classes/vehicle";
 import type { IVehicleMapper } from "../domain/models/vehicle/mapper";
 import { VehicleMapper } from "../domain/models/vehicle/mapper";
+import type { VehicleRequest } from "../dtos/vehicleRequestSchema";
 
 export interface IVehicleRepository {
   getVehicleById(vehicleId: string): Promise<IVehicle | null>;
   getVehiclesByIds(vehicleIds: string[]): Promise<IVehicle[]>;
+  getVehicleByProperty(params: VehicleRequest): Promise<IVehicle | null>;
 }
 
 export class VehicleRepository implements IVehicleRepository {
@@ -38,5 +40,29 @@ export class VehicleRepository implements IVehicleRepository {
     });
 
     return vehiclesRaw.map((vehicle) => this._vehicleMapper.toDomain(vehicle));
+  }
+
+  public async getVehicleByProperty(params: VehicleRequest): Promise<IVehicle | null> {
+    const { id, stickerNumber, licensePlate } = params;
+    if (!id && !stickerNumber && !licensePlate) {
+      return null;
+    }
+
+    try {
+      const vehicleRaw = await this._database.vehicle.findUniqueOrThrow({
+        where: {
+          ...{ id: id || undefined },
+          ...{ stickerNumber: stickerNumber || undefined },
+          ...{ licensePlate: licensePlate || undefined }
+        },
+        include: {
+          owner: true
+        }
+      });
+
+      return this._vehicleMapper.toDomain(vehicleRaw);
+    } catch {
+      return null;
+    }
   }
 }

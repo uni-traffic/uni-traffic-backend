@@ -1,8 +1,28 @@
-import { NotFoundError, ForbiddenError } from "../../../../shared/core/errors";
+import { NotFoundError } from "../../../../shared/core/errors";
+import type { IVehicleDTO } from "../../src/dtos/vehicleDTO";
+import type { VehicleRequest } from "../../src/dtos/vehicleRequestSchema";
 import { GetVehicleInformationUseCase } from "../../src/useCases/getVehicleInformationUseCase";
-import { db } from "../../../../shared/infrastructure/database/prisma";
 import { seedVehicle } from "../utils/vehicle/seedVehicle";
-import { seedAuthenticatedUser } from "../../../user/tests/utils/user/seedAuthenticatedUser";
+
+const assertVehicle = (received: IVehicleDTO, expected: IVehicleDTO) => {
+  expect(received!.id).toBe(expected.id);
+  expect(received!.isActive).toBe(expected.isActive);
+  expect(received!.licensePlate).toBe(expected.licensePlate);
+  expect(received.make).toBe(expected.make);
+  expect(received.model).toBe(expected.model);
+  expect(received.series).toBe(expected.series);
+  expect(received.color).toBe(expected.color);
+  expect(received.type).toBe(expected.type);
+  expect(received.images).toStrictEqual(expected.images);
+  expect(received!.stickerNumber).toBe(expected.stickerNumber);
+  expect(received!.ownerId).toBe(expected.ownerId);
+  expect(received!.owner.id).toBe(expected.owner.id);
+  expect(received!.owner.role).toBe(expected.owner.role);
+  expect(received!.owner.lastName).toBe(expected.owner.lastName);
+  expect(received!.owner.firstName).toBe(expected.owner.firstName);
+  expect(received!.owner.email).toBe(expected.owner.email);
+  expect(received!.owner.username).toBe(expected.owner.username);
+};
 
 describe("GetVehicleInformationUseCase", () => {
   let getVehicleInformationUseCase: GetVehicleInformationUseCase;
@@ -11,48 +31,49 @@ describe("GetVehicleInformationUseCase", () => {
     getVehicleInformationUseCase = new GetVehicleInformationUseCase();
   });
 
-  beforeEach(async () => {
-    await db.vehicle.deleteMany();
-    await db.user.deleteMany();
-  });
-
-  it("should return vehicle information when vehicle exists and user has ADMIN role", async () => {
+  it("should return VehicleDTO when id is provided", async () => {
     const seededVehicle = await seedVehicle({});
-    const adminUser = await seedAuthenticatedUser({ role: "ADMIN" });
+    const mockRequest: VehicleRequest = {
+      id: seededVehicle.id
+    };
 
-    const result = await getVehicleInformationUseCase.execute(seededVehicle.id, adminUser.id);
+    const vehicleDTO = await getVehicleInformationUseCase.execute(mockRequest);
 
-    expect(result.id).toBe(seededVehicle.id);
-    expect(result.licenseNumber).toBe(seededVehicle.licenseNumber);
-    expect(result.stickerNumber).toBe(seededVehicle.stickerNumber);
-    expect(result.isActive).toBe(seededVehicle.isActive);
+    expect(vehicleDTO).toBeDefined();
+    assertVehicle(vehicleDTO, seededVehicle);
   });
 
-  it("should return vehicle information when vehicle exists and user has SECURITY role", async () => {
+  it("should return VehicleDTO when licensePlate is provided", async () => {
     const seededVehicle = await seedVehicle({});
-    const securityUser = await seedAuthenticatedUser({ role: "SECURITY" });
+    const mockRequest: VehicleRequest = {
+      licensePlate: seededVehicle.licensePlate
+    };
 
-    const result = await getVehicleInformationUseCase.execute(seededVehicle.id, securityUser.id);
+    const vehicleDTO = await getVehicleInformationUseCase.execute(mockRequest);
 
-    expect(result.id).toBe(seededVehicle.id);
+    expect(vehicleDTO).toBeDefined();
+    assertVehicle(vehicleDTO, seededVehicle);
   });
 
-  it("should throw NotFoundError when vehicle does not exist", async () => {
-    const adminUser = await seedAuthenticatedUser({ role: "ADMIN" });
-
-    await expect(
-      getVehicleInformationUseCase.execute("non-existent-id", adminUser.id)
-    ).rejects.toThrow(new NotFoundError("Vehicle not found."));
-  });
-
-  it("should throw ForbiddenError when user does not have ADMIN or SECURITY role", async () => {
+  it("should return VehicleDTO when stickerNumber is provided", async () => {
     const seededVehicle = await seedVehicle({});
-    const unauthorizedUser = await seedAuthenticatedUser({ role: "STUDENT" });
+    const mockRequest: VehicleRequest = {
+      stickerNumber: seededVehicle.stickerNumber
+    };
 
-    await expect(
-      getVehicleInformationUseCase.execute(seededVehicle.id, unauthorizedUser.id)
-    ).rejects.toThrow(
-      new ForbiddenError("You do not have the required permissions to view this vehicle.")
+    const vehicleDTO = await getVehicleInformationUseCase.execute(mockRequest);
+
+    expect(vehicleDTO).toBeDefined();
+    assertVehicle(vehicleDTO, seededVehicle);
+  });
+
+  it("should throw NotFoundError when provided un-existing id", async () => {
+    const mockRequest: VehicleRequest = {
+      id: "non-existing-id"
+    };
+
+    await expect(getVehicleInformationUseCase.execute(mockRequest)).rejects.toThrow(
+      new NotFoundError("Vehicle not found.")
     );
   });
 });
