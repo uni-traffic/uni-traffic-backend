@@ -16,7 +16,7 @@ describe("VehicleLicensePlateNumber", () => {
 
     expect(vehicleOrFailure.isSuccess).toBe(true);
     expect(vehicleOrFailure.getValue()).toBeInstanceOf(VehicleLicensePlateNumber);
-    expect(vehicleOrFailure.getValue().value).toBe(validPlate);
+    expect(vehicleOrFailure.getValue().value).toBe(validPlate.replace(" ", ""));
   });
 
   it("should not match invalid license plates", () => {

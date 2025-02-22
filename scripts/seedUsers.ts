@@ -60,7 +60,7 @@ const seedVehicleAndOwnerData = async () => {
   };
 
   const VEHICLE_DATA = {
-    licensePlate: "959 CIP",
+    licensePlate: "959CIP",
     make: "YAMAHA",
     model: "2020",
     series: "MIO SPORTY",
