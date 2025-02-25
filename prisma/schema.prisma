@@ -27,7 +27,7 @@ model User {
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   vehicles     Vehicle[]
-  violations   Violation[]
+  violations   UserViolation[]
 }
 
 enum Role {
@@ -52,7 +52,7 @@ model Vehicle {
   updatedAt     DateTime    @updatedAt
   type          VehicleType
   owner         User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  violations    Violation[]
+  userViolations UserViolation[]
 }
 
 enum VehicleType {
@@ -61,14 +61,22 @@ enum VehicleType {
 }
 
 model Violation {
-  id            String          @id @default(uuid())
-  vehicleId     String
-  reportedBy    String
-  violationType String
-  status        ViolationStatus @default(PENDING)
-  timestamp     DateTime        @default(now())
-  vehicle       Vehicle         @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
-  reporter      User            @relation(fields: [reportedBy], references: [id], onDelete: Cascade)
+  id             String      @id @default(uuid())
+  category       String      @db.Char(1) 
+  violationName  String
+  penalty        Float       // Changed from Double to Float
+  userViolations UserViolation[]
+}
+
+model UserViolation {
+  id           String    @id @default(uuid())
+  userId       String    // Added userId field
+  violationId  String    // Added violationId field
+  vehicleId    String    // Added vehicleId field
+  
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  violation    Violation @relation(fields: [violationId], references: [id], onDelete: Cascade)
+  vehicle      Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
 }
 
 enum ViolationStatus {
