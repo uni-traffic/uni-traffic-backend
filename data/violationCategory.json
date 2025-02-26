@@ -1,0 +1,176 @@
+[
+    {
+        "category": "A",
+        "id": 1,
+        "violationName": "Driving without VVP or VPS",
+        "penalty": 250
+    },
+    {
+        "category": "A",
+        "id": 2,
+        "violationName": "Counter flow",
+        "penalty": 250
+    },
+    {
+        "category": "A",
+        "id": 3,
+        "violationName": "Parking in inappropriate locations, such as driveways, walkways, pathways, and main roadways",
+        "penalty": 250
+    },
+    {
+        "category": "A",
+        "id": 4,
+        "violationName": "Parking in reserved areas",
+        "penalty": 250
+    },
+    {
+        "category": "A",
+        "id": 5,
+        "violationName": "Not parking in the designated area",
+        "penalty": 250
+    },
+    {
+        "category": "A",
+        "id": 6,
+        "violationName": "Improper parking",
+        "penalty": 250
+    },
+    {
+        "category": "A",
+        "id": 7,
+        "violationName": "Unauthorized overnight parking inside the campus",
+        "penalty": 250
+    },
+    {
+        "category": "A",
+        "id": 8,
+        "violationName": "Practicing inside the campus",
+        "penalty": 250
+    },
+    {
+        "category": "A",
+        "id": 9,
+        "violationName": "Overloading",
+        "penalty": 250
+    },
+    {
+        "category": "A",
+        "id": 10,
+        "violationName": "Improper clothing",
+        "penalty": 250
+    },
+    {
+        "category": "A",
+        "id": 11,
+        "violationName": "Using a motorcycle without a helmet",
+        "penalty": 250
+    },
+    {
+        "category": "A",
+        "id": 12,
+        "violationName": "Ignoring traffic signs",
+        "penalty": 250
+    },
+    {
+        "category": "B",
+        "id": 13,
+        "violationName": "Driving over 10 kph",
+        "penalty": 500
+    },
+    {
+        "category": "B",
+        "id": 14,
+        "violationName": "Blocking or causing delays in traffic flow",
+        "penalty": 500
+    },
+    {
+        "category": "B",
+        "id": 15,
+        "violationName": "Bringing any kind of goods and selling them without the permission of the NEU administration",
+        "penalty": 500
+    },
+    {
+        "category": "B",
+        "id": 16,
+        "violationName": "Creating disturbing noise",
+        "penalty": 500
+    },
+    {
+        "category": "B",
+        "id": 17,
+        "violationName": "The vehicle is emitting excessive smoke",
+        "penalty": 500
+    },
+    {
+        "category": "C",
+        "id": 18,
+        "violationName": "Transferring VPS or VVP to another car",
+        "penalty": 1000
+    },
+    {
+        "category": "C",
+        "id": 19,
+        "violationName": "Tampering with VPS or VVP",
+        "penalty": 1000
+    },
+    {
+        "category": "C",
+        "id": 20,
+        "violationName": "Driving inside the campus without a license",
+        "penalty": 1000
+    },
+    {
+        "category": "C",
+        "id": 21,
+        "violationName": "Vandalizing, destroying, transferring, and removing traffic signs",
+        "penalty": 1000
+    },
+    {
+        "category": "C",
+        "id": 22,
+        "violationName": "Arguing with school guards or officials who enforce traffic rules",
+        "penalty": 1000
+    },
+    {
+        "category": "C",
+        "id": 23,
+        "violationName": "Threatening, fighting, speaking ill, or cursing, and showing disrespect to fellow drivers, parents, students, and others within the NEU community",
+        "penalty": 1000
+    },
+    {
+        "category": "C",
+        "id": 24,
+        "violationName": "Entering the campus while drunk",
+        "penalty": 1000
+    },
+    {
+        "category": "C",
+        "id": 25,
+        "violationName": "Carrying and/or smoking cigarettes and similar products",
+        "penalty": 1000
+    },
+    {
+        "category": "C",
+        "id": 26,
+        "violationName": "Bringing and/or consuming any type of alcohol and/or illegal drugs",
+        "penalty": 1000
+    },
+    {
+        "category": "C",
+        "id": 27,
+        "violationName": "Bringing any gambling equipment and/or gambling within the NEU campus",
+        "penalty": 1000
+    },
+    {
+        "category": "C",
+        "id": 28,
+        "violationName": "Carrying any type of weapon that can cause harm or death",
+        "penalty": 1000
+    },
+    {
+        "category": "C",
+        "id": 29,
+        "violationName": "Engaging in any obscene or immoral acts, even inside a vehicle",
+        "penalty": 1000
+    }
+]
