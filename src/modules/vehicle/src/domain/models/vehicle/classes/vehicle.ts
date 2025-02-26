@@ -18,7 +18,7 @@ export interface IVehicle {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
-  owner: IUserDTO;
+  owner: IUserDTO | undefined;
 }
 
 export class Vehicle implements IVehicle {
@@ -35,7 +35,7 @@ export class Vehicle implements IVehicle {
   private readonly _isActive: boolean;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date;
-  private readonly _owner: IUserDTO;
+  private readonly _owner: IUserDTO | undefined;
 
   private constructor({
     id,
@@ -52,22 +52,7 @@ export class Vehicle implements IVehicle {
     createdAt,
     updatedAt,
     owner
-  }: {
-    id: string;
-    ownerId: string;
-    licensePlate: VehicleLicensePlateNumber;
-    make: string;
-    model: string;
-    series: string;
-    color: string;
-    type: VehicleType;
-    images: VehicleImages;
-    stickerNumber: VehicleStickerNumber;
-    isActive: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-    owner: IUserDTO;
-  }) {
+  }: IVehicle) {
     this._id = id;
     this._ownerId = ownerId;
     this._licensePlate = licensePlate;
@@ -136,56 +121,11 @@ export class Vehicle implements IVehicle {
     return this._updatedAt;
   }
 
-  get owner(): IUserDTO {
+  get owner(): IUserDTO | undefined {
     return this._owner;
   }
 
-  public static create({
-    id,
-    ownerId,
-    licensePlate,
-    make,
-    model,
-    series,
-    color,
-    type,
-    images,
-    stickerNumber,
-    isActive,
-    createdAt,
-    updatedAt,
-    owner
-  }: {
-    id: string;
-    ownerId: string;
-    licensePlate: VehicleLicensePlateNumber;
-    make: string;
-    model: string;
-    series: string;
-    color: string;
-    type: VehicleType;
-    images: VehicleImages;
-    stickerNumber: VehicleStickerNumber;
-    isActive: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-    owner: IUserDTO;
-  }): IVehicle {
-    return new Vehicle({
-      id,
-      ownerId,
-      licensePlate,
-      make,
-      model,
-      series,
-      color,
-      type,
-      images,
-      stickerNumber,
-      isActive,
-      createdAt,
-      updatedAt,
-      owner
-    });
+  public static create(props: IVehicle): IVehicle {
+    return new Vehicle(props);
   }
 }

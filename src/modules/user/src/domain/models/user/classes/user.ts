@@ -1,37 +1,34 @@
-import type { Role } from "@prisma/client";
 import type { IUserDeletionStatus, UserDeletionStatus } from "./userDeletionStatus";
 import type { UserEmail } from "./userEmail";
 import type { UserName } from "./userName";
+import type { UserRole } from "./userRole";
 
 export interface IUser {
   id: string;
-  username: UserName;
-  usernameValue: string;
   firstName: string;
   lastName: string;
-  email: UserEmail;
-  emailValue: string;
   password: string;
   isSuperAdmin: boolean;
-  role: Role;
-  userDeletionStatus: UserDeletionStatus;
-  userDeletionStatusValue: IUserDeletionStatus;
+  role: UserRole;
   createdAt: Date;
   updatedAt: Date;
+  email: UserEmail;
+  username: UserName;
+  userDeletionStatus: UserDeletionStatus;
 }
 
 export class User implements IUser {
   private readonly _id: string;
-  private readonly _username: UserName;
   private readonly _firstName: string;
   private readonly _lastName: string;
-  private readonly _email: UserEmail;
   private readonly _password: string;
   private readonly _isSuperAdmin: boolean;
-  private readonly _role: Role;
-  private readonly _userDeletionStatus: UserDeletionStatus;
+  private readonly _role: UserRole;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date;
+  private readonly _email: UserEmail;
+  private readonly _username: UserName;
+  private readonly _userDeletionStatus: UserDeletionStatus;
 
   private constructor({
     id,
@@ -53,7 +50,7 @@ export class User implements IUser {
     email: UserEmail;
     password: string;
     isSuperAdmin: boolean;
-    role: Role;
+    role: UserRole;
     userDeletionStatus: UserDeletionStatus;
     createdAt: Date;
     updatedAt: Date;
@@ -107,7 +104,7 @@ export class User implements IUser {
     return this._isSuperAdmin;
   }
 
-  get role(): Role {
+  get role(): UserRole {
     return this._role;
   }
 
@@ -150,7 +147,7 @@ export class User implements IUser {
     email: UserEmail;
     password: string;
     isSuperAdmin: boolean;
-    role: Role;
+    role: UserRole;
     userDeletionStatus: UserDeletionStatus;
     createdAt: Date;
     updatedAt: Date;

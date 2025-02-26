@@ -1,6 +1,6 @@
-import type { Prisma, Vehicle, User } from "@prisma/client";
+import type { Prisma, User, Vehicle } from "@prisma/client";
 
 export interface IVehicleRawObject extends Vehicle {
-  owner: User;
+  owner?: User;
 }
 export type IVehicleSchema = Prisma.VehicleUncheckedCreateInput;

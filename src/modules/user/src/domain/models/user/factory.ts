@@ -1,11 +1,11 @@
-import type { Role } from "@prisma/client";
-import { User, type IUser } from "./classes/user";
-import { UserEmail } from "./classes/userEmail";
-import { Result } from "../../../../../../shared/core/result";
 import { defaultTo } from "rambda";
 import { v4 as uuid } from "uuid";
-import { UserName } from "./classes/userName";
+import { Result } from "../../../../../../shared/core/result";
+import { type IUser, User } from "./classes/user";
 import { UserDeletionStatus } from "./classes/userDeletionStatus";
+import { UserEmail } from "./classes/userEmail";
+import { UserName } from "./classes/userName";
+import { UserRole } from "./classes/userRole";
 
 export interface IUserFactoryProps {
   id?: string;
@@ -14,7 +14,7 @@ export interface IUserFactoryProps {
   lastName: string;
   email: string;
   password: string;
-  role: Role;
+  role: string;
   isSuperAdmin?: boolean;
   isDeleted?: boolean;
   deletedAt?: Date | null;
@@ -34,6 +34,11 @@ export class UserFactory {
       return Result.fail(userNameOrError.getErrorMessage()!);
     }
 
+    const userRoleOrError = UserRole.create(userFactoryProps.role);
+    if (userRoleOrError.isFailure) {
+      return Result.fail(userRoleOrError.getErrorMessage()!);
+    }
+
     const userDeletionStatusOrError = UserDeletionStatus.create(
       defaultTo<boolean>(false, userFactoryProps.isDeleted),
       defaultTo<Date | null>(null, userFactoryProps.deletedAt)
@@ -48,6 +53,7 @@ export class UserFactory {
         id: defaultTo(uuid(), userFactoryProps.id),
         username: userNameOrError.getValue(),
         email: userEmailOrError.getValue(),
+        role: userRoleOrError.getValue(),
         isSuperAdmin: defaultTo<boolean>(false, userFactoryProps.isSuperAdmin),
         userDeletionStatus: userDeletionStatusOrError.getValue(),
         createdAt: defaultTo<Date>(new Date(), userFactoryProps.createdAt),
