@@ -79,6 +79,12 @@ model UserViolation {
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   vehicle      Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
   violation    Violation @relation(fields: [violationId], references: [id], onDelete: Cascade)
+  status       PaymentStatus   @default(UNPAID)
+}
+
+enum PaymentStatus{
+  UNPAID
+  PAID
 }
 
 enum ViolationStatus {
