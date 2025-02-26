@@ -14,18 +14,18 @@ datasource db {
 }
 
 model User {
-  id           String      @id @default(uuid())
-  username     String      @unique
+  id           String          @id @default(uuid())
+  username     String          @unique
   firstName    String
   lastName     String
-  email        String      @unique
+  email        String          @unique
   password     String
-  isSuperAdmin Boolean     @default(false)
-  role         Role        @default(STUDENT)
-  isDeleted    Boolean     @default(false)
+  isSuperAdmin Boolean         @default(false)
+  role         Role            @default(STUDENT)
+  isDeleted    Boolean         @default(false)
   deletedAt    DateTime?
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
   vehicles     Vehicle[]
   violations   UserViolation[]
 }
@@ -38,20 +38,20 @@ enum Role {
 }
 
 model Vehicle {
-  id            String      @id @default(uuid())
-  ownerId       String
-  licensePlate  String      @unique
-  color         String
-  make          String
-  series        String
-  model         String
-  images        String[]
-  stickerNumber String      @unique
-  isActive      Boolean     @default(true)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  type          VehicleType
-  owner         User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  id             String          @id @default(uuid())
+  ownerId        String
+  licensePlate   String          @unique
+  color          String
+  make           String
+  series         String
+  model          String
+  images         String[]
+  stickerNumber  String          @unique
+  isActive       Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  type           VehicleType
+  owner          User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   userViolations UserViolation[]
 }
 
@@ -61,22 +61,22 @@ enum VehicleType {
 }
 
 model Violation {
-  id             String      @id @default(uuid())
-  category       String      @db.Char(1) 
+  id             String          @id @unique
+  category       String          @db.Char(1)
   violationName  String
-  penalty        Float    
+  penalty        Float
   userViolations UserViolation[]
 }
 
 model UserViolation {
-  id           String    @id @default(uuid())
-  userId       String    
-  violationId  String    
-  vehicleId    String    
-  
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  violation    Violation @relation(fields: [violationId], references: [id], onDelete: Cascade)
-  vehicle      Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  id          String @id @default(uuid())
+  userId      String
+  violationId String
+  vehicleId   String
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  violation Violation @relation(fields: [violationId], references: [id], onDelete: Cascade)
+  vehicle   Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
 }
 
 enum ViolationStatus {
