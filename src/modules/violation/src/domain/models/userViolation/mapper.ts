@@ -1,3 +1,4 @@
+import { IUserDTO } from "../../../../../user/src/dtos/userDTO";
 import type { IUserViolationDTO } from "../../../dtos/userViolationDTO";
 import type { IUserViolation } from "./classes/userViolation";
 import type { IUserViolationRawObject } from "./constant";
@@ -16,7 +17,11 @@ export class UserViolationMapper implements IUserViolationMapper {
       userId: userViolation.userId,
       reportedById: userViolation.reportedById,
       violationId: userViolation.violationId,
-      vehicleId: userViolation.vehicleId
+      vehicleId: userViolation.vehicleId,
+      status: userViolation.status,
+      reporter: userViolation.reporter,
+      violation: userViolation.violation,
+      vehicle: userViolation.vehicle,
     };
   }
 
@@ -26,7 +31,11 @@ export class UserViolationMapper implements IUserViolationMapper {
       userId: raw.userId,
       reportedById: raw.reportedById,
       violationId: raw.violationId,
-      vehicleId: raw.vehicleId
+      vehicleId: raw.vehicleId,
+      status: raw.status,
+      reporter: raw.reporter,
+      violation: raw.violation,
+      vehicle: raw.vehicle,
     });
 
     return userViolationOrError.getValue();
@@ -38,7 +47,11 @@ export class UserViolationMapper implements IUserViolationMapper {
       userId: userViolation.userId,
       reportedById: userViolation.reportedById,
       violationId: userViolation.violationId,
-      vehicleId: userViolation.vehicleId
+      vehicleId: userViolation.vehicleId,
+      status: userViolation.status,
+      reporter: userViolation.reporter,
+      violation: userViolation.violation,
+      vehicle: userViolation.vehicle,
     };
   }
 }
