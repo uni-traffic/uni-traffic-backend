@@ -1,4 +1,5 @@
 import type { VehicleType } from "@prisma/client";
+import { defaultTo } from "rambda";
 import type { IVehicleDTO } from "../../../dtos/vehicleDTO";
 import type { IVehicle } from "./classes/vehicle";
 import type { IVehicleRawObject, IVehicleSchema } from "./constant";
@@ -10,7 +11,7 @@ export interface IVehicleMapper {
   toDTO(vehicle: IVehicle): IVehicleDTO;
 }
 
-export class VehicleMapper {
+export class VehicleMapper implements IVehicleMapper {
   public toPersistence(vehicle: IVehicle): IVehicleSchema {
     return {
       id: vehicle.id,
@@ -46,7 +47,7 @@ export class VehicleMapper {
       licensePlate: vehicle.licensePlate.value,
       stickerNumber: vehicle.stickerNumber.value,
       isActive: vehicle.isActive,
-      owner: vehicle.owner
+      owner: defaultTo(null, vehicle.owner)
     };
   }
 }

@@ -6,12 +6,12 @@ import { seedUser } from "../../utils/user/seedUser";
 
 const assertUser = (user: IUser, expectedUserValue: IUserRawObject) => {
   expect(user.id).toBe(expectedUserValue.id);
-  expect(user.usernameValue).toBe(expectedUserValue.username);
+  expect(user.username.value).toBe(expectedUserValue.username);
   expect(user.firstName).toBe(expectedUserValue.firstName);
   expect(user.lastName).toBe(expectedUserValue.lastName);
-  expect(user.emailValue).toBe(expectedUserValue.email);
+  expect(user.email.value).toBe(expectedUserValue.email);
   expect(user.password).toBe(expectedUserValue.password);
-  expect(user.role).toBe(expectedUserValue.role);
+  expect(user.role.value).toBe(expectedUserValue.role);
   expect(user.isSuperAdmin).toBe(expectedUserValue.isSuperAdmin);
   expect(user.createdAt.toString()).toBe(expectedUserValue.createdAt.toString());
   expect(user.updatedAt.toString()).toBe(expectedUserValue.updatedAt.toString());

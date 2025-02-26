@@ -1,6 +1,6 @@
+import { faker } from "@faker-js/faker";
 import { User } from "../../../../src/domain/models/user/classes/user";
 import { type IUserFactoryProps, UserFactory } from "../../../../src/domain/models/user/factory";
-import { faker } from "@faker-js/faker";
 
 describe("UserFactory", () => {
   let mockUserData: IUserFactoryProps;
@@ -30,12 +30,12 @@ describe("UserFactory", () => {
 
     const user = result.getValue();
     expect(user.id).toBe(mockUserData.id);
-    expect(user.usernameValue).toBe(mockUserData.username);
+    expect(user.username.value).toBe(mockUserData.username);
     expect(user.firstName).toBe(mockUserData.firstName);
     expect(user.lastName).toBe(mockUserData.lastName);
-    expect(user.emailValue).toBe(mockUserData.email);
+    expect(user.email.value).toBe(mockUserData.email);
     expect(user.password).toBe(mockUserData.password);
-    expect(user.role).toBe(mockUserData.role);
+    expect(user.role.value).toBe(mockUserData.role);
     expect(user.isSuperAdmin).toBe(mockUserData.isSuperAdmin);
     expect(user.createdAt).toBe(mockUserData.createdAt);
     expect(user.updatedAt).toBe(mockUserData.updatedAt);

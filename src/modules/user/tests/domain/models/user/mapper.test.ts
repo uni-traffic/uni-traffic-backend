@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
-import { User } from "../../src/domain/models/user/classes/user";
-import { type IUserMapper, UserMapper } from "../../src/domain/models/user/mapper";
-import { createUserDomainObject } from "../utils/user/createUserDomainObject";
+import { User } from "../../../../src/domain/models/user/classes/user";
+import { type IUserMapper, UserMapper } from "../../../../src/domain/models/user/mapper";
+import { createUserDomainObject } from "../../../utils/user/createUserDomainObject";
 
 describe("UserMapper", () => {
   let userMapper: IUserMapper;
@@ -29,11 +29,11 @@ describe("UserMapper", () => {
 
     expect(userDomainObject).toBeInstanceOf(User);
     expect(userDomainObject.id).toBe(userSchemaObject.id);
-    expect(userDomainObject.usernameValue).toBe(userSchemaObject.username);
+    expect(userDomainObject.username.value).toBe(userSchemaObject.username);
     expect(userDomainObject.firstName).toBe(userSchemaObject.firstName);
     expect(userDomainObject.lastName).toBe(userSchemaObject.lastName);
-    expect(userDomainObject.emailValue).toBe(userSchemaObject.email);
-    expect(userDomainObject.role).toBe(userSchemaObject.role);
+    expect(userDomainObject.email.value).toBe(userSchemaObject.email);
+    expect(userDomainObject.role.value).toBe(userSchemaObject.role);
     expect(userDomainObject.isSuperAdmin).toBe(userSchemaObject.isSuperAdmin);
     expect(userDomainObject.userDeletionStatus.isDeleted).toBe(userSchemaObject.isDeleted);
   });
@@ -43,13 +43,13 @@ describe("UserMapper", () => {
     const userSchemaObject = userMapper.toPersistence(userDomainObject);
 
     expect(userSchemaObject.id).toBe(userDomainObject.id);
-    expect(userSchemaObject.username).toBe(userDomainObject.usernameValue);
+    expect(userSchemaObject.username).toBe(userDomainObject.username.value);
     expect(userDomainObject.firstName).toBe(userSchemaObject.firstName);
     expect(userDomainObject.lastName).toBe(userSchemaObject.lastName);
-    expect(userSchemaObject.email).toBe(userDomainObject.emailValue);
-    expect(userSchemaObject.role).toBe(userDomainObject.role);
+    expect(userSchemaObject.email).toBe(userDomainObject.email.value);
+    expect(userSchemaObject.role).toBe(userDomainObject.role.value);
     expect(userSchemaObject.isSuperAdmin).toBe(userDomainObject.isSuperAdmin);
-    expect(userSchemaObject.isDeleted).toBe(userDomainObject.userDeletionStatusValue.isDeleted);
+    expect(userSchemaObject.isDeleted).toBe(userDomainObject.userDeletionStatus.isDeleted);
   });
 
   it("should map to DTO from domain", () => {
@@ -57,8 +57,8 @@ describe("UserMapper", () => {
     const userDTO = userMapper.toDTO(userDomainObject);
 
     expect(userDTO.id).toBe(userDomainObject.id);
-    expect(userDTO.username).toBe(userDomainObject.usernameValue);
-    expect(userDTO.email).toBe(userDomainObject.emailValue);
+    expect(userDTO.username).toBe(userDomainObject.username.value);
+    expect(userDTO.email).toBe(userDomainObject.email.value);
     expect(userDTO.firstName).toBe(userDomainObject.firstName);
     expect(userDTO.lastName).toBe(userDomainObject.lastName);
   });

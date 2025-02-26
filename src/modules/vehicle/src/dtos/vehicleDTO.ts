@@ -1,8 +1,5 @@
 import type { IUserDTO } from "../../../user/src/dtos/userDTO";
 
-/**
- * TODO: Include vehicle image
- */
 export interface IVehicleDTO {
   id: string;
   ownerId: string;
@@ -15,5 +12,5 @@ export interface IVehicleDTO {
   images: string[];
   stickerNumber: string;
   isActive: boolean;
-  owner: IUserDTO;
+  owner: IUserDTO | null;
 }

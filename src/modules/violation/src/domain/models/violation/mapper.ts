@@ -1,16 +1,16 @@
 import type { IViolationDTO } from "../../../dtos/violationDTO";
 import type { IViolation } from "./classes/violation";
-import type { IViolationRawObject } from "./constant";
+import type { IViolationRawObject, IViolationSchema } from "./constant";
 import { ViolationFactory } from "./factory";
 
 export interface IViolationMapper {
-  toPersistence(violation: IViolation): IViolationRawObject;
+  toPersistence(violation: IViolation): IViolationSchema;
   toDomain(raw: IViolationRawObject): IViolation;
   toDTO(violation: IViolation): IViolationDTO;
 }
 
 export class ViolationMapper implements IViolationMapper {
-  public toPersistence(violation: IViolation): IViolationRawObject {
+  public toPersistence(violation: IViolation): IViolationSchema {
     return {
       id: violation.id,
       category: violation.category,

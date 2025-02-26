@@ -1,3 +1,4 @@
+import type { Role } from "@prisma/client";
 import type { IUserDTO } from "../../../dtos/userDTO";
 import type { IUser } from "./classes/user";
 import type { IUserRawObject } from "./constant";
@@ -13,13 +14,13 @@ export class UserMapper {
   public toPersistence(user: IUser): IUserRawObject {
     return {
       id: user.id,
-      username: user.usernameValue,
+      username: user.username.value,
       firstName: user.firstName,
       lastName: user.lastName,
-      email: user.emailValue,
+      email: user.email.value,
       password: user.password,
       isSuperAdmin: user.isSuperAdmin,
-      role: user.role,
+      role: user.role.value as Role,
       isDeleted: user.userDeletionStatus.isDeleted,
       deletedAt: user.userDeletionStatus.deletedAt,
       createdAt: user.createdAt,
@@ -49,11 +50,11 @@ export class UserMapper {
   public toDTO(user: IUser): IUserDTO {
     return {
       id: user.id,
-      username: user.usernameValue,
-      email: user.emailValue,
+      username: user.username.value,
+      email: user.email.value,
       firstName: user.firstName,
       lastName: user.lastName,
-      role: user.role
+      role: user.role.value
     };
   }
 }

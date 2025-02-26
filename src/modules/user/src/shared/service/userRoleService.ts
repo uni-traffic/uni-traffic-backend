@@ -20,7 +20,7 @@ export class UserRoleService implements IUserRoleService {
       return false;
     }
 
-    return user.role === role;
+    return user.role.value === role;
   }
 
   public async hasAdminRole(userId: string): Promise<boolean> {

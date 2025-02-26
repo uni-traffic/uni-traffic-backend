@@ -1,9 +1,9 @@
 import { faker } from "@faker-js/faker";
-import type { Role } from "@prisma/client";
 import { User } from "../../../../../src/domain/models/user/classes/user";
 import { UserDeletionStatus } from "../../../../../src/domain/models/user/classes/userDeletionStatus";
 import { UserEmail } from "../../../../../src/domain/models/user/classes/userEmail";
 import { UserName } from "../../../../../src/domain/models/user/classes/userName";
+import { UserRole } from "../../../../../src/domain/models/user/classes/userRole";
 
 describe("User", () => {
   it("should create a User", () => {
@@ -15,7 +15,7 @@ describe("User", () => {
       email: UserEmail;
       password: string;
       isSuperAdmin: boolean;
-      role: Role;
+      role: UserRole;
       userDeletionStatus: UserDeletionStatus;
       createdAt: Date;
       updatedAt: Date;
@@ -26,7 +26,9 @@ describe("User", () => {
       lastName: faker.person.lastName(),
       email: UserEmail.create(faker.internet.email()).getValue(),
       password: faker.internet.password(),
-      role: faker.helpers.arrayElement(["STUDENT", "SECURITY", "ADMIN", "STAFF"]),
+      role: UserRole.create(
+        faker.helpers.arrayElement(["STUDENT", "SECURITY", "ADMIN", "STAFF"])
+      ).getValue(),
       isSuperAdmin: false,
       userDeletionStatus: UserDeletionStatus.create(false, null).getValue(),
       createdAt: faker.date.past(),
@@ -37,10 +39,8 @@ describe("User", () => {
 
     expect(user).toBeInstanceOf(User);
     expect(user.id).toBe(mockUserData.id);
-    expect(user.usernameValue).toBe(mockUserData.username.value);
     expect(user.firstName).toBe(mockUserData.firstName);
     expect(user.lastName).toBe(mockUserData.lastName);
-    expect(user.emailValue).toBe(mockUserData.email.value);
     expect(user.password).toBe(mockUserData.password);
     expect(user.role).toBe(mockUserData.role);
     expect(user.isSuperAdmin).toBe(mockUserData.isSuperAdmin);

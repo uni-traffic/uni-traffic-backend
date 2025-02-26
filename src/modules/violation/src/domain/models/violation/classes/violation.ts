@@ -44,17 +44,7 @@ export class Violation implements IViolation {
     return this._penalty;
   }
 
-  public static create({
-    id,
-    category,
-    violationName,
-    penalty
-  }: {
-    id: string;
-    category: string;
-    violationName: string;
-    penalty: number;
-  }): IViolation {
-    return new Violation({ id, category, violationName, penalty });
+  public static create(props: IViolation): IViolation {
+    return new Violation(props);
   }
 }
