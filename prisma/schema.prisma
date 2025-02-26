@@ -14,20 +14,21 @@ datasource db {
 }
 
 model User {
-  id           String          @id @default(uuid())
-  username     String          @unique
-  firstName    String
-  lastName     String
-  email        String          @unique
-  password     String
-  isSuperAdmin Boolean         @default(false)
-  role         Role            @default(STUDENT)
-  isDeleted    Boolean         @default(false)
-  deletedAt    DateTime?
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
-  vehicles     Vehicle[]
-  violations   UserViolation[]
+  id                 String          @id @default(uuid())
+  username           String          @unique
+  firstName          String
+  lastName           String
+  email              String          @unique
+  password           String
+  isSuperAdmin       Boolean         @default(false)
+  role               Role            @default(STUDENT)
+  isDeleted          Boolean         @default(false)
+  deletedAt          DateTime?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  reportedViolations UserViolation[] @relation("ViolationReporter")
+  violations         UserViolation[]
+  vehicles           Vehicle[]
 }
 
 enum Role {
@@ -61,7 +62,7 @@ enum VehicleType {
 }
 
 model Violation {
-  id             String          @id @unique
+  id             String          @id @default(uuid())
   category       String          @db.Char(1)
   violationName  String
   penalty        Float
@@ -69,14 +70,15 @@ model Violation {
 }
 
 model UserViolation {
-  id          String @id @default(uuid())
-  userId      String
-  violationId String
-  vehicleId   String
-
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  violation Violation @relation(fields: [violationId], references: [id], onDelete: Cascade)
-  vehicle   Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  id           String    @id @default(uuid())
+  userId       String
+  violationId  String
+  vehicleId    String
+  reportedById String
+  reporter     User      @relation("ViolationReporter", fields: [reportedById], references: [id], onDelete: Cascade)
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicle      Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  violation    Violation @relation(fields: [violationId], references: [id], onDelete: Cascade)
 }
 
 enum ViolationStatus {

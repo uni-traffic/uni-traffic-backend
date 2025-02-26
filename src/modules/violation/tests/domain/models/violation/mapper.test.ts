@@ -1,7 +1,10 @@
 import { faker } from "@faker-js/faker";
-import { Violation } from "../../src/domain/models/violation/classes/violation";
-import { type IViolationMapper, ViolationMapper } from "../../src/domain/models/violation/mapper";
-import { createViolationDomainObject } from "../utils/violation/createViolationDomainObject";
+import { Violation } from "../../../../src/domain/models/violation/classes/violation";
+import {
+  type IViolationMapper,
+  ViolationMapper
+} from "../../../../src/domain/models/violation/mapper";
+import { createViolationDomainObject } from "../../../utils/violation/createViolationDomainObject";
 
 describe("ViolationMapper", () => {
   let violationMapper: IViolationMapper;
