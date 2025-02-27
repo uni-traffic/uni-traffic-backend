@@ -1,6 +1,9 @@
-import type { IViolationDTO } from "../dtos/violationDTO";
 import { type IViolationMapper, ViolationMapper } from "../domain/models/violation/mapper";
-import { IViolationRepository, ViolationRepository } from "../repositories/violationRepository";
+import type { IViolationDTO } from "../dtos/violationDTO";
+import {
+  type IViolationRepository,
+  ViolationRepository
+} from "../repositories/violationRepository";
 
 export class GetViolationsUseCase {
   private _violationRepository: IViolationRepository;

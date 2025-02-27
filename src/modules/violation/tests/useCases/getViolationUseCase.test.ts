@@ -1,7 +1,6 @@
-import { GetViolationsUseCase } from "../../src/useCases/getViolationUseCase";
-import { ViolationRepository } from "../../src/repositories/violationRepository";
-import { ViolationMapper } from "../../src/domain/models/violation/mapper";
 import type { IViolationDTO } from "../../src/dtos/violationDTO";
+import { ViolationRepository } from "../../src/repositories/violationRepository";
+import { GetViolationsUseCase } from "../../src/useCases/getViolationUseCase";
 
 const assertViolation = (received: IViolationDTO, expected: IViolationDTO) => {
   expect(received.id).toBe(expected.id);
@@ -13,12 +12,10 @@ const assertViolation = (received: IViolationDTO, expected: IViolationDTO) => {
 describe("GetViolationsUseCase", () => {
   let getViolationsUseCase: GetViolationsUseCase;
   let violationRepository: ViolationRepository;
-  let violationMapper: ViolationMapper;
 
   beforeAll(() => {
     violationRepository = new ViolationRepository();
-    violationMapper = new ViolationMapper();
-    getViolationsUseCase = new GetViolationsUseCase(violationRepository, violationMapper);
+    getViolationsUseCase = new GetViolationsUseCase();
   });
 
   it("should return a list of ViolationDTOs", async () => {

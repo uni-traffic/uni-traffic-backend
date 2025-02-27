@@ -1,15 +1,17 @@
 import request from "supertest";
+import type TestAgent from "supertest/lib/agent";
 import app from "../../../../../../../../api";
+import { seedViolations } from "../../../../../../../../scripts/seedViolation";
 import { db } from "../../../../../../../shared/infrastructure/database/prisma";
 import { seedAuthenticatedUser } from "../../../../../../user/tests/utils/user/seedAuthenticatedUser";
 import type { IViolationDTO } from "../../../../../src/dtos/violationDTO";
-import type TestAgent from "supertest/lib/agent";
 
 describe("GET /api/v1/violation", () => {
   let requestAPI: TestAgent;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     requestAPI = request(app);
+    await seedViolations();
   });
 
   beforeEach(async () => {
@@ -82,7 +84,7 @@ describe("GET /api/v1/violation", () => {
   it("should return status 401 if the token is invalid or malformed", async () => {
     const response = await requestAPI
       .get("/api/v1/violation")
-      .set("Authorization", `Bearer invalid_token_example`);
+      .set("Authorization", "Bearer invalid_token_example");
 
     expect(response.status).toBe(401);
     expect(response.body.message).toBe("The provided token is invalid or malformed.");

@@ -40,7 +40,7 @@ export const seedViolations = async () => {
       skipDuplicates: true
     });
 
-    console.log("CSV data seeded successfully!");
+    if (process.env.NODE_ENV !== "test") console.log("CSV data seeded successfully!");
   } catch (error) {
     console.error("Error reading or inserting CSV data:", error);
   }
