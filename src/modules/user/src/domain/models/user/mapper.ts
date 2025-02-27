@@ -1,17 +1,17 @@
 import type { Role } from "@prisma/client";
 import type { IUserDTO } from "../../../dtos/userDTO";
 import type { IUser } from "./classes/user";
-import type { IUserRawObject } from "./constant";
+import type { IUserRawObject, IUserSchema } from "./constant";
 import { UserFactory } from "./factory";
 
 export interface IUserMapper {
-  toPersistence(user: IUser): IUserRawObject;
+  toPersistence(user: IUser): IUserSchema;
   toDomain(raw: IUserRawObject): IUser;
   toDTO(user: IUser): IUserDTO;
 }
 
-export class UserMapper {
-  public toPersistence(user: IUser): IUserRawObject {
+export class UserMapper implements IUserMapper {
+  public toPersistence(user: IUser): IUserSchema {
     return {
       id: user.id,
       username: user.username.value,
