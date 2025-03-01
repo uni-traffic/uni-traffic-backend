@@ -6,12 +6,7 @@ import type { IUserRawObject } from "../../../src/domain/models/user/constant";
 
 export const seedUser = async ({
   id = uuid(),
-  username = faker.word.sample({
-    length: {
-      min: 3,
-      max: 15
-    }
-  }),
+  username = faker.number.int({ min: 100, max: 99_999_99 }).toString(),
   firstName = faker.person.firstName(),
   lastName = faker.person.lastName(),
   email = faker.internet.email(),

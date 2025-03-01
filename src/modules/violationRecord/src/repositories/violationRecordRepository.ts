@@ -3,40 +3,31 @@ import type { IViolationRecord } from "../domain/models/violationRecord/classes/
 import { ViolationRecordMapper } from "../domain/models/violationRecord/mapper";
 
 export interface IViolationRecordRepository {
-    createViolationRecord(
-        userId: string,
-        vehicleId: string,
-        violationId: string,
-        reportedById: string
-    ): Promise<IViolationRecord>;
+  createViolationRecord(violationRecord: IViolationRecord): Promise<IViolationRecord | null>;
 }
 
 export class ViolationRecordRepository implements IViolationRecordRepository {
-    private _database;
-    private _violationRecordMapper: ViolationRecordMapper;
+  private _database;
+  private _violationRecordMapper: ViolationRecordMapper;
 
-    public constructor(database = db, violationRecordMapper = new ViolationRecordMapper()) {
-        this._database = database;
-        this._violationRecordMapper = violationRecordMapper;
-    }
+  public constructor(database = db, violationRecordMapper = new ViolationRecordMapper()) {
+    this._database = database;
+    this._violationRecordMapper = violationRecordMapper;
+  }
 
-    public async createViolationRecord(
-        userId: string,
-        vehicleId: string,
-        violationId: string,
-        reportedById: string
-    ): Promise<IViolationRecord> {
-        const newViolationRecord = await this._database.violationRecord.create({
-        data: { userId, vehicleId, violationId, reportedById, status: "UNPAID" },
-        include: {
-            user: true,
-            reporter: true,
-            violation: true,
-            vehicle: true
-        }
-        });
-        const domainRecord = this._violationRecordMapper.toDomain(newViolationRecord);
-        return domainRecord;
+  public async createViolationRecord(
+    violationRecord: IViolationRecord
+  ): Promise<IViolationRecord | null> {
+    try {
+      const violationRecordPersistence = this._violationRecordMapper.toPersistence(violationRecord);
+
+      const newViolationRecord = await this._database.violationRecord.create({
+        data: violationRecordPersistence
+      });
+
+      return this._violationRecordMapper.toDomain(newViolationRecord);
+    } catch {
+      return null;
     }
-    
+  }
 }
