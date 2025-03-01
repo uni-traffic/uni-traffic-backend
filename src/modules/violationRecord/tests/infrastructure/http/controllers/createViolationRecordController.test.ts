@@ -2,27 +2,27 @@ import request, { SuperTest, Test } from "supertest";
 import app from "../../../../../../../api";
 import { db } from "../../../../../../shared/infrastructure/database/prisma";
 import { seedAuthenticatedUser } from "../../../../../user/tests/utils/user/seedAuthenticatedUser";
-import { faker } from "@faker-js/faker";
 import { seedVehicle } from "../../../../../vehicle/tests/utils/vehicle/seedVehicle";
 import { seedViolation } from "../../../../../violation/tests/utils/violation/seedViolation";
 
-describe("POST /api/v1/violation-record", () => {
+describe("POST /api/v1/violation-record/create", () => {
     let requestAPI: SuperTest<Test>;
     let vehicleId: string;
     let ownerId: string;  
     let violationId: string;
-    beforeAll(async () => {
+    beforeAll(() => {
         requestAPI = request.agent(app) as unknown as SuperTest<Test>;
+    });    
+
+    beforeEach(async () => {
+        await db.violationRecord.deleteMany();
+        await db.user.deleteMany();
         const user = await seedAuthenticatedUser({ role: "STUDENT", expiration: "1h" });
         ownerId = user.id;  
         const vehicle = await seedVehicle({ ownerId });
         vehicleId = vehicle.id;
         const violation = await seedViolation();
          violationId = violation.id;
-    });    
-
-    beforeEach(async () => {
-        await db.violationRecord.deleteMany();
     });
 
     it("should create a new violation record with valid security role", async () => {
@@ -30,19 +30,19 @@ describe("POST /api/v1/violation-record", () => {
         const payload = {
         userId: ownerId,
         vehicleId: vehicleId,
-        violationId: violationId,
+        violationId: violationId
         };
         const response = await requestAPI
-        .post("/api/v1/violation-record")
+        .post("/api/v1/violation-record/create")
        .set("Authorization", `Bearer ${reporter.accessToken}`)
        .send(payload);
-        console.log("response ", response.status, response.body)
+
         expect(response.status).toBe(201);
         expect(response.body).toHaveProperty("id");
     });
 
     it("should return 403 Forbidden if user does not have the SECURITY role", async () => {
-        const user = await seedAuthenticatedUser({ role: "STUDENT", expiration: "1h" });
+        const reporter = await seedAuthenticatedUser({ role: "STUDENT", expiration: "1h" });
         const payload = {
         userId: ownerId,
         vehicleId: vehicleId,
@@ -50,8 +50,8 @@ describe("POST /api/v1/violation-record", () => {
         };
 
         const response = await requestAPI
-        .post("/api/v1/violation-record")
-        .set("Authorization", `Bearer ${user.accessToken}`)
+        .post("/api/v1/violation-record/create")
+        .set("Authorization", `Bearer ${reporter.accessToken}`)
         .send(payload);
 
         expect(response.status).toBe(403);
@@ -59,7 +59,8 @@ describe("POST /api/v1/violation-record", () => {
     });
 
     it("should return 401 Unauthorized if no token is provided", async () => {
-        const response = await requestAPI.post("/api/v1/violation-record").send({
+        const response = await requestAPI.post("/api/v1/violation-record/create")
+        .send({
         userId: "test-user-id",
         vehicleId: "test-vehicle-id",
         violationId: "test-violation-id",

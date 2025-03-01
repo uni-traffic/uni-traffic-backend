@@ -8,12 +8,12 @@ import { CreateViolationRecordUseCase } from "../../../useCases/createViolationR
 export class CreateViolationRecordController extends BaseController {
     private _createViolationRecordUseCase: CreateViolationRecordUseCase;
     private _jsonWebToken: IJSONWebToken;
-    private _userRoleService: UserRoleService;
+    private _userRoleService: UserRoleService; 
 
     public constructor(
         createViolationRecordUseCase = new CreateViolationRecordUseCase(),
         jsonWebToken = new JSONWebToken(),
-        userRoleService = new UserRoleService()
+        userRoleService = new UserRoleService(),
     ) {
         super();
         this._createViolationRecordUseCase = createViolationRecordUseCase;
@@ -27,10 +27,12 @@ export class CreateViolationRecordController extends BaseController {
         const { userId, vehicleId, violationId } = req.body;
 
         const violationRecordDTO = await this._createViolationRecordUseCase.execute(
-        userId,
-        vehicleId,
-        violationId,
-        reportedById
+            {
+            userId,
+            vehicleId,
+            violationId,
+            reportedById,
+            status: "UNPAID"}
         );
 
         this.created(res,"Violation created.", violationRecordDTO);
@@ -39,17 +41,12 @@ export class CreateViolationRecordController extends BaseController {
     private async _verifyPermission(req: Request): Promise<string> {
         const accessToken = this._getAccessToken(req);
         const decodedToken = this._jsonWebToken.verify(accessToken) as { id: string };
-        const id = decodedToken.id; 
-        console.log("Decoded Token:", decodedToken);
-        console.log(id)
-        if (!decodedToken.id) throw new Error("Invalid token: missing user ID.");
 
-
-        const hasSecurityRole = await this._userRoleService.hasSecurityRole(id);
+        const hasSecurityRole = await this._userRoleService.hasSecurityRole(decodedToken.id);
         if (!hasSecurityRole) {
             throw new ForbiddenError("You do not have the required permissions to perform this action.");
         }
 
-        return id;
+        return decodedToken.id;
     }
 }

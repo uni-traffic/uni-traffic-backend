@@ -38,7 +38,7 @@ export const seedAuthenticatedUser = async ({
   const hashedPassword = await bycryptPassword.generateHash(password);
 
   const jsonWebToken = new JSONWebToken();
-  const accessToken = jsonWebToken.sign({ id: id, role: role }, expiration);
+  const accessToken = jsonWebToken.sign({ id: id }, expiration);
 
   const savedUser = await db.user.create({
     data: {
