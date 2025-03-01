@@ -7,6 +7,7 @@ const violationRecordRouter = Router();
 
 violationRecordRouter.post(
   "/create",
+  validateRequest({ body: ViolationRecordSchema }),
   (req: Request, res: Response) => {
     new CreateViolationRecordController().execute(req, res);
   }

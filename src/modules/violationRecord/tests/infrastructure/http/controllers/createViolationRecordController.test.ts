@@ -27,10 +27,12 @@ describe("POST /api/v1/violation-record/create", () => {
 
     it("should create a new violation record with valid security role", async () => {
         const reporter = await seedAuthenticatedUser({ role: "SECURITY", expiration: "1h" });
+        const reporterId = reporter.id;
         const payload = {
         userId: ownerId,
         vehicleId: vehicleId,
-        violationId: violationId
+        violationId: violationId,
+        reportedById: reporterId
         };
         const response = await requestAPI
         .post("/api/v1/violation-record/create")
@@ -43,12 +45,13 @@ describe("POST /api/v1/violation-record/create", () => {
 
     it("should return 403 Forbidden if user does not have the SECURITY role", async () => {
         const reporter = await seedAuthenticatedUser({ role: "STUDENT", expiration: "1h" });
+        const reporterId = reporter.id;
         const payload = {
         userId: ownerId,
         vehicleId: vehicleId,
         violationId: violationId,
+        reportedById: reporterId
         };
-
         const response = await requestAPI
         .post("/api/v1/violation-record/create")
         .set("Authorization", `Bearer ${reporter.accessToken}`)
@@ -59,12 +62,15 @@ describe("POST /api/v1/violation-record/create", () => {
     });
 
     it("should return 401 Unauthorized if no token is provided", async () => {
-        const response = await requestAPI.post("/api/v1/violation-record/create")
-        .send({
-        userId: "test-user-id",
-        vehicleId: "test-vehicle-id",
-        violationId: "test-violation-id",
-        });
+        const payload = {
+            userId: "ownerId",
+            vehicleId: "vehicleId",
+            violationId: "violationId",
+            reportedById: "reporterId"
+        };
+        const response = await requestAPI
+        .post("/api/v1/violation-record/create")
+        .send(payload);
         expect(response.status).toBe(401);
         expect(response.body.message).toBe('Access token is required "Bearer {token}"');
         });

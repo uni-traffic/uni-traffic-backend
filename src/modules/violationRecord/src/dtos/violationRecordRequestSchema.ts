@@ -9,7 +9,7 @@ export const ViolationRecordSchema = z.object({
   status: z.enum([
     ViolationRecordStatus.UNPAID, 
     ViolationRecordStatus.PAID
-  ]),
+  ]).optional(),
 });
 
 export type ViolationRecordRequest = z.infer<typeof ViolationRecordSchema>;
