@@ -1,8 +1,8 @@
 import type { User, Vehicle, Violation } from "@prisma/client";
 import { defaultTo } from "rambda";
-import { v4 as uuid } from "uuid";
 import { UnexpectedError } from "../../../../../../shared/core/errors";
 import { Result } from "../../../../../../shared/core/result";
+import { uniTrafficId } from "../../../../../../shared/lib/uniTrafficId";
 import { UserFactory } from "../../../../../user/src/domain/models/user/factory";
 import { UserMapper } from "../../../../../user/src/domain/models/user/mapper";
 import type { IUserDTO } from "../../../../../user/src/dtos/userDTO";
@@ -56,7 +56,7 @@ export class ViolationRecordFactory {
     return Result.ok<IViolationRecord>(
       ViolationRecord.create({
         ...props,
-        id: defaultTo(uuid(), props.id),
+        id: defaultTo(uniTrafficId(), props.id),
         status: violationRecordPaymentStatusOrError.getValue(),
         user: userOrUndefined,
         reporter: reporterOrUndefined,

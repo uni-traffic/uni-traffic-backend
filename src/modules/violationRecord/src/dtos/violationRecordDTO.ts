@@ -14,3 +14,11 @@ export interface IViolationRecordDTO {
   violation: IViolationDTO | null;
   vehicle: IVehicleDTO | null;
 }
+
+export interface ICreateViolationRecordInputUseCase {
+  reportedById: string;
+  violationId: string;
+  vehicleId?: string;
+  licensePlate?: string;
+  stickerNumber?: string;
+}
