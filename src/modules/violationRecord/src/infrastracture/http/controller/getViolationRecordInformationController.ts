@@ -27,7 +27,7 @@ export class GetViolationRecordController extends BaseController {
 
     const violationRecordDTO = await this._getViolationRecordInformationUseCase.execute(req.query);
 
-    this.ok<IViolationRecordDTO>(res, violationRecordDTO);
+    this.ok<IViolationRecordDTO[]>(res, violationRecordDTO);
   }
 
   private async _verifyPermission(req: Request): Promise<string> {
@@ -38,13 +38,11 @@ export class GetViolationRecordController extends BaseController {
     const hasSecurityRole = await this._userRoleService.hasSecurityRole(tokenUserId);
 
     const requestedUserId =
-      ((req.params.userId || req.query.userId) as string | undefined) || tokenUserId;
+      ((req.params || req.query) as unknown as string | undefined) || tokenUserId;
 
-    if (!hasAdminRole && !hasSecurityRole) {
-      if (requestedUserId !== tokenUserId) {
+      if ((!hasAdminRole && !hasSecurityRole) && requestedUserId !== tokenUserId) {
         throw new ForbiddenError("You can only access your own violation records.");
       }
-    }
 
     return tokenUserId;
   }

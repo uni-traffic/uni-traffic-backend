@@ -11,7 +11,7 @@ export interface IViolationRecordRepository {
   getViolationsRecordByReporterId(reportedById: string): Promise<IViolationRecord[]>;
   getViolationsRecordByVehicleId(vehicleId: string): Promise<IViolationRecord[]>;
   getViolationsRecordByStatus(status: "UNPAID" | "PAID"): Promise<IViolationRecord[]>;
-  getViolationRecordByProperty(params: ViolationRecordRequest): Promise<IViolationRecord | null>;
+  getViolationRecordByProperty(params: ViolationRecordRequest): Promise<IViolationRecord[]>;
 }
 
 export class ViolationRecordRepository implements IViolationRecordRepository {
@@ -118,26 +118,27 @@ export class ViolationRecordRepository implements IViolationRecordRepository {
 
   public async getViolationRecordByProperty(
     params: ViolationRecordRequest
-  ): Promise<IViolationRecord | null> {
-    const { id, userId, violationId, reportedById } = params;
-    if (!id && !userId && !violationId && !reportedById) {
-      return null;
+  ): Promise<IViolationRecord[]> {
+    const { id, userId, violationId, reportedById, vehicleId } = params;
+    if (!id && !userId && !violationId && !reportedById && !vehicleId) {
+      return [];
     }
 
     try {
-      const violationRecordRaw = await this._database.violationRecord.findUniqueOrThrow({
+      const violationRecordRaw = await this._database.violationRecord.findMany({
         where: {
           ...{ id: id || undefined },
           ...{ userId: userId || undefined },
           ...{ violationId: violationId || undefined },
-          ...{ reportedById: reportedById || undefined }
+          ...{ reportedById: reportedById || undefined },
+          ...{ vehicleId: vehicleId || undefined }
         },
         include: { reporter: true, user: true, vehicle: true, violation: true }
       });
 
-      return this._violationRecordMapper.toDomain(violationRecordRaw);
+      return violationRecordRaw.map((record) => this._violationRecordMapper.toDomain(record));
     } catch {
-      return null;
+      return [];
     }
   }
 }

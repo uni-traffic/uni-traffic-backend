@@ -8,17 +8,22 @@ import { db } from "../../../../shared/infrastructure/database/prisma";
 import type { ViolationRecordRequest } from "../../src/dtos/violationRecordRequestSchema";
 import type { IViolationRecordDTO } from "../../src/dtos/violationRecordDTO";
 
-const assertViolationRecord = (received: IViolationRecordDTO, expected: IViolationRecordDTO) => {
-  expect(received.id).toBe(expected.id);
-  expect(received.reportedById).toBe(expected.reportedById);
-  expect(received.reporter?.id).toBe(expected.reporter?.id);
-  expect(received.status).toBe(expected.status);
-  expect(received.user?.id).toBe(expected.user?.id);
-  expect(received.userId).toBe(expected.userId);
-  expect(received.vehicle?.id).toBe(expected.vehicle?.id);
-  expect(received.vehicleId).toBe(expected.vehicleId);
-  expect(received.violation?.id).toBe(expected.violation?.id);
-  expect(received.violationId).toBe(expected.violationId);
+const assertViolationRecord = (received: IViolationRecordDTO[], expected: IViolationRecordDTO) => {
+  expect(received).toBeInstanceOf(Array);
+  expect(received).not.toHaveLength(0);
+
+  const record = received[0]; 
+
+  expect(record.id).toBe(expected.id);
+  expect(record.reportedById).toBe(expected.reportedById);
+  expect(record.reporter?.id).toBe(expected.reporter?.id);
+  expect(record.status).toBe(expected.status);
+  expect(record.user?.id).toBe(expected.user?.id);
+  expect(record.userId).toBe(expected.userId);
+  expect(record.vehicle?.id).toBe(expected.vehicle?.id);
+  expect(record.vehicleId).toBe(expected.vehicleId);
+  expect(record.violation?.id).toBe(expected.violation?.id);
+  expect(record.violationId).toBe(expected.violationId);
 };
 
 describe("GetViolationRecordUseCase", () => {

@@ -23,23 +23,22 @@ export class GetViolationRecordInformationUseCase {
     this._violationRecordMapper = violationRecordMapper;
   }
 
-  public async execute(payload: ViolationRecordRequest): Promise<IViolationRecordDTO> {
-    const refinedPayLoad = this._refinePayload(payload);
-    const violatioRecord = await this._getViolationRecordDetails(refinedPayLoad);
+  public async execute(payload: ViolationRecordRequest): Promise<IViolationRecordDTO[]> {
+    const violatioRecord = await this._getViolationRecordDetails(payload);
 
-    return this._violationRecordMapper.toDTO(violatioRecord);
+    return [this._violationRecordMapper.toDTO(violatioRecord)];
   }
 
   private async _getViolationRecordDetails(
     payload: ViolationRecordRequest
   ): Promise<IViolationRecord> {
-    const violationRecord =
+    const violationRecords =
       await this._violationRecordRepository.getViolationRecordByProperty(payload);
-    if (!violationRecord) {
+    if (!violationRecords || violationRecords.length === 0) {
       throw new NotFoundError("Violation Records not found");
     }
 
-    return violationRecord;
+    return violationRecords[0];
   }
 
   private _refinePayload(payload: ViolationRecordRequest): ViolationRecordRequest {
