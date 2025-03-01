@@ -25,7 +25,6 @@ describe("CreateViolationRecordUseCase", () => {
     const vehicle = await seedVehicle({ownerId: user.id});
 
     newViolationData = {
-        id: "test-violation-record-id",
         userId: user.id,
         reportedById: reporter.id,
         violationId: violation.id,
@@ -52,22 +51,8 @@ describe("CreateViolationRecordUseCase", () => {
     expect(recordInDb?.status).toBe("UNPAID");
   });
 
-  it("should throw ConflictError when a violation record already exists", async () => {
-    let message = "";
-    try {
-      await createViolationRecordUseCase.execute(newViolationData);
-      await createViolationRecordUseCase.execute(newViolationData);
-    } catch (error) {
-      message = (error as Error).message;
-    }
-
-    expect(message).toBeTruthy();
-    expect(message).toEqual("Violation record already exists.");
-  });
-
   it("should throw an error if required fields are missing", async () => {
     emptyViolationData = {
-      id: "",
       userId: "",
       reportedById: "",
       vehicleId: "",

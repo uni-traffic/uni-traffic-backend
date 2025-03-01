@@ -4,15 +4,11 @@ import { ViolationRecordMapper } from "../domain/models/violationRecord/mapper";
 
 export interface IViolationRecordRepository {
     createViolationRecord(
-        id: string,
         userId: string,
         vehicleId: string,
         violationId: string,
         reportedById: string
     ): Promise<IViolationRecord>;
-    isViolationRecordAlreadyExists(
-        id: string,
-    ): Promise<boolean>; 
 }
 
 export class ViolationRecordRepository implements IViolationRecordRepository {
@@ -25,14 +21,13 @@ export class ViolationRecordRepository implements IViolationRecordRepository {
     }
 
     public async createViolationRecord(
-        id: string,
         userId: string,
         vehicleId: string,
         violationId: string,
         reportedById: string
     ): Promise<IViolationRecord> {
         const newViolationRecord = await this._database.violationRecord.create({
-        data: { id, userId, vehicleId, violationId, reportedById, status: "UNPAID" },
+        data: { userId, vehicleId, violationId, reportedById, status: "UNPAID" },
         include: {
             user: true,
             reporter: true,
@@ -42,14 +37,6 @@ export class ViolationRecordRepository implements IViolationRecordRepository {
         });
         const domainRecord = this._violationRecordMapper.toDomain(newViolationRecord);
         return domainRecord;
-    }
-    
-    public async isViolationRecordAlreadyExists(id: string): Promise<boolean> {
-        if (!id) return false; 
-        const foundRecord = await this._database.violationRecord.findUnique({
-            where: { id } 
-        });
-        return !!foundRecord;
     }
     
 }
