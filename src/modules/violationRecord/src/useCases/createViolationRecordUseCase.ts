@@ -2,6 +2,7 @@ import { type IViolationRecordDTO } from "../dtos/violationRecordDTO";
 import { ViolationRecordMapper } from "../domain/models/violationRecord/mapper";
 import { type IViolationRecordRepository, ViolationRecordRepository } from "../repositories/violationRecordRepository";
 import { ViolationRecordRequest } from "../dtos/violationRecordRequestSchema";
+export type CreateViolationRecordInput = Omit<ViolationRecordRequest, "reportedById"> & { reportedById: string };
 
 export class CreateViolationRecordUseCase {
   private _violationRecordMapper: ViolationRecordMapper;
@@ -20,7 +21,7 @@ export class CreateViolationRecordUseCase {
     vehicleId,
     violationId,
     reportedById
-  } : ViolationRecordRequest): Promise<IViolationRecordDTO> {
+  } : CreateViolationRecordInput): Promise<IViolationRecordDTO> {
 
     const newViolationRecord = await this._violationRecordRepository.createViolationRecord(
         userId,

@@ -1,15 +1,13 @@
 import { db } from "../../../../shared/infrastructure/database/prisma";
-import { CreateViolationRecordUseCase } from "../../src/useCases/createViolationRecordUseCase";
+import { CreateViolationRecordInput, CreateViolationRecordUseCase } from "../../src/useCases/createViolationRecordUseCase";
 import { seedAuthenticatedUser } from "../../../user/tests/utils/user/seedAuthenticatedUser";
 import { seedVehicle } from "../../../vehicle/tests/utils/vehicle/seedVehicle";
 import { seedViolation } from "../../../violation/tests/utils/violation/seedViolation";
-import { ViolationRecordRequest } from "../../src/dtos/violationRecordRequestSchema";
-
 
 describe("CreateViolationRecordUseCase", () => {
   let createViolationRecordUseCase: CreateViolationRecordUseCase;
-  let newViolationData: ViolationRecordRequest ;
-  let emptyViolationData: ViolationRecordRequest
+  let newViolationData: CreateViolationRecordInput;
+  let emptyViolationData: CreateViolationRecordInput;
 
   beforeAll(() => {
     createViolationRecordUseCase = new CreateViolationRecordUseCase();
