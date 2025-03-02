@@ -1,6 +1,7 @@
 import type { IUserDTO } from "../../../../../../user/src/dtos/userDTO";
 import type { IVehicleDTO } from "../../../../../../vehicle/src/dtos/vehicleDTO";
 import type { IViolationDTO } from "../../../../../../violation/src/dtos/violationDTO";
+import type { ViolationRecordRemarks } from "./violationRecordRemarks";
 import type { ViolationRecordStatus } from "./violationRecordStatus";
 
 export interface IViolationRecord {
@@ -9,6 +10,8 @@ export interface IViolationRecord {
   reportedById: string;
   violationId: string;
   vehicleId: string;
+  createdAt: Date;
+  remarks: ViolationRecordRemarks;
   status: ViolationRecordStatus;
   user: IUserDTO | undefined;
   reporter: IUserDTO | undefined;
@@ -22,6 +25,8 @@ export class ViolationRecord implements IViolationRecord {
   private readonly _reportedById: string;
   private readonly _violationId: string;
   private readonly _vehicleId: string;
+  private readonly _remarks: ViolationRecordRemarks;
+  private readonly _createdAt: Date;
   private readonly _status: ViolationRecordStatus;
   private readonly _user: IUserDTO | undefined;
   private readonly _reporter: IUserDTO | undefined;
@@ -34,6 +39,8 @@ export class ViolationRecord implements IViolationRecord {
     reportedById,
     violationId,
     vehicleId,
+    remarks,
+    createdAt,
     status,
     user,
     reporter,
@@ -45,6 +52,8 @@ export class ViolationRecord implements IViolationRecord {
     this._reportedById = reportedById;
     this._violationId = violationId;
     this._vehicleId = vehicleId;
+    this._remarks = remarks;
+    this._createdAt = createdAt;
     this._status = status;
     this._user = user;
     this._reporter = reporter;
@@ -72,8 +81,16 @@ export class ViolationRecord implements IViolationRecord {
     return this._vehicleId;
   }
 
+  get createdAt(): Date {
+    return this._createdAt;
+  }
+
   get status(): ViolationRecordStatus {
     return this._status;
+  }
+
+  get remarks(): ViolationRecordRemarks {
+    return this._remarks;
   }
 
   get user(): IUserDTO | undefined {

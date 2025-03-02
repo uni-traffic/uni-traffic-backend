@@ -1,16 +1,15 @@
-import type TestAgent from "supertest/lib/agent";
+import { faker } from "@faker-js/faker";
 import request from "supertest";
-import type { IViolationRecordDTO } from "../../../../src/dtos/violationRecordDTO";
+import type TestAgent from "supertest/lib/agent";
 import app from "../../../../../../../api";
 import { db } from "../../../../../../shared/infrastructure/database/prisma";
 import { seedAuthenticatedUser } from "../../../../../user/tests/utils/user/seedAuthenticatedUser";
+import { seedUser } from "../../../../../user/tests/utils/user/seedUser";
+import { seedVehicle } from "../../../../../vehicle/tests/utils/vehicle/seedVehicle";
+import { seedViolation } from "../../../../../violation/tests/utils/violation/seedViolation";
+import type { IViolationRecordDTO } from "../../../../src/dtos/violationRecordDTO";
 import type { ViolationRecordGetRequest } from "../../../../src/dtos/violationRecordRequestSchema";
 import { seedViolationRecord } from "../../../utils/violationRecord/seedViolationRecord";
-import { seedVehicle } from "../../../../../vehicle/tests/utils/vehicle/seedVehicle";
-import { seedUser } from "../../../../../user/tests/utils/user/seedUser";
-import { seedViolation } from "../../../../../violation/tests/utils/violation/seedViolation";
-import { faker } from "@faker-js/faker";
-
 
 describe("GET /api/v1/violation-record/search", () => {
   let requestAPI: TestAgent;
@@ -46,6 +45,8 @@ describe("GET /api/v1/violation-record/search", () => {
     expect(response.status).toBe(200);
     expect(responseBody[0].id).toBe(seededViolationRecord.id);
     expect(responseBody[0].reportedById).toBe(seededViolationRecord.reportedById);
+    expect(responseBody[0].date).toBeDefined();
+    expect(responseBody[0].remarks).toBeDefined();
     expect(responseBody[0].status).toBe(seededViolationRecord.status);
     expect(responseBody[0].userId).toBe(seededViolationRecord.userId);
     expect(responseBody[0].vehicleId).toBe(seededViolationRecord.vehicleId);
@@ -273,8 +274,12 @@ describe("GET /api/v1/violation-record/search", () => {
     const seededAuthenticatedUser = await seedAuthenticatedUser({
       role: faker.helpers.arrayElement(["STUDENT", "STAFF"])
     });
-    const seededViolationRecord1 = await seedViolationRecord({ userId: seededAuthenticatedUser.id })
-    const seededViolationRecord2 = await seedViolationRecord({ userId: seededAuthenticatedUser.id })
+    const seededViolationRecord1 = await seedViolationRecord({
+      userId: seededAuthenticatedUser.id
+    });
+    const seededViolationRecord2 = await seedViolationRecord({
+      userId: seededAuthenticatedUser.id
+    });
 
     const response = await requestAPI
       .get("/api/v1/violation-record/search")
@@ -304,7 +309,6 @@ describe("GET /api/v1/violation-record/search", () => {
 
     expect(response.status).toBe(400);
   });
-
 
   it("should return status 403 status code and message when Authorization provided lacks permission", async () => {
     const seededAuthenticatedUser = await seedAuthenticatedUser({

@@ -13,6 +13,7 @@ import { ViolationFactory } from "../../../../../violation/src/domain/models/vio
 import { ViolationMapper } from "../../../../../violation/src/domain/models/violation/mapper";
 import type { IViolationDTO } from "../../../../../violation/src/dtos/violationDTO";
 import { type IViolationRecord, ViolationRecord } from "./classes/violationRecord";
+import { ViolationRecordRemarks } from "./classes/violationRecordRemarks";
 import { ViolationRecordStatus } from "./classes/violationRecordStatus";
 
 export interface IViolationRecordFactoryProps {
@@ -21,6 +22,8 @@ export interface IViolationRecordFactoryProps {
   reportedById: string;
   violationId: string;
   vehicleId: string;
+  remarks: string;
+  createdAt?: Date;
   status?: string;
   user?: User;
   reporter?: User;
@@ -35,6 +38,11 @@ export class ViolationRecordFactory {
     );
     if (violationRecordPaymentStatusOrError.isFailure) {
       return Result.fail(violationRecordPaymentStatusOrError.getErrorMessage()!);
+    }
+
+    const violationRemarksOrError = ViolationRecordRemarks.create(defaultTo("", props.remarks));
+    if (violationRemarksOrError.isFailure) {
+      return Result.fail(violationRemarksOrError.getErrorMessage()!);
     }
 
     const userOrUndefined = props.user
@@ -59,6 +67,8 @@ export class ViolationRecordFactory {
         id: defaultTo(uniTrafficId(), props.id),
         status: violationRecordPaymentStatusOrError.getValue(),
         user: userOrUndefined,
+        remarks: violationRemarksOrError.getValue(),
+        createdAt: defaultTo(new Date(), props.createdAt),
         reporter: reporterOrUndefined,
         violation: violationOrUndefined,
         vehicle: vehicleOrUndefined

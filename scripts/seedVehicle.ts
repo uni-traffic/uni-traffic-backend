@@ -2,23 +2,24 @@ import type { Role } from "@prisma/client";
 import { seedUser } from "../src/modules/user/tests/utils/user/seedUser";
 import { seedVehicle } from "../src/modules/vehicle/tests/utils/vehicle/seedVehicle";
 import { db } from "../src/shared/infrastructure/database/prisma";
+import { uniTrafficId } from "../src/shared/lib/uniTrafficId";
 
 export const seedVehicleAndOwnerData = async () => {
   const OWNER_DATA = [
     {
-      username: "french.montajes",
+      username: "french",
       email: "frenchanthony.montajes@neu.edu.ph",
-      password: "robee123",
+      password: "french123",
       lastName: "Montajes",
       firstName: "French Anthony",
       role: "STUDENT"
     },
     {
-      username: "robee.herrera",
+      username: "robee",
       email: "angelorobee.herrera@neu.edu.ph",
       password: "robee123",
       lastName: "Herrera",
-      firstName: "TJ Anthony",
+      firstName: "Angelo Robee",
       role: "STUDENT"
     }
   ];
@@ -102,14 +103,45 @@ export const seedVehicleAndOwnerData = async () => {
       {
         id: seededVehicles[0].id,
         licensePlate: seededVehicles[0].licensePlate,
-        stickerNumber: seededVehicles[0].stickerNumber
+        stickerNumber: seededVehicles[0].stickerNumber,
+        username: seededUsers[0].username,
+        password: OWNER_DATA[0].password
       },
       {
         id: seededVehicles[1].id,
         licensePlate: seededVehicles[1].licensePlate,
-        stickerNumber: seededVehicles[1].stickerNumber
+        stickerNumber: seededVehicles[1].stickerNumber,
+        username: seededUsers[1].username,
+        password: OWNER_DATA[1].password
       }
     ]);
+
+    const seededReporter = await seedUser({ role: "SECURITY" });
+
+    await db.violationRecord.create({
+      data: {
+        id: uniTrafficId(),
+        violationId: "1",
+        reportedById: seededReporter.id,
+        remarks: "Driving without VVP or VPS",
+        vehicleId: seededVehicles[0].id,
+        userId: seededUsers[0].id,
+        status: "UNPAID"
+      }
+    });
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await db.violationRecord.create({
+      data: {
+        id: uniTrafficId(),
+        violationId: "3",
+        reportedById: seededReporter.id,
+        remarks:
+          "Parking in inappropriate locations, such as driveways, walkways, pathways, and main roadways",
+        vehicleId: seededVehicles[0].id,
+        userId: seededUsers[0].id,
+        status: "PAID"
+      }
+    });
   } catch (error) {
     console.log(error);
   }

@@ -1,14 +1,14 @@
 import type { Request, Response } from "express";
+import { ForbiddenError } from "../../../../../../shared/core/errors";
 import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
 import { type IJSONWebToken, JSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
 import { UserRoleService } from "../../../../../user/src/shared/service/userRoleService";
-import { GetViolationRecordInformationUseCase } from "../../../useCases/getViolationRecordUseCase";
-import { ForbiddenError } from "../../../../../../shared/core/errors";
 import type { IViolationRecordDTO } from "../../../dtos/violationRecordDTO";
 import type {
-  ViolationRecordGetRequest,
-  ViolationRecordRequest
+  ViolationRecordCreateRequest,
+  ViolationRecordGetRequest
 } from "../../../dtos/violationRecordRequestSchema";
+import { GetViolationRecordInformationUseCase } from "../../../useCases/getViolationRecordUseCase";
 
 export class GetViolationRecordController extends BaseController {
   private _getViolationRecordInformationUseCase: GetViolationRecordInformationUseCase;
@@ -30,7 +30,7 @@ export class GetViolationRecordController extends BaseController {
     await this._verifyPermission(req);
 
     const violationRecordDTO = await this._getViolationRecordInformationUseCase.execute(
-      req.query as ViolationRecordRequest
+      req.query as ViolationRecordCreateRequest
     );
 
     this.ok<IViolationRecordDTO[]>(res, violationRecordDTO);

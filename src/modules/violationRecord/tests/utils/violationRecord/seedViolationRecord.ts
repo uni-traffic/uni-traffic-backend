@@ -1,15 +1,15 @@
 import { faker } from "@faker-js/faker";
+import type { ViolationRecordStatus as ViolationRecordSchema } from "@prisma/client";
 import { defaultTo } from "rambda";
 import { db } from "../../../../../shared/infrastructure/database/prisma";
-import { seedUser } from "../../../../user/tests/utils/user/seedUser";
-import type { IViolationRecordFactoryProps } from "../../../src/domain/models/violationRecord/factory";
-import type { IUserRawObject } from "../../../../user/src/domain/models/user/constant";
-import type { IVehicleRawObject } from "../../../../vehicle/src/domain/models/vehicle/constant";
-import type { IViolationRawObject } from "../../../../violation/src/domain/models/violation/constant";
-import type { ViolationRecordStatus as ViolationRecordSchema } from "@prisma/client";
-import { seedVehicle } from "../../../../vehicle/tests/utils/vehicle/seedVehicle";
-import { seedViolation } from "../../../../violation/tests/utils/violation/seedViolation";
 import { uniTrafficId } from "../../../../../shared/lib/uniTrafficId";
+import type { IUserRawObject } from "../../../../user/src/domain/models/user/constant";
+import { seedUser } from "../../../../user/tests/utils/user/seedUser";
+import type { IVehicleRawObject } from "../../../../vehicle/src/domain/models/vehicle/constant";
+import { seedVehicle } from "../../../../vehicle/tests/utils/vehicle/seedVehicle";
+import type { IViolationRawObject } from "../../../../violation/src/domain/models/violation/constant";
+import { seedViolation } from "../../../../violation/tests/utils/violation/seedViolation";
+import type { IViolationRecordFactoryProps } from "../../../src/domain/models/violationRecord/factory";
 
 export const seedViolationRecord = async ({
   id = uniTrafficId(),
@@ -31,6 +31,7 @@ export const seedViolationRecord = async ({
   return db.violationRecord.create({
     data: {
       id,
+      remarks: faker.lorem.sentence({ min: 1, max: 15 }),
       vehicleId: defaultTo(seededVehicle.id, vehicleId),
       violationId: defaultTo(seededViolation.id, violationId),
       userId: defaultTo(seededVehicle.ownerId, userId),

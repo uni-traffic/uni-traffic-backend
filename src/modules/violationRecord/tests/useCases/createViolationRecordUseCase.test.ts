@@ -26,6 +26,7 @@ describe("CreateViolationRecordUseCase", () => {
     const seededVehicle = await seedVehicle({ ownerId: seededUser.id });
 
     const mockRequestData: ICreateViolationRecordInputUseCase = {
+      remarks: faker.lorem.sentence({ min: 3, max: 15 }),
       vehicleId: seededVehicle.id,
       reportedById: seededSecurityUser.id,
       violationId: "1"
@@ -42,6 +43,7 @@ describe("CreateViolationRecordUseCase", () => {
     const seededVehicle = await seedVehicle({ ownerId: seededUser.id });
 
     const mockRequestData: ICreateViolationRecordInputUseCase = {
+      remarks: faker.lorem.sentence({ min: 3, max: 15 }),
       licensePlate: seededVehicle.licensePlate,
       reportedById: seededSecurityUser.id,
       violationId: "1"
@@ -58,6 +60,7 @@ describe("CreateViolationRecordUseCase", () => {
     const seededVehicle = await seedVehicle({ ownerId: seededUser.id });
 
     const mockRequestData: ICreateViolationRecordInputUseCase = {
+      remarks: faker.lorem.sentence({ min: 3, max: 15 }),
       stickerNumber: seededVehicle.stickerNumber,
       reportedById: seededSecurityUser.id,
       violationId: "1"
@@ -72,6 +75,7 @@ describe("CreateViolationRecordUseCase", () => {
     const seededSecurityUser = await seedUser({ role: "SECURITY" });
 
     const mockRequestData: ICreateViolationRecordInputUseCase = {
+      remarks: faker.lorem.sentence({ min: 3, max: 15 }),
       stickerNumber: faker.string.uuid(),
       reportedById: seededSecurityUser.id,
       violationId: "1"
@@ -88,6 +92,7 @@ describe("CreateViolationRecordUseCase", () => {
     const seededSecurityUser = await seedUser({ role: "SECURITY" });
 
     const mockRequestData: ICreateViolationRecordInputUseCase = {
+      remarks: faker.lorem.sentence({ min: 3, max: 15 }),
       licensePlate: faker.vehicle.vrm(),
       reportedById: seededSecurityUser.id,
       violationId: "1"
@@ -104,6 +109,7 @@ describe("CreateViolationRecordUseCase", () => {
     const seededSecurityUser = await seedUser({ role: "SECURITY" });
 
     const mockRequestData: ICreateViolationRecordInputUseCase = {
+      remarks: faker.lorem.sentence({ min: 3, max: 15 }),
       stickerNumber: faker.vehicle.vin(),
       reportedById: seededSecurityUser.id,
       violationId: "1"

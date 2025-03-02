@@ -75,6 +75,9 @@ model ViolationRecord {
   violationId  String
   vehicleId    String
   reportedById String
+  remarks      String
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
   reporter     User                  @relation("ViolationReporter", fields: [reportedById], references: [id], onDelete: Cascade)
   user         User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   vehicle      Vehicle               @relation(fields: [vehicleId], references: [id], onDelete: Cascade)

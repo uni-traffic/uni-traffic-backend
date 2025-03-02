@@ -19,6 +19,8 @@ export class ViolationRecordMapper implements IViolationRecordMapper {
       reportedById: violationRecord.reportedById,
       violationId: violationRecord.violationId,
       vehicleId: violationRecord.vehicleId,
+      remarks: violationRecord.remarks.value,
+      createdAt: violationRecord.createdAt,
       status: violationRecord.status.value as ViolationRecordStatus
     };
   }
@@ -35,6 +37,8 @@ export class ViolationRecordMapper implements IViolationRecordMapper {
       violationId: violationRecord.violationId,
       vehicleId: violationRecord.vehicleId,
       status: violationRecord.status.value,
+      remarks: violationRecord.remarks.value,
+      date: violationRecord.createdAt.toISOString(),
       user: defaultTo(null, violationRecord.user),
       reporter: defaultTo(null, violationRecord.reporter),
       violation: defaultTo(null, violationRecord.violation),

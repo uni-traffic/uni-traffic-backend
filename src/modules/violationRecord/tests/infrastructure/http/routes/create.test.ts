@@ -7,7 +7,7 @@ import { seedAuthenticatedUser } from "../../../../../user/tests/utils/user/seed
 import { seedUser } from "../../../../../user/tests/utils/user/seedUser";
 import { seedVehicle } from "../../../../../vehicle/tests/utils/vehicle/seedVehicle";
 import { seedViolation } from "../../../../../violation/tests/utils/violation/seedViolation";
-import type { ViolationRecordRequest } from "../../../../src/dtos/violationRecordRequestSchema";
+import type { ViolationRecordCreateRequest } from "../../../../src/dtos/violationRecordRequestSchema";
 
 describe("POST /api/v1/violation-record/create", () => {
   let requestAPI: TestAgent;
@@ -28,7 +28,7 @@ describe("POST /api/v1/violation-record/create", () => {
     const seededVehicle = await seedVehicle({ ownerId: seededUser.id });
     const reporter = await seedAuthenticatedUser({ role: "SECURITY", expiration: "1h" });
 
-    const payload: ViolationRecordRequest = {
+    const payload: ViolationRecordCreateRequest = {
       violationId: "1",
       vehicleId: seededVehicle.id
     };
@@ -50,7 +50,7 @@ describe("POST /api/v1/violation-record/create", () => {
     const seededVehicle = await seedVehicle({ ownerId: seededUser.id });
     const reporter = await seedAuthenticatedUser({ role: "SECURITY", expiration: "1h" });
 
-    const payload: ViolationRecordRequest = {
+    const payload: ViolationRecordCreateRequest = {
       violationId: "1",
       licensePlate: seededVehicle.licensePlate
     };
@@ -72,7 +72,7 @@ describe("POST /api/v1/violation-record/create", () => {
     const seededVehicle = await seedVehicle({ ownerId: seededUser.id });
     const reporter = await seedAuthenticatedUser({ role: "SECURITY", expiration: "1h" });
 
-    const payload: ViolationRecordRequest = {
+    const payload: ViolationRecordCreateRequest = {
       violationId: "1",
       stickerNumber: seededVehicle.stickerNumber
     };
@@ -92,7 +92,7 @@ describe("POST /api/v1/violation-record/create", () => {
   it("should return status code 403 if user lacks permission", async () => {
     const reporter = await seedAuthenticatedUser({ role: "STAFF", expiration: "1h" });
 
-    const payload: ViolationRecordRequest = {
+    const payload: ViolationRecordCreateRequest = {
       violationId: "1",
       stickerNumber: faker.vehicle.vin()
     };
