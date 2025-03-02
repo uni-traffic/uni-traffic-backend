@@ -5,6 +5,10 @@ import { UserRoleService } from "../../../../../user/src/shared/service/userRole
 import { GetViolationRecordInformationUseCase } from "../../../useCases/getViolationRecordUseCase";
 import { ForbiddenError } from "../../../../../../shared/core/errors";
 import type { IViolationRecordDTO } from "../../../dtos/violationRecordDTO";
+import type {
+  ViolationRecordGetRequest,
+  ViolationRecordRequest
+} from "../../../dtos/violationRecordRequestSchema";
 
 export class GetViolationRecordController extends BaseController {
   private _getViolationRecordInformationUseCase: GetViolationRecordInformationUseCase;
@@ -25,7 +29,9 @@ export class GetViolationRecordController extends BaseController {
   protected async executeImpl(req: Request, res: Response): Promise<void> {
     await this._verifyPermission(req);
 
-    const violationRecordDTO = await this._getViolationRecordInformationUseCase.execute(req.query);
+    const violationRecordDTO = await this._getViolationRecordInformationUseCase.execute(
+      req.query as ViolationRecordRequest
+    );
 
     this.ok<IViolationRecordDTO[]>(res, violationRecordDTO);
   }
@@ -37,12 +43,11 @@ export class GetViolationRecordController extends BaseController {
     const hasAdminRole = await this._userRoleService.hasAdminRole(tokenUserId);
     const hasSecurityRole = await this._userRoleService.hasSecurityRole(tokenUserId);
 
-    const requestedUserId =
-      ((req.params || req.query) as unknown as string | undefined) || tokenUserId;
+    const requestQuery = req.query as ViolationRecordGetRequest;
 
-      if ((!hasAdminRole && !hasSecurityRole) && requestedUserId !== tokenUserId) {
-        throw new ForbiddenError("You can only access your own violation records.");
-      }
+    if (!hasAdminRole && !hasSecurityRole && requestQuery.userId !== tokenUserId) {
+      throw new ForbiddenError("You do not have the required permissions to perform this action.");
+    }
 
     return tokenUserId;
   }

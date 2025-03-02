@@ -5,7 +5,7 @@ import {
   ViolationRecordMapper
 } from "../domain/models/violationRecord/mapper";
 import type { IViolationRecordDTO } from "../dtos/violationRecordDTO";
-import type { ViolationRecordRequest } from "../dtos/violationRecordRequestSchema";
+import type { ViolationRecordGetRequest } from "../dtos/violationRecordRequestSchema";
 import {
   type IViolationRecordRepository,
   ViolationRecordRepository
@@ -23,32 +23,21 @@ export class GetViolationRecordInformationUseCase {
     this._violationRecordMapper = violationRecordMapper;
   }
 
-  public async execute(payload: ViolationRecordRequest): Promise<IViolationRecordDTO[]> {
-    const violatioRecord = await this._getViolationRecordDetails(payload);
+  public async execute(payload: ViolationRecordGetRequest): Promise<IViolationRecordDTO[]> {
+    const violationRecord = await this._getViolationRecordDetails(payload);
 
-    return [this._violationRecordMapper.toDTO(violatioRecord)];
+    return violationRecord.map(record => this._violationRecordMapper.toDTO(record));
   }
 
   private async _getViolationRecordDetails(
-    payload: ViolationRecordRequest
-  ): Promise<IViolationRecord> {
+    payload: ViolationRecordGetRequest
+  ): Promise<IViolationRecord[]> {
     const violationRecords =
       await this._violationRecordRepository.getViolationRecordByProperty(payload);
     if (!violationRecords || violationRecords.length === 0) {
       throw new NotFoundError("Violation Records not found");
     }
 
-    return violationRecords[0];
-  }
-
-  private _refinePayload(payload: ViolationRecordRequest): ViolationRecordRequest {
-    return {
-      id: payload.id || undefined,
-      reportedById: payload.reportedById,
-      status: payload.status,
-      vehicleId: payload.vehicleId,
-      userId: payload.userId,
-      violationId: payload.violationId
-    };
+    return violationRecords;
   }
 }

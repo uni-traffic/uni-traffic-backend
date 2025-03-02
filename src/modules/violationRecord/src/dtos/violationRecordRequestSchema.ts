@@ -21,7 +21,7 @@ export const ViolationRecordRequestSchema = z
     reportedById: z.string().optional(),
     status: z.enum(["UNPAID", "PAID"]).optional()
   })
-  .refine((data) => data.vehicleId || data.userId || data.violationId || data.reportedById , {
+  .refine((data) => data.id || data.vehicleId || data.userId || data.violationId || data.reportedById || data.status , {
     message: "At least one of 'vehicleId', 'userId', 'reportedBy', or 'violationId' must be provided."
   });
 export type ViolationRecordGetRequest = z.infer<typeof ViolationRecordRequestSchema>;
