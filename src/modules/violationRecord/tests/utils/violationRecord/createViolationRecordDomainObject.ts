@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import { v4 as uuid } from "uuid";
 import { createUserPersistenceData } from "../../../../user/tests/utils/user/createUserPersistenceData";
 import { createVehiclePersistenceData } from "../../../../vehicle/tests/utils/vehicle/createVehiclePersistenceData";
@@ -13,6 +14,7 @@ export const createViolationRecordDomainObject = ({
   violationId = uuid(),
   vehicleId = uuid(),
   status = "UNPAID",
+  remarks = faker.lorem.sentence({ min: 1, max: 15 }),
   user = createUserPersistenceData({}),
   reporter = createUserPersistenceData({}),
   violation = createViolationPersistenceData({}),
@@ -25,6 +27,7 @@ export const createViolationRecordDomainObject = ({
     violationId,
     vehicleId,
     status,
+    remarks,
     user,
     reporter,
     violation,

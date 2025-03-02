@@ -17,6 +17,8 @@ describe("ViolationRecordFactory", () => {
     expect(violationRecord.violationId).toBe(mockViolationRecordData.violationId);
     expect(violationRecord.vehicleId).toBe(mockViolationRecordData.vehicleId);
     expect(violationRecord.status.value).toBe(mockViolationRecordData.status);
+    expect(violationRecord.remarks.value).toBe(mockViolationRecordData.remarks);
+    expect(violationRecord.createdAt.toString()).toBe(mockViolationRecordData.createdAt.toString());
     expect(violationRecord.user).toBeDefined();
     expect(violationRecord.reporter).toBeDefined();
     expect(violationRecord.violation).toBeDefined();

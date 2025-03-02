@@ -9,6 +9,8 @@ export interface IViolationRecordDTO {
   violationId: string;
   vehicleId: string;
   status: string;
+  remarks: string;
+  date: string;
   user: IUserDTO | null;
   reporter: IUserDTO | null;
   violation: IViolationDTO | null;
@@ -21,4 +23,5 @@ export interface ICreateViolationRecordInputUseCase {
   vehicleId?: string;
   licensePlate?: string;
   stickerNumber?: string;
+  remarks: string;
 }

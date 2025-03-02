@@ -4,6 +4,6 @@ import { seedViolations } from "./seedViolation";
 
 (async () => {
   await seedUserAccounts();
-  await seedVehicleAndOwnerData();
   await seedViolations();
+  await seedVehicleAndOwnerData();
 })();

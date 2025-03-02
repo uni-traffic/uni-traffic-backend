@@ -36,14 +36,16 @@ export class CreateViolationRecordUseCase {
     violationId,
     reportedById,
     licensePlate,
-    stickerNumber
+    stickerNumber,
+    remarks
   }: ICreateViolationRecordInputUseCase): Promise<IViolationRecordDTO> {
     const vehicle = await this._getVehicleFromDatabase({ vehicleId, licensePlate, stickerNumber });
     const violationRecord = this._createViolationRecordObject({
       userId: vehicle.ownerId,
       vehicleId: vehicle.id,
       reportedById,
-      violationId
+      violationId,
+      remarks
     });
     const savedViolationRecord = await this._saveViolationRecord(violationRecord);
 
@@ -74,6 +76,7 @@ export class CreateViolationRecordUseCase {
     vehicleId: string;
     violationId: string;
     reportedById: string;
+    remarks: string;
   }): IViolationRecord {
     const violationRecord = ViolationRecordFactory.create(props);
     if (violationRecord.isFailure) {

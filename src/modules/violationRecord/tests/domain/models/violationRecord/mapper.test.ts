@@ -26,6 +26,7 @@ describe("ViolationRecordMapper", () => {
     expect(violationRecordDomainObject.violationId).toBe(
       violationRecordPersistenceData.violationId
     );
+    expect(violationRecordDomainObject.remarks.value).toBe(violationRecordPersistenceData.remarks);
     expect(violationRecordDomainObject.vehicleId).toBe(violationRecordPersistenceData.vehicleId);
     expect(violationRecordDomainObject.status.value).toBe(violationRecordPersistenceData.status);
     expect(violationRecordDomainObject.user).toBeDefined();

@@ -1,32 +1,24 @@
 import { faker } from "@faker-js/faker";
-import type { IUserDTO } from "../../../../../../user/src/dtos/userDTO";
-import type { IVehicleDTO } from "../../../../../../vehicle/src/dtos/vehicleDTO";
-import type { IViolationDTO } from "../../../../../../violation/src/dtos/violationDTO";
-import { ViolationRecord } from "../../../../../src/domain/models/violationRecord/classes/violationRecord";
+import {
+  type IViolationRecord,
+  ViolationRecord
+} from "../../../../../src/domain/models/violationRecord/classes/violationRecord";
+import { ViolationRecordRemarks } from "../../../../../src/domain/models/violationRecord/classes/violationRecordRemarks";
 import { ViolationRecordStatus } from "../../../../../src/domain/models/violationRecord/classes/violationRecordStatus";
 
 describe("ViolationRecord", () => {
   it("should create a ViolationRecord", () => {
-    const mockViolationRecordData: {
-      id: string;
-      userId: string;
-      reportedById: string;
-      violationId: string;
-      vehicleId: string;
-      status: ViolationRecordStatus;
-      user: IUserDTO | undefined;
-      reporter: IUserDTO | undefined;
-      violation: IViolationDTO | undefined;
-      vehicle: IVehicleDTO | undefined;
-    } = {
+    const mockViolationRecordData: IViolationRecord = {
       id: faker.string.uuid(),
       userId: faker.string.uuid(),
       reportedById: faker.string.uuid(),
       violationId: faker.string.uuid(),
+      createdAt: new Date(),
       vehicleId: faker.string.uuid(),
       status: ViolationRecordStatus.create(
         faker.helpers.arrayElement(["UNPAID", "PAID"])
       ).getValue(),
+      remarks: ViolationRecordRemarks.create(faker.lorem.sentence({ min: 5, max: 15 })).getValue(),
       user: {
         id: faker.string.uuid(),
         username: faker.person.fullName(),

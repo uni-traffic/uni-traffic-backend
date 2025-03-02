@@ -1,9 +1,10 @@
 import type { Request, Response } from "express";
+import { defaultTo } from "rambda";
 import { ForbiddenError } from "../../../../../../shared/core/errors";
 import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
 import { type IJSONWebToken, JSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
 import { UserRoleService } from "../../../../../user/src/shared/service/userRoleService";
-import type { ViolationRecordRequest } from "../../../dtos/violationRecordRequestSchema";
+import type { ViolationRecordCreateRequest } from "../../../dtos/violationRecordRequestSchema";
 import { CreateViolationRecordUseCase } from "../../../useCases/createViolationRecordUseCase";
 
 export class CreateViolationRecordController extends BaseController {
@@ -24,11 +25,12 @@ export class CreateViolationRecordController extends BaseController {
 
   protected async executeImpl(req: Request, res: Response) {
     const reportedById = await this._verifyPermission(req);
-    const requestBody = req.body as ViolationRecordRequest;
+    const requestBody = req.body as ViolationRecordCreateRequest;
 
     const violationRecordDTO = await this._createViolationRecordUseCase.execute({
       ...requestBody,
-      reportedById
+      reportedById,
+      remarks: defaultTo("", requestBody.remarks)
     });
 
     this.created(res, "Violation created.", violationRecordDTO);
