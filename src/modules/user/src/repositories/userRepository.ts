@@ -1,11 +1,13 @@
 import type { IUser } from "../domain/models/user/classes/user";
 import { db } from "../../../../shared/infrastructure/database/prisma";
 import { type IUserMapper, UserMapper } from "../domain/models/user/mapper";
+import type { GetUserRequestSchema } from "../dtos/userRequestSchema";
 
 export interface IUserRepository {
   getUserByUsername(username: string): Promise<IUser | null>;
   getUserById(userId: string): Promise<IUser | null>;
   getUsersByIds(userIds: string[]): Promise<IUser[]>;
+  getUserByProperty(params: GetUserRequestSchema): Promise<IUser[]>;
   isUsernameAlreadyTaken(username: string): Promise<boolean>;
   isEmailAlreadyTaken(email: string): Promise<boolean>;
   createUser(user: IUser): Promise<IUser | null>;
@@ -99,6 +101,29 @@ export class UserRepository implements IUserRepository {
       );
 
       return userPersistence.map((role) => this._userMapper.toDomain(role));
+    } catch {
+      return [];
+    }
+  }
+
+  public async getUserByProperty(params: GetUserRequestSchema): Promise<IUser[]> {
+    const { id, firstName, lastName, userName, email, role } = params;
+    if (!id && !firstName && !lastName && !userName && !email && !role) {
+      return [];
+    }
+
+    try {
+      const userPropertyDetails = await this._database.user.findMany({
+        where: {
+          ...{ id: id || undefined },
+          ...{ firstName: firstName || undefined },
+          ...{ lastName: lastName || undefined },
+          ...{ username: userName || undefined },
+          ...{ email: email || undefined },
+          ...{ role: role || undefined }
+        }
+      });
+      return userPropertyDetails.map((userDetails) => this._userMapper.toDomain(userDetails));
     } catch {
       return [];
     }
