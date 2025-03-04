@@ -16,3 +16,13 @@ export const RegisterSchema = z.object({
   role: z.enum([Role.ADMIN, Role.SECURITY, Role.STAFF, Role.STUDENT])
 });
 export type RegisterRequest = z.infer<typeof RegisterSchema>;
+
+export const GetUserSchema = z.object({
+  id: z.string().optional(),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  userName: z.string().optional(),
+  email: z.string().optional(),
+  role: z.enum([Role.ADMIN, Role.SECURITY, Role.STAFF, Role.STUDENT]).optional()
+});
+export type GetUserRequestSchema = z.infer<typeof GetUserSchema>;
