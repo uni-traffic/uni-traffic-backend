@@ -1,13 +1,13 @@
 import type { IUser } from "../domain/models/user/classes/user";
 import { db } from "../../../../shared/infrastructure/database/prisma";
 import { type IUserMapper, UserMapper } from "../domain/models/user/mapper";
-import type { GetUserRequestSchema } from "../dtos/userRequestSchema";
+import type { GetUserRequest } from "../dtos/userRequestSchema";
 
 export interface IUserRepository {
   getUserByUsername(username: string): Promise<IUser | null>;
   getUserById(userId: string): Promise<IUser | null>;
   getUsersByIds(userIds: string[]): Promise<IUser[]>;
-  getUserByProperty(params: GetUserRequestSchema): Promise<IUser[]>;
+  getUserByProperty(params: GetUserRequest): Promise<IUser[]>;
   isUsernameAlreadyTaken(username: string): Promise<boolean>;
   isEmailAlreadyTaken(email: string): Promise<boolean>;
   createUser(user: IUser): Promise<IUser | null>;
@@ -106,9 +106,9 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  public async getUserByProperty(params: GetUserRequestSchema): Promise<IUser[]> {
-    const { id, firstName, lastName, userName, email, role } = params;
-    if (!id && !firstName && !lastName && !userName && !email && !role) {
+  public async getUserByProperty(params: GetUserRequest): Promise<IUser[]> {
+    const { id, firstName, lastName, username, email, role } = params;
+    if (!id && !firstName && !lastName && !username && !email && !role) {
       return [];
     }
 
@@ -118,7 +118,7 @@ export class UserRepository implements IUserRepository {
           ...{ id: id || undefined },
           ...{ firstName: firstName || undefined },
           ...{ lastName: lastName || undefined },
-          ...{ username: userName || undefined },
+          ...{ username: username || undefined },
           ...{ email: email || undefined },
           ...{ role: role || undefined }
         }

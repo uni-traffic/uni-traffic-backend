@@ -122,7 +122,6 @@ describe("UserRepository.getUserByProperty", () => {
   it("should return empty array when no property is provided", async () => {
     const user = await _userRepository.getUserByProperty({});
 
-    console.log(user);
     expect(user).toEqual([]);
   });
 });
