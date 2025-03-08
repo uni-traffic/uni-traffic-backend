@@ -1,12 +1,12 @@
+import { faker } from "@faker-js/faker";
 import request from "supertest";
 import type TestAgent from "supertest/lib/agent";
 import app from "../../../../../../../../api";
 import { db } from "../../../../../../../shared/infrastructure/database/prisma";
-import { seedAuthenticatedUser } from "../../../../utils/user/seedAuthenticatedUser";
-import type { GetUserRequest } from "../../../../../src/dtos/userRequestSchema";
-import { seedUser } from "../../../../utils/user/seedUser";
-import { faker } from "@faker-js/faker";
 import type { IUserDTO } from "../../../../../src/dtos/userDTO";
+import type { GetUserRequest } from "../../../../../src/dtos/userRequestSchema";
+import { seedAuthenticatedUser } from "../../../../utils/user/seedAuthenticatedUser";
+import { seedUser } from "../../../../utils/user/seedUser";
 
 describe("GET /api/v1/user/search", () => {
   let requestAPI: TestAgent;
@@ -244,16 +244,16 @@ describe("GET /api/v1/user/search", () => {
     expect(responseBody.message).toBe("Your session has expired. Please log in again.");
   });
 
-    it("should return status 401 when the provided Authorization is malformed", async () => {
-      const response = await requestAPI
-        .get("/api/v1/user/search")
-        .set("Authorization", `Bearer ${faker.internet.jwt()}`)
-        .query({
-          id: faker.string.uuid()
-        });
-      const responseBody = response.body;
+  it("should return status 401 when the provided Authorization is malformed", async () => {
+    const response = await requestAPI
+      .get("/api/v1/user/search")
+      .set("Authorization", `Bearer ${faker.internet.jwt()}`)
+      .query({
+        id: faker.string.uuid()
+      });
+    const responseBody = response.body;
 
-      expect(response.status).toBe(401);
-      expect(responseBody.message).toBe("The provided token is invalid or malformed.");
-    });
+    expect(response.status).toBe(401);
+    expect(responseBody.message).toBe("The provided token is invalid or malformed.");
+  });
 });

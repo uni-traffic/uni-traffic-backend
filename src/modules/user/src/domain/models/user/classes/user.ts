@@ -15,6 +15,7 @@ export interface IUser {
   email: UserEmail;
   username: UserName;
   userDeletionStatus: UserDeletionStatus;
+  updateRole(newRole: UserRole): void;
 }
 
 export class User implements IUser {
@@ -23,7 +24,7 @@ export class User implements IUser {
   private readonly _lastName: string;
   private readonly _password: string;
   private readonly _isSuperAdmin: boolean;
-  private readonly _role: UserRole;
+  private _role: UserRole;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date;
   private readonly _email: UserEmail;
@@ -42,7 +43,19 @@ export class User implements IUser {
     userDeletionStatus,
     createdAt,
     updatedAt
-  }: IUser) {
+  }: {
+    id: string;
+    username: UserName;
+    firstName: string;
+    lastName: string;
+    email: UserEmail;
+    password: string;
+    isSuperAdmin: boolean;
+    role: UserRole;
+    userDeletionStatus: UserDeletionStatus;
+    createdAt: Date;
+    updatedAt: Date;
+  }) {
     this._id = id;
     this._username = username;
     this._firstName = firstName;
@@ -100,7 +113,23 @@ export class User implements IUser {
     return this._updatedAt;
   }
 
-  public static create(props: IUser): IUser {
+  public updateRole(newRole: UserRole): void {
+    this._role = newRole;
+  }
+
+  public static create(props: {
+    id: string;
+    username: UserName;
+    firstName: string;
+    lastName: string;
+    email: UserEmail;
+    password: string;
+    isSuperAdmin: boolean;
+    role: UserRole;
+    userDeletionStatus: UserDeletionStatus;
+    createdAt: Date;
+    updatedAt: Date;
+  }): IUser {
     return new User(props);
   }
 }
