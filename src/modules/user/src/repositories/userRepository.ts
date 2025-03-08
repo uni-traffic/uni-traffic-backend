@@ -1,5 +1,5 @@
-import type { IUser } from "../domain/models/user/classes/user";
 import { db } from "../../../../shared/infrastructure/database/prisma";
+import type { IUser } from "../domain/models/user/classes/user";
 import { type IUserMapper, UserMapper } from "../domain/models/user/mapper";
 import type { GetUserRequest } from "../dtos/userRequestSchema";
 
@@ -12,6 +12,7 @@ export interface IUserRepository {
   isEmailAlreadyTaken(email: string): Promise<boolean>;
   createUser(user: IUser): Promise<IUser | null>;
   createUsers(users: IUser[]): Promise<IUser[]>;
+  updateUser(user: IUser): Promise<IUser | null>;
 }
 
 export class UserRepository implements IUserRepository {
@@ -103,6 +104,22 @@ export class UserRepository implements IUserRepository {
       return userPersistence.map((role) => this._userMapper.toDomain(role));
     } catch {
       return [];
+    }
+  }
+
+  public async updateUser(user: IUser): Promise<IUser | null> {
+    try {
+      const userPersistence = this._userMapper.toPersistence(user);
+      const savedUser = await this._database.user.update({
+        where: {
+          id: userPersistence.id
+        },
+        data: userPersistence
+      });
+
+      return this._userMapper.toDomain(savedUser);
+    } catch {
+      return null;
     }
   }
 

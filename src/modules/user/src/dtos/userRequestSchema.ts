@@ -1,5 +1,6 @@
-import z from "zod";
 import { Role } from "@prisma/client";
+import z, { string } from "zod";
+import { UserRole } from "../domain/models/user/classes/userRole";
 
 export const LoginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -40,3 +41,11 @@ export const GetUserRequestSchema = z
     }
   );
 export type GetUserRequest = z.infer<typeof GetUserRequestSchema>;
+
+export const UpdateUserRoleSchema = z.object({
+  userId: string({ message: '"id" of the user must be provided.' }),
+  role: z.string().refine((value) => UserRole.validRoles.includes(value), {
+    message: `"role" must be one of: ${UserRole.validRoles.join(", ")}`
+  })
+});
+export type UpdateRoleRequest = z.infer<typeof UpdateUserRoleSchema>;
