@@ -16,6 +16,12 @@ export class LoginUserController extends BaseController {
     const requestBody: LoginRequest = req.body;
     const accessToken = await this._userLoginUseCase.execute(requestBody);
 
+    res.cookie("accessToken", accessToken.accessToken, {
+      httpOnly: true,
+      maxAge: 12 * 60 * 60 * 1000,
+      signed: true
+    });
+
     this.ok<IUserLoginResponse>(res, accessToken);
   }
 }

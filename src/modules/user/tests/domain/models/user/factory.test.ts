@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { User } from "../../../../src/domain/models/user/classes/user";
+import { UserName } from "../../../../src/domain/models/user/classes/userName";
 import { type IUserFactoryProps, UserFactory } from "../../../../src/domain/models/user/factory";
 
 describe("UserFactory", () => {
@@ -51,11 +52,13 @@ describe("UserFactory", () => {
   });
 
   it("should fail to create a User when username exceeds the character limit", () => {
-    mockUserData.username = "a".repeat(16);
+    mockUserData.username = "a".repeat(UserName.MAXIMUM_USERNAME_LENGTH + 1);
 
     const result = UserFactory.create(mockUserData);
 
     expect(result.isFailure).toBe(true);
-    expect(result.getErrorMessage()).toBe("Username is limited to 15 characters long");
+    expect(result.getErrorMessage()).toBe(
+      `Username is limited to ${UserName.MAXIMUM_USERNAME_LENGTH} characters long`
+    );
   });
 });

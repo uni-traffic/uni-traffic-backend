@@ -12,3 +12,14 @@ export interface IUserLoginResponse {
   appKey: string;
   accessToken: string;
 }
+
+export interface GetUserByPropertyUseCasePayload {
+  id?: string;
+  lastName?: string;
+  firstName?: string;
+  username?: string;
+  email?: string;
+  role?: string;
+  count: number;
+  page: number;
+}

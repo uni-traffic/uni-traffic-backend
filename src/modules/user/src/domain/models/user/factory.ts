@@ -14,7 +14,7 @@ export interface IUserFactoryProps {
   lastName: string;
   email: string;
   password: string;
-  role: string;
+  role?: string;
   isSuperAdmin?: boolean;
   isDeleted?: boolean;
   deletedAt?: Date | null;
@@ -34,7 +34,7 @@ export class UserFactory {
       return Result.fail(userNameOrError.getErrorMessage()!);
     }
 
-    const userRoleOrError = UserRole.create(userFactoryProps.role);
+    const userRoleOrError = UserRole.create(defaultTo("GUEST", userFactoryProps.role));
     if (userRoleOrError.isFailure) {
       return Result.fail(userRoleOrError.getErrorMessage()!);
     }
