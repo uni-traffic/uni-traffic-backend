@@ -32,6 +32,32 @@ describe("POST /api/v1/user/update/role", () => {
 
     const payload = {
       userId: seededUser.id,
+      role: "SECURITY"
+    };
+    const response = await requestAPI
+      .post("/api/v1/user/update/role")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .send(payload);
+    const responseBody = response.body;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.role).toBe("SECURITY");
+
+    const userFromDatabase = await userRepository.getUserById(seededUser.id);
+
+    expect(userFromDatabase).not.toBeNull();
+    expect(userFromDatabase!.role.value).toBe("SECURITY");
+  });
+
+  it("should successfully update the user to ADMIN if user that request has SUPERADMIN role", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "SUPERADMIN",
+      expiration: "1h"
+    });
+    const seededUser = await seedUser({ role: "STUDENT" });
+
+    const payload = {
+      userId: seededUser.id,
       role: "ADMIN"
     };
     const response = await requestAPI
@@ -57,7 +83,7 @@ describe("POST /api/v1/user/update/role", () => {
 
     const payload = {
       userId: faker.string.uuid(),
-      role: "ADMIN"
+      role: "SECURITY"
     };
     const response = await requestAPI
       .post("/api/v1/user/update/role")
@@ -119,6 +145,27 @@ describe("POST /api/v1/user/update/role", () => {
       .send(payload);
 
     expect(response.status).toBe(400);
+  });
+
+  it("should return status 403 and message when user try to update user role to admin but lacks permission", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: faker.helpers.arrayElement(["STUDENT", "STAFF", "SECURITY", "ADMIN"])
+    });
+
+    const payload = {
+      userId: faker.string.uuid(),
+      role: "ADMIN"
+    };
+    const response = await requestAPI
+      .post("/api/v1/user/update/role")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .send(payload);
+    const responseBody = response.body;
+
+    expect(response.status).toBe(403);
+    expect(responseBody.message).toBe(
+      "You do not have the required permissions to perform this action."
+    );
   });
 
   it("should return status 403 and message when Authorization provided lacks permission", async () => {

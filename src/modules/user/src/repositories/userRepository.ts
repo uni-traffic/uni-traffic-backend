@@ -1,13 +1,15 @@
+import type { Role } from "@prisma/client";
 import { db } from "../../../../shared/infrastructure/database/prisma";
 import type { IUser } from "../domain/models/user/classes/user";
 import { type IUserMapper, UserMapper } from "../domain/models/user/mapper";
-import type { GetUserRequest } from "../dtos/userRequestSchema";
+import type { GetUserByPropertyUseCasePayload } from "../dtos/userDTO";
 
 export interface IUserRepository {
   getUserByUsername(username: string): Promise<IUser | null>;
   getUserById(userId: string): Promise<IUser | null>;
   getUsersByIds(userIds: string[]): Promise<IUser[]>;
-  getUserByProperty(params: GetUserRequest): Promise<IUser[]>;
+  getUserByEmail(email: string): Promise<IUser | null>;
+  getUserByProperty(params: GetUserByPropertyUseCasePayload): Promise<IUser[]>;
   isUsernameAlreadyTaken(username: string): Promise<boolean>;
   isEmailAlreadyTaken(email: string): Promise<boolean>;
   createUser(user: IUser): Promise<IUser | null>;
@@ -59,6 +61,21 @@ export class UserRepository implements IUserRepository {
     });
 
     return usersRaw.map((user) => this._userMapper.toDomain(user));
+  }
+
+  public async getUserByEmail(email: string): Promise<IUser | null> {
+    try {
+      const usersRaw = await this._database.user.findUniqueOrThrow({
+        where: {
+          email: email,
+          isDeleted: false
+        }
+      });
+
+      return this._userMapper.toDomain(usersRaw);
+    } catch {
+      return null;
+    }
   }
 
   public async isUsernameAlreadyTaken(username: string): Promise<boolean> {
@@ -123,21 +140,20 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  public async getUserByProperty(params: GetUserRequest): Promise<IUser[]> {
-    const { id, firstName, lastName, username, email, role } = params;
-    if (!id && !firstName && !lastName && !username && !email && !role) {
-      return [];
-    }
+  public async getUserByProperty(params: GetUserByPropertyUseCasePayload): Promise<IUser[]> {
+    const { id, firstName, lastName, username, email, role, count, page } = params;
 
     try {
       const userPropertyDetails = await this._database.user.findMany({
+        skip: count * (page - 1),
+        take: count * page,
         where: {
           ...{ id: id || undefined },
           ...{ firstName: firstName || undefined },
           ...{ lastName: lastName || undefined },
           ...{ username: username || undefined },
           ...{ email: email || undefined },
-          ...{ role: role || undefined }
+          ...{ role: (role as Role) || undefined }
         }
       });
       return userPropertyDetails.map((userDetails) => this._userMapper.toDomain(userDetails));

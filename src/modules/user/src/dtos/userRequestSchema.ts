@@ -18,28 +18,43 @@ export const RegisterSchema = z.object({
 });
 export type RegisterRequest = z.infer<typeof RegisterSchema>;
 
-export const GetUserRequestSchema = z
-  .object({
-    id: z.string().optional(),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
-    username: z.string().optional(),
-    email: z.string().optional(),
-    role: z.enum([Role.ADMIN, Role.SECURITY, Role.STAFF, Role.STUDENT]).optional()
-  })
-  .refine(
-    (data) =>
-      data.id ||
-      data.firstName ||
-      data.lastName ||
-      data.username ||
-      data.email ||
-      data.role,
+export const GoogleSignInSchema = z.object({
+  token: z.string().min(1, "Access Token"),
+  clientType: z.enum(["WEB", "MOBILE"], { message: "Client Type must be provided." })
+});
+export type GoogleSignInRequest = z.infer<typeof GoogleSignInSchema>;
+
+export const GetUserRequestSchema = z.object({
+  count: z.string().refine(
+    (val) => {
+      const num = Number(val);
+      return !Number.isNaN(num) && Number.isInteger(num) && num > 0;
+    },
     {
-      message:
-        "At least one of 'firstName', 'lastName', 'username', 'email', or 'role' must be provided."
+      message: '"count" must be a valid positive whole number'
     }
-  );
+  ),
+  page: z.string().refine(
+    (val) => {
+      const num = Number(val);
+      return !Number.isNaN(num) && Number.isInteger(num) && num > 0;
+    },
+    {
+      message: '"page" must be a valid positive whole number'
+    }
+  ),
+  id: z.string().optional(),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  username: z.string().optional(),
+  email: z.string().optional(),
+  role: z
+    .string()
+    .refine((value) => UserRole.validRoles.includes(value), {
+      message: `"role" must be one of: ${UserRole.validRoles.join(", ")}`
+    })
+    .optional()
+});
 export type GetUserRequest = z.infer<typeof GetUserRequestSchema>;
 
 export const UpdateUserRoleSchema = z.object({

@@ -1,5 +1,9 @@
 import { AppError } from "../core/errors";
 
+/**
+ * [UTE003] PLATE_RECOGNIZER_KEY is not defined in environment variables
+ */
+
 export interface IAppKeys {
   plateRecognizerKey: string;
 }

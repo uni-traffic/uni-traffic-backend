@@ -29,7 +29,9 @@ describe("GET /api/v1/user/search", () => {
     });
 
     const payload: GetUserRequest = {
-      id: seededUser.id
+      id: seededUser.id,
+      count: "1",
+      page: "1"
     };
 
     const response = await requestAPI
@@ -58,7 +60,9 @@ describe("GET /api/v1/user/search", () => {
     });
 
     const payload: GetUserRequest = {
-      firstName: seededUser.firstName
+      firstName: seededUser.firstName,
+      count: "2",
+      page: "1"
     };
 
     const response = await requestAPI
@@ -88,7 +92,9 @@ describe("GET /api/v1/user/search", () => {
     });
 
     const payload: GetUserRequest = {
-      lastName: seededUser.lastName
+      lastName: seededUser.lastName,
+      count: "2",
+      page: "1"
     };
 
     const response = await requestAPI
@@ -117,7 +123,9 @@ describe("GET /api/v1/user/search", () => {
     });
 
     const payload: GetUserRequest = {
-      email: seededUser.email
+      email: seededUser.email,
+      count: "1",
+      page: "1"
     };
 
     const response = await requestAPI
@@ -146,7 +154,9 @@ describe("GET /api/v1/user/search", () => {
     });
 
     const payload: GetUserRequest = {
-      role: "STUDENT"
+      role: "STUDENT",
+      count: "3",
+      page: "1"
     };
 
     const response = await requestAPI
@@ -178,7 +188,9 @@ describe("GET /api/v1/user/search", () => {
     const payload: GetUserRequest = {
       id: seededUser1.id,
       email: seededUser1.email,
-      role: "STUDENT"
+      role: "STUDENT",
+      count: "1",
+      page: "1"
     };
 
     const response = await requestAPI
@@ -215,7 +227,9 @@ describe("GET /api/v1/user/search", () => {
       .get("/api/v1/user/search")
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query({
-        id: faker.string.uuid()
+        id: faker.string.uuid(),
+        count: "1",
+        page: "1"
       });
     const responseBody = response.body;
 
@@ -236,7 +250,9 @@ describe("GET /api/v1/user/search", () => {
       .get("/api/v1/user/search")
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query({
-        id: faker.string.uuid()
+        id: faker.string.uuid(),
+        count: "1",
+        page: "1"
       });
     const responseBody = response.body;
 
@@ -249,7 +265,9 @@ describe("GET /api/v1/user/search", () => {
       .get("/api/v1/user/search")
       .set("Authorization", `Bearer ${faker.internet.jwt()}`)
       .query({
-        id: faker.string.uuid()
+        id: faker.string.uuid(),
+        count: "1",
+        page: "1"
       });
     const responseBody = response.body;
 

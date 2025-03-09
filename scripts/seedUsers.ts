@@ -24,6 +24,26 @@ export const seedUserAccounts = async () => {
       username: "student",
       password: "student123",
       role: "STUDENT"
+    },
+    {
+      username: "guest",
+      password: "guest123",
+      role: "GUEST"
+    },
+    {
+      username: "unverified",
+      password: "unverified123",
+      role: "UNVERIFIED"
+    },
+    {
+      username: "superadmin",
+      password: "superadmin123",
+      role: "SUPERADMIN"
+    },
+    {
+      username: "cashier",
+      password: "cashier123",
+      role: "CASHIER"
     }
   ];
 

@@ -5,6 +5,7 @@ export interface IUserRoleService {
   hasRole(userId: string, role: Role): Promise<boolean>;
   hasAdminRole(userId: string): Promise<boolean>;
   hasSecurityRole(userId: string): Promise<boolean>;
+  hasGivenRoles(userId: string, roles: Role[]): Promise<boolean>;
 }
 
 export class UserRoleService implements IUserRoleService {
@@ -21,6 +22,15 @@ export class UserRoleService implements IUserRoleService {
     }
 
     return user.role.value === role;
+  }
+
+  public async hasGivenRoles(userId: string, roles: Role[]): Promise<boolean> {
+    const user = await this._userRepository.getUserById(userId);
+    if (user === null) {
+      return false;
+    }
+
+    return roles.includes(user.role.value as Role);
   }
 
   public async hasAdminRole(userId: string): Promise<boolean> {

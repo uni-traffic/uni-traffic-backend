@@ -1,12 +1,12 @@
 import { db } from "../../../../../shared/infrastructure/database/prisma";
-import { UserRepository, type IUserRepository } from "../../../src/repositories/userRepository";
+import { type IUserRepository, UserRepository } from "../../../src/repositories/userRepository";
 import { seedUser } from "../../utils/user/seedUser";
 
 describe("UserRepository.getUserByProperty", () => {
-  let _userRepository: IUserRepository;
+  let userRepository: IUserRepository;
 
   beforeAll(async () => {
-    _userRepository = new UserRepository();
+    userRepository = new UserRepository();
   });
 
   beforeEach(async () => {
@@ -17,8 +17,10 @@ describe("UserRepository.getUserByProperty", () => {
     const seededUser = await seedUser({});
     const seededUser1 = await seedUser({});
 
-    const result = await _userRepository.getUserByProperty({
-      id: seededUser.id
+    const result = await userRepository.getUserByProperty({
+      id: seededUser.id,
+      count: 1,
+      page: 1
     });
 
     expect(result.length).toBe(1);
@@ -26,13 +28,29 @@ describe("UserRepository.getUserByProperty", () => {
     expect(result[0].id).not.toBe(seededUser1.id);
   });
 
+  it("should return number of users with count given", async () => {
+    await seedUser({});
+    await seedUser({});
+    await seedUser({});
+    await seedUser({});
+
+    const result = await userRepository.getUserByProperty({
+      count: 3,
+      page: 1
+    });
+
+    expect(result.length).toBe(3);
+  });
+
   it("should return User when the parameter is first name", async () => {
     const seededUser = await seedUser({ firstName: "Robs" });
     const seededUser1 = await seedUser({ firstName: "Robs" });
     const seededUser2 = await seedUser({ firstName: "Angelo" });
 
-    const result = await _userRepository.getUserByProperty({
-      firstName: seededUser.firstName
+    const result = await userRepository.getUserByProperty({
+      firstName: seededUser.firstName,
+      count: 5,
+      page: 1
     });
 
     const mappedUser = result.map((users) => users.id);
@@ -51,8 +69,10 @@ describe("UserRepository.getUserByProperty", () => {
     const seededUser3 = await seedUser({ lastName: "Yumul" });
     const seededUser4 = await seedUser({ lastName: "Ramos" });
 
-    const result = await _userRepository.getUserByProperty({
-      lastName: seededUser.lastName
+    const result = await userRepository.getUserByProperty({
+      lastName: seededUser.lastName,
+      count: 5,
+      page: 1
     });
 
     const mappedUser = result.map((users) => users.id);
@@ -70,8 +90,10 @@ describe("UserRepository.getUserByProperty", () => {
     const seededUser = await seedUser({});
     const seededUser1 = await seedUser({});
 
-    const result = await _userRepository.getUserByProperty({
-      email: seededUser.email
+    const result = await userRepository.getUserByProperty({
+      email: seededUser.email,
+      count: 1,
+      page: 1
     });
 
     expect(result).not.toBe([]);
@@ -88,8 +110,10 @@ describe("UserRepository.getUserByProperty", () => {
     const seededUser5 = await seedUser({ role: "STUDENT" });
     const seededUser6 = await seedUser({ role: "SECURITY" });
 
-    const result = await _userRepository.getUserByProperty({
-      role: "ADMIN"
+    const result = await userRepository.getUserByProperty({
+      role: "ADMIN",
+      count: 3,
+      page: 1
     });
 
     const mappedUser = result.map((users) => users.id);
@@ -108,10 +132,12 @@ describe("UserRepository.getUserByProperty", () => {
     const seededUser = await seedUser({ role: "ADMIN" });
     const seededUser1 = await seedUser({ role: "STAFF" });
 
-    const result = await _userRepository.getUserByProperty({
+    const result = await userRepository.getUserByProperty({
       id: seededUser.id,
       firstName: seededUser.firstName,
-      role: "ADMIN"
+      role: "ADMIN",
+      count: 5,
+      page: 1
     });
 
     expect(result.length).toBe(1);
@@ -119,9 +145,14 @@ describe("UserRepository.getUserByProperty", () => {
     expect(result[0].id).not.toBe(seededUser1.id);
   });
 
-  it("should return empty array when no property is provided", async () => {
-    const user = await _userRepository.getUserByProperty({});
-
-    expect(user).toEqual([]);
-  });
+  /**
+   * it("should return empty array when no property is provided", async () => {
+   *     const user = await _userRepository.getUserByProperty({
+   *       count: 1,
+   *       page: 1
+   *     });
+   *
+   *     expect(user).toEqual([]);
+   *   });
+   */
 });
