@@ -1,6 +1,8 @@
 import { type Request, type Response, Router } from "express";
 import { validateRequest } from "zod-express-middleware";
-import { LoginSchema, RegisterSchema } from "../../../dtos/userRequestSchema";
+import { GoogleSignInSchema, LoginSchema, RegisterSchema } from "../../../dtos/userRequestSchema";
+import { GoogleSignInController } from "../controllers/googleSignInController";
+import { LogOutUserController } from "../controllers/logOutUserController";
 import { LoginUserController } from "../controllers/loginUserController";
 import { RegisterUserController } from "../controllers/registerUserController";
 
@@ -20,5 +22,17 @@ authRouter.post(
     new RegisterUserController().execute(req, res);
   }
 );
+
+authRouter.post(
+  "/google",
+  validateRequest({ body: GoogleSignInSchema }),
+  (req: Request, res: Response) => {
+    new GoogleSignInController().execute(req, res);
+  }
+);
+
+authRouter.post("/logout", (req: Request, res: Response) => {
+  new LogOutUserController().execute(req, res);
+});
 
 export { authRouter };

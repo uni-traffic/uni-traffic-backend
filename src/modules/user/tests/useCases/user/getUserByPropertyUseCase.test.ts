@@ -1,13 +1,12 @@
-import { NotFoundError } from "../../../../../shared/core/errors";
 import { db } from "../../../../../shared/infrastructure/database/prisma";
 import { GetUserByPropertyUseCase } from "../../../src/useCases/user/getUserByPropertyUseCase";
 import { seedUser } from "../../utils/user/seedUser";
 
 describe("GetUserByPropertyUseCase", () => {
-  let _getUserByPropertyDetails: GetUserByPropertyUseCase;
+  let getUserByPropertyDetails: GetUserByPropertyUseCase;
 
   beforeAll(async () => {
-    _getUserByPropertyDetails = new GetUserByPropertyUseCase();
+    getUserByPropertyDetails = new GetUserByPropertyUseCase();
   });
 
   beforeEach(async () => {
@@ -17,8 +16,10 @@ describe("GetUserByPropertyUseCase", () => {
   it("should return User that match the given id", async () => {
     const seededUser = await seedUser({});
 
-    const result = await _getUserByPropertyDetails.execute({
-      id: seededUser.id
+    const result = await getUserByPropertyDetails.execute({
+      id: seededUser.id,
+      count: "1",
+      page: "1"
     });
 
     expect(result[0].id).toBe(seededUser.id);
@@ -28,13 +29,30 @@ describe("GetUserByPropertyUseCase", () => {
     expect(result[0].username).toBe(seededUser.username);
   });
 
+  it("should return 5 users", async () => {
+    await seedUser({});
+    await seedUser({});
+    await seedUser({});
+    await seedUser({});
+    await seedUser({});
+
+    const result = await getUserByPropertyDetails.execute({
+      count: "5",
+      page: "1"
+    });
+
+    expect(result.length).toBe(5);
+  });
+
   it("should return User when the parameter is first name", async () => {
     const seededUser = await seedUser({ firstName: "Robs" });
     const seededUser1 = await seedUser({ firstName: "Robs" });
     const seededUser2 = await seedUser({ firstName: "Angelo" });
 
-    const result = await _getUserByPropertyDetails.execute({
-      firstName: seededUser.firstName
+    const result = await getUserByPropertyDetails.execute({
+      firstName: seededUser.firstName,
+      count: "50",
+      page: "1"
     });
 
     const mappedUser = result.map((users) => users.id);
@@ -53,8 +71,10 @@ describe("GetUserByPropertyUseCase", () => {
     const seededUser3 = await seedUser({ lastName: "Yumul" });
     const seededUser4 = await seedUser({ lastName: "Ramos" });
 
-    const result = await _getUserByPropertyDetails.execute({
-      lastName: seededUser.lastName
+    const result = await getUserByPropertyDetails.execute({
+      lastName: seededUser.lastName,
+      count: "50",
+      page: "1"
     });
 
     const mappedUser = result.map((users) => users.id);
@@ -72,8 +92,10 @@ describe("GetUserByPropertyUseCase", () => {
     const seededUser = await seedUser({});
     const seededUser1 = await seedUser({});
 
-    const result = await _getUserByPropertyDetails.execute({
-      email: seededUser.email
+    const result = await getUserByPropertyDetails.execute({
+      email: seededUser.email,
+      count: "50",
+      page: "1"
     });
 
     expect(result).not.toBe([]);
@@ -90,8 +112,10 @@ describe("GetUserByPropertyUseCase", () => {
     const seededUser5 = await seedUser({ role: "STUDENT" });
     const seededUser6 = await seedUser({ role: "SECURITY" });
 
-    const result = await _getUserByPropertyDetails.execute({
-      role: "ADMIN"
+    const result = await getUserByPropertyDetails.execute({
+      role: "ADMIN",
+      count: "50",
+      page: "1"
     });
 
     const mappedUser = result.map((users) => users.id);
@@ -110,10 +134,12 @@ describe("GetUserByPropertyUseCase", () => {
     const seededUser = await seedUser({ role: "ADMIN" });
     const seededUser1 = await seedUser({ role: "STAFF" });
 
-    const result = await _getUserByPropertyDetails.execute({
+    const result = await getUserByPropertyDetails.execute({
       id: seededUser.id,
       firstName: seededUser.firstName,
-      role: "ADMIN"
+      role: "ADMIN",
+      count: "50",
+      page: "1"
     });
 
     expect(result.length).toBe(1);
@@ -121,11 +147,14 @@ describe("GetUserByPropertyUseCase", () => {
     expect(result[0].id).not.toBe(seededUser1.id);
   });
 
-  it("should return empty array when no property is provided", async () => {
-    await seedUser({});
-
-    await expect(_getUserByPropertyDetails.execute({})).rejects.toThrow(
-      new NotFoundError("User Not Found")
-    );
-  });
+  /**
+   * TODO: Add this test
+   * it("should return empty array when no property is provided", async () => {
+   *     await seedUser({});
+   *
+   *     await expect(_getUserByPropertyDetails.execute({})).rejects.toThrow(
+   *       new NotFoundError("User Not Found")
+   *     );
+   *   });
+   */
 });

@@ -10,7 +10,7 @@ describe("UserName", () => {
   });
 
   it("should fail if username exceeds maximum characters", () => {
-    const longName = "a".repeat(16);
+    const longName = "a".repeat(UserName.MAXIMUM_USERNAME_LENGTH + 1);
     const result = UserName.create(longName);
 
     expect(result.isFailure).toBe(true);

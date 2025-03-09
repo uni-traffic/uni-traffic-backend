@@ -36,6 +36,14 @@ export class UpdateUserRoleController extends BaseController {
     const accessToken = this._getAccessToken(req);
     const { id } = this._jsonWebToken.verify<{ id: string }>(accessToken);
 
+    const hasSuperAdminRole = await this._userRoleService.hasGivenRoles(id, ["SUPERADMIN"]);
+    if (hasSuperAdminRole) {
+      return true;
+    }
+    if (!hasSuperAdminRole && (req.body as UpdateRoleRequest).role.toUpperCase() === "ADMIN") {
+      throw new ForbiddenError("You do not have the required permissions to perform this action.");
+    }
+
     const hasAdminRole = await this._userRoleService.hasAdminRole(id);
     if (!hasAdminRole) {
       throw new ForbiddenError("You do not have the required permissions to perform this action.");

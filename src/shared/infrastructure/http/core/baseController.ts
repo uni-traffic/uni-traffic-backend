@@ -43,6 +43,13 @@ export abstract class BaseController {
     }
 
     if (error instanceof UnauthorizedError) {
+      res.clearCookie("accessToken", {
+        httpOnly: true,
+        signed: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "none"
+      });
+
       return this.jsonResponse(res, 401, error.message);
     }
 
@@ -66,11 +73,17 @@ export abstract class BaseController {
   }
 
   protected _getAccessToken(req: Request) {
-    const accessToken = req.headers["authorization"];
-    if (!accessToken || !accessToken.includes("Bearer")) {
+    const accessTokenFromCookie = req.signedCookies.accessToken;
+    const accessTokenFromHeaders = req.headers["authorization"];
+    if (
+      !accessTokenFromCookie &&
+      (!accessTokenFromHeaders || !accessTokenFromHeaders.startsWith("Bearer "))
+    ) {
       throw new UnauthorizedError('Access token is required "Bearer {token}"');
     }
 
-    return accessToken.replace("Bearer ", "");
+    return accessTokenFromCookie
+      ? accessTokenFromCookie
+      : accessTokenFromHeaders!.replace("Bearer ", "");
   }
 }
