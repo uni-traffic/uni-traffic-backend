@@ -3,6 +3,7 @@ import type { IUserRawObject } from "../../../../../user/src/domain/models/user/
 import { Vehicle } from "../../../../src/domain/models/vehicle/classes/vehicle";
 import { type IVehicleMapper, VehicleMapper } from "../../../../src/domain/models/vehicle/mapper";
 import { createVehicleDomainObject } from "../../../utils/vehicle/createVehicleDomainObject";
+import { createVehiclePersistenceData } from "../../../utils/vehicle/createVehiclePersistenceData";
 
 describe("VehicleMapper", () => {
   let vehicleMapper: IVehicleMapper;
@@ -27,22 +28,7 @@ describe("VehicleMapper", () => {
   });
 
   it("should map to domain from persistence data", () => {
-    const mockVehiclePersistenceData = {
-      id: faker.string.uuid(),
-      ownerId: mockUserData.id,
-      licensePlate: faker.vehicle.vrm().toUpperCase(),
-      make: faker.vehicle.manufacturer(),
-      model: faker.date.past().getFullYear().toString(),
-      series: faker.vehicle.model(),
-      color: faker.vehicle.color(),
-      type: faker.helpers.arrayElement(["CAR", "MOTORCYCLE"]),
-      images: Array.from({ length: 3 }).map(() => faker.image.url()),
-      stickerNumber: "12345678",
-      isActive: faker.datatype.boolean(),
-      createdAt: faker.date.past(),
-      updatedAt: faker.date.past(),
-      owner: mockUserData
-    };
+    const mockVehiclePersistenceData = createVehiclePersistenceData({});
     const vehicleDomainObject = vehicleMapper.toDomain(mockVehiclePersistenceData);
 
     expect(vehicleDomainObject).toBeInstanceOf(Vehicle);
@@ -56,7 +42,7 @@ describe("VehicleMapper", () => {
     expect(vehicleDomainObject.type.value).toBe(mockVehiclePersistenceData.type);
     expect(vehicleDomainObject.images.value).toBe(mockVehiclePersistenceData.images);
     expect(vehicleDomainObject.stickerNumber.value).toBe(mockVehiclePersistenceData.stickerNumber);
-    expect(vehicleDomainObject.isActive).toBe(mockVehiclePersistenceData.isActive);
+    expect(vehicleDomainObject.status.value).toBe(mockVehiclePersistenceData.status);
     expect(vehicleDomainObject.createdAt).toBe(mockVehiclePersistenceData.createdAt);
     expect(vehicleDomainObject.updatedAt).toBe(mockVehiclePersistenceData.updatedAt);
     expect(vehicleDomainObject.owner!.id).toBe(mockVehiclePersistenceData.owner!.id);
@@ -81,7 +67,7 @@ describe("VehicleMapper", () => {
     expect(vehiclePersistenceObject.type).toBe(vehicleDomainObject.type.value);
     expect(vehiclePersistenceObject.images).toBe(vehicleDomainObject.images.value);
     expect(vehiclePersistenceObject.stickerNumber).toBe(vehicleDomainObject.stickerNumber.value);
-    expect(vehiclePersistenceObject.isActive).toBe(vehicleDomainObject.isActive);
+    expect(vehiclePersistenceObject.status).toBe(vehicleDomainObject.status.value);
     expect(vehiclePersistenceObject.createdAt).toBe(vehicleDomainObject.createdAt);
     expect(vehiclePersistenceObject.updatedAt).toBe(vehicleDomainObject.updatedAt);
   });
@@ -100,7 +86,7 @@ describe("VehicleMapper", () => {
     expect(vehicleDTO.type).toBe(vehicleDomainObject.type.value);
     expect(vehicleDTO.images).toBe(vehicleDomainObject.images.value);
     expect(vehicleDTO.stickerNumber).toBe(vehicleDomainObject.stickerNumber.value);
-    expect(vehicleDTO.isActive).toBe(vehicleDomainObject.isActive);
+    expect(vehicleDTO.status).toBe(vehicleDomainObject.status.value);
     expect(vehicleDTO.owner).toStrictEqual(vehicleDomainObject.owner);
   });
 });

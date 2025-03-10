@@ -1,6 +1,8 @@
 import { faker } from "@faker-js/faker";
+import type { VehicleStatus as VehicleStatusEnum } from "@prisma/client";
 import { v4 as uuid } from "uuid";
 import { createUserPersistenceData } from "../../../../user/tests/utils/user/createUserPersistenceData";
+import { VehicleStatus } from "../../../src/domain/models/vehicle/classes/vehicleStatus";
 import type { IVehicleRawObject } from "../../../src/domain/models/vehicle/constant";
 
 export const createVehiclePersistenceData = ({
@@ -14,11 +16,13 @@ export const createVehiclePersistenceData = ({
   type = faker.helpers.arrayElement(["CAR", "MOTORCYCLE"]),
   images = Array.from({ length: 3 }).map(() => faker.image.url()),
   stickerNumber = faker.number.bigInt({ min: 10_000_000, max: 99_999_999 }).toString(),
-  isActive = faker.datatype.boolean(),
+  status = faker.helpers.arrayElement(VehicleStatus.validVehicleStatus) as VehicleStatusEnum,
   createdAt = faker.date.past(),
   updatedAt = faker.date.past(),
-  owner = createUserPersistenceData({})
+  owner
 }: Partial<IVehicleRawObject>): IVehicleRawObject => {
+  const mockOwner = createUserPersistenceData({ id: ownerId });
+
   return {
     id,
     ownerId,
@@ -30,9 +34,9 @@ export const createVehiclePersistenceData = ({
     type,
     images,
     stickerNumber,
-    isActive,
+    status,
     createdAt,
     updatedAt,
-    owner
+    owner: owner ? owner : mockOwner
   };
 };

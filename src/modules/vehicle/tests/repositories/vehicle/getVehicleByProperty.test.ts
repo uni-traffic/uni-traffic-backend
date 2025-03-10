@@ -10,7 +10,7 @@ import { seedVehicle } from "../../utils/vehicle/seedVehicle";
 const assertVehicle = (received: IVehicle, expected: IVehicleDTO) => {
   expect(received).toBeInstanceOf(Vehicle);
   expect(received.id).toBe(expected.id);
-  expect(received.isActive).toBe(expected.isActive);
+  expect(received.status.value).toBe(expected.status);
   expect(received.licensePlate.value).toBe(expected.licensePlate);
   expect(received.make).toBe(expected.make);
   expect(received.model).toBe(expected.model);
