@@ -1,4 +1,5 @@
 import { faker } from "@faker-js/faker";
+import { VehicleStatus } from "../../../../../../vehicle/src/domain/models/vehicle/classes/vehicleStatus";
 import {
   type IViolationRecord,
   ViolationRecord
@@ -50,7 +51,7 @@ describe("ViolationRecord", () => {
         series: faker.vehicle.type(),
         color: faker.color.human(),
         stickerNumber: "12345678",
-        isActive: faker.datatype.boolean(),
+        status: faker.helpers.arrayElement(VehicleStatus.validVehicleStatus),
         type: faker.helpers.arrayElement(["Car", "Motorcycle"]),
         images: Array.from({ length: faker.number.int({ min: 1, max: 5 }) }, () =>
           faker.image.url()

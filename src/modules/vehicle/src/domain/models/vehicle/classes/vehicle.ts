@@ -1,6 +1,7 @@
 import type { IUserDTO } from "../../../../../../user/src/dtos/userDTO";
 import type { VehicleImages } from "./vehicleImages";
 import type { VehicleLicensePlateNumber } from "./vehicleLicensePlate";
+import type { VehicleStatus } from "./vehicleStatus";
 import type { VehicleStickerNumber } from "./vehicleStickerNumber";
 import type { VehicleType } from "./vehicleType";
 
@@ -12,10 +13,10 @@ export interface IVehicle {
   model: string;
   series: string;
   color: string;
+  status: VehicleStatus;
   type: VehicleType;
   images: VehicleImages;
   stickerNumber: VehicleStickerNumber;
-  isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
   owner: IUserDTO | undefined;
@@ -29,10 +30,10 @@ export class Vehicle implements IVehicle {
   private readonly _model: string;
   private readonly _series: string;
   private readonly _color: string;
+  private readonly _status: VehicleStatus;
   private readonly _type: VehicleType;
   private readonly _images: VehicleImages;
   private readonly _stickerNumber: VehicleStickerNumber;
-  private readonly _isActive: boolean;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date;
   private readonly _owner: IUserDTO | undefined;
@@ -47,8 +48,8 @@ export class Vehicle implements IVehicle {
     color,
     type,
     stickerNumber,
+    status,
     images,
-    isActive,
     createdAt,
     updatedAt,
     owner
@@ -62,8 +63,8 @@ export class Vehicle implements IVehicle {
     this._color = color;
     this._type = type;
     this._images = images;
+    this._status = status;
     this._stickerNumber = stickerNumber;
-    this._isActive = isActive;
     this._createdAt = createdAt;
     this._updatedAt = updatedAt;
     this._owner = owner;
@@ -109,8 +110,8 @@ export class Vehicle implements IVehicle {
     return this._stickerNumber;
   }
 
-  get isActive(): boolean {
-    return this._isActive;
+  get status(): VehicleStatus {
+    return this._status;
   }
 
   get createdAt(): Date {

@@ -1,4 +1,4 @@
-import type { VehicleType } from "@prisma/client";
+import type { VehicleStatus, VehicleType } from "@prisma/client";
 import { defaultTo } from "rambda";
 import type { IVehicleDTO } from "../../../dtos/vehicleDTO";
 import type { IVehicle } from "./classes/vehicle";
@@ -22,9 +22,9 @@ export class VehicleMapper implements IVehicleMapper {
       color: vehicle.color,
       images: vehicle.images.value,
       type: vehicle.type.value as VehicleType,
+      status: vehicle.status.value as VehicleStatus,
       licensePlate: vehicle.licensePlate.value,
       stickerNumber: vehicle.stickerNumber.value,
-      isActive: vehicle.isActive,
       createdAt: vehicle.createdAt,
       updatedAt: vehicle.updatedAt
     };
@@ -43,10 +43,10 @@ export class VehicleMapper implements IVehicleMapper {
       series: vehicle.series,
       color: vehicle.color,
       type: vehicle.type.value,
+      status: vehicle.status.value,
       images: vehicle.images.value,
       licensePlate: vehicle.licensePlate.value,
       stickerNumber: vehicle.stickerNumber.value,
-      isActive: vehicle.isActive,
       owner: defaultTo(null, vehicle.owner)
     };
   }

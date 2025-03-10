@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { v4 as uuid } from "uuid";
 import type { IVehicle } from "../../../src/domain/models/vehicle/classes/vehicle";
+import { VehicleStatus } from "../../../src/domain/models/vehicle/classes/vehicleStatus";
 import {
   type IVehicleFactoryProps,
   VehicleFactory
@@ -17,7 +18,7 @@ export const createVehicleDomainObject = ({
   type = faker.helpers.arrayElement(["CAR", "MOTORCYCLE"]),
   images = Array.from({ length: 3 }).map(() => faker.image.url()),
   stickerNumber = faker.number.bigInt({ min: 10_000_000, max: 99_999_999 }).toString(),
-  isActive = faker.datatype.boolean(),
+  status = faker.helpers.arrayElement(VehicleStatus.validVehicleStatus),
   createdAt = faker.date.past(),
   updatedAt = faker.date.past()
 }: Partial<IVehicleFactoryProps>): IVehicle => {
@@ -31,8 +32,8 @@ export const createVehicleDomainObject = ({
     color,
     type,
     images,
+    status,
     stickerNumber,
-    isActive,
     createdAt,
     updatedAt,
     owner: {

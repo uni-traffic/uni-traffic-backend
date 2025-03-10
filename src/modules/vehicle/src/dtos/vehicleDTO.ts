@@ -10,7 +10,7 @@ export interface IVehicleDTO {
   color: string;
   type: string;
   images: string[];
+  status: string;
   stickerNumber: string;
-  isActive: boolean;
   owner: IUserDTO | null;
 }

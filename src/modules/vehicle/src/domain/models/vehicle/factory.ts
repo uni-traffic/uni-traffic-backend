@@ -9,6 +9,7 @@ import type { IUserDTO } from "../../../../../user/src/dtos/userDTO";
 import { type IVehicle, Vehicle } from "./classes/vehicle";
 import { VehicleImages } from "./classes/vehicleImages";
 import { VehicleLicensePlateNumber } from "./classes/vehicleLicensePlate";
+import { VehicleStatus } from "./classes/vehicleStatus";
 import { VehicleStickerNumber } from "./classes/vehicleStickerNumber";
 import { VehicleType } from "./classes/vehicleType";
 
@@ -23,7 +24,7 @@ export interface IVehicleFactoryProps {
   type: string;
   images: string[];
   stickerNumber: string;
-  isActive: boolean;
+  status?: string;
   createdAt?: Date;
   updatedAt?: Date;
   owner?: User;
@@ -51,6 +52,11 @@ export class VehicleFactory {
       return Result.fail<IVehicle>(stickerNumberOrError.getErrorMessage()!);
     }
 
+    const vehicleStatusOrError = VehicleStatus.create(defaultTo("PENDING", props.status));
+    if (vehicleStatusOrError.isFailure) {
+      return Result.fail<IVehicle>(vehicleStatusOrError.getErrorMessage()!);
+    }
+
     const ownerOrUndefined = props.owner
       ? VehicleFactory._getUserDTOFromPersistence(props.owner)
       : undefined;
@@ -62,6 +68,7 @@ export class VehicleFactory {
         licensePlate: licenseNumberOrError.getValue(),
         type: vehicleTypeOrError.getValue(),
         images: vehicleImagesOrError.getValue(),
+        status: vehicleStatusOrError.getValue(),
         stickerNumber: stickerNumberOrError.getValue(),
         createdAt: defaultTo(new Date(), props.createdAt),
         updatedAt: defaultTo(new Date(), props.updatedAt),
