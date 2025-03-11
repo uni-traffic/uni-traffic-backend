@@ -146,8 +146,8 @@ model ViolationRecordPayment {
   cashierId         String
   violationRecordId String          @unique
   amountPaid        Float
-  remarks           String
-  createdAt         DateTime        @default(now())
+  remarks           String?
+  timePaid         DateTime        @default(now())
   violationRecord   ViolationRecord @relation(fields: [violationRecordId], references: [id])
   cashier           User            @relation(fields: [cashierId], references: [id])
 }
