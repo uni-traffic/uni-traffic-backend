@@ -43,11 +43,10 @@ export abstract class BaseController {
     }
 
     if (error instanceof UnauthorizedError) {
+      const cookieOptions = this._getCookieOptions();
       res.clearCookie("accessToken", {
-        httpOnly: true,
-        signed: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "none"
+        ...cookieOptions,
+        maxAge: undefined
       });
 
       return this.jsonResponse(res, 401, error.message);
