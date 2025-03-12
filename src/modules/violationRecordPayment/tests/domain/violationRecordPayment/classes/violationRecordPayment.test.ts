@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import {
-  IViolationRecordPayment,
+  type IViolationRecordPayment,
   ViolationRecordPayment
 } from "../../../../src/domain/models/violationRecordPayment/classes/violationRecordPayment";
 import { ViolationRecordPaymentRemarks } from "../../../../src/domain/models/violationRecordPayment/classes/violationRecordPaymentRemarks";
