@@ -1,6 +1,9 @@
 import { db } from "../../../../shared/infrastructure/database/prisma";
 import type { IViolationRecord } from "../domain/models/violationRecord/classes/violationRecord";
-import { ViolationRecordMapper } from "../domain/models/violationRecord/mapper";
+import {
+  type IViolationRecordMapper,
+  ViolationRecordMapper
+} from "../domain/models/violationRecord/mapper";
 import type { ViolationRecordGetRequest } from "../dtos/violationRecordRequestSchema";
 
 export interface IViolationRecordRepository {
@@ -10,9 +13,12 @@ export interface IViolationRecordRepository {
 
 export class ViolationRecordRepository implements IViolationRecordRepository {
   private _database;
-  private _violationRecordMapper: ViolationRecordMapper;
+  private _violationRecordMapper: IViolationRecordMapper;
 
-  public constructor(database = db, violationRecordMapper = new ViolationRecordMapper()) {
+  public constructor(
+    database = db,
+    violationRecordMapper: IViolationRecordMapper = new ViolationRecordMapper()
+  ) {
     this._database = database;
     this._violationRecordMapper = violationRecordMapper;
   }
@@ -36,8 +42,8 @@ export class ViolationRecordRepository implements IViolationRecordRepository {
   public async getViolationRecordByProperty(
     params: ViolationRecordGetRequest
   ): Promise<IViolationRecord[]> {
-    const { id, userId, violationId, reportedById, vehicleId , status} = params;
-    if (!id && !userId && !violationId && !reportedById  && !vehicleId && !status) {
+    const { id, userId, violationId, reportedById, vehicleId, status } = params;
+    if (!id && !userId && !violationId && !reportedById && !vehicleId && !status) {
       return [];
     }
 

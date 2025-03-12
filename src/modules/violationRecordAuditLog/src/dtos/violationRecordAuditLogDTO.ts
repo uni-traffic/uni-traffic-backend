@@ -10,3 +10,10 @@ export interface IViolationRecordAuditLogDTO {
   actor: IUserDTO | null;
   violationRecord: IViolationRecordDTO | null;
 }
+
+export interface ICreateViolationRecordAuditLogProps {
+  actorId: string;
+  auditLogType: string;
+  violationRecordId: string;
+  details: string;
+}

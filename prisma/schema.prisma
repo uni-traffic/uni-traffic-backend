@@ -42,7 +42,7 @@ model UserSignInActivity {
   id     String   @id @unique @default(uuid())
   userId String
   time   DateTime @default(now())
-  user   User     @relation(fields: [userId], references: [id])
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserAuditLog {
@@ -52,8 +52,8 @@ model UserAuditLog {
   auditLogType AuditLogType
   details      String
   createdAt    DateTime     @default(now())
-  actor        User         @relation("UserEdits", fields: [actorId], references: [id])
-  user         User         @relation("AuditLogs", fields: [userId], references: [id])
+  actor        User         @relation("UserEdits", fields: [actorId], references: [id], onDelete: Cascade)
+  user         User         @relation("AuditLogs", fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum Role {
@@ -103,8 +103,8 @@ model VehicleAuditLog {
   auditLogType AuditLogType
   details      String
   createdAt    DateTime     @default(now())
-  actor        User         @relation(fields: [actorId], references: [id])
-  vehicle      Vehicle      @relation(fields: [vehicleId], references: [id])
+  actor        User         @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  vehicle      Vehicle      @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
 }
 
 model VehicleScanLog {
@@ -147,9 +147,9 @@ model ViolationRecordPayment {
   violationRecordId String          @unique
   amountPaid        Float
   remarks           String?
-  timePaid         DateTime        @default(now())
-  violationRecord   ViolationRecord @relation(fields: [violationRecordId], references: [id])
-  cashier           User            @relation(fields: [cashierId], references: [id])
+  timePaid          DateTime        @default(now())
+  violationRecord   ViolationRecord @relation(fields: [violationRecordId], references: [id], onDelete: Cascade)
+  cashier           User            @relation(fields: [cashierId], references: [id], onDelete: Cascade)
 }
 
 model ViolationRecordAuditLog {
@@ -159,8 +159,8 @@ model ViolationRecordAuditLog {
   auditLogType      AuditLogType
   details           String
   createdAt         DateTime        @default(now())
-  actor             User            @relation(fields: [actorId], references: [id])
-  violationRecord   ViolationRecord @relation(fields: [violationRecordId], references: [id])
+  actor             User            @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  violationRecord   ViolationRecord @relation(fields: [violationRecordId], references: [id], onDelete: Cascade)
 }
 
 enum ViolationRecordStatus {
