@@ -1,11 +1,11 @@
 import type { Request, Response } from "express";
-import { ForbiddenError } from "../../../../../../shared/core/errors";
-import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
-import { type IJSONWebToken, JSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
-import type { IUserDTO } from "../../../dtos/userDTO";
-import type { UpdateRoleRequest } from "../../../dtos/userRequestSchema";
-import { type IUserRoleService, UserRoleService } from "../../../shared/service/userRoleService";
-import { UpdateUserRoleUseCase } from "../../../useCases/user/updateUserRoleUseCase";
+import { ForbiddenError } from "../../../../../../../shared/core/errors";
+import { BaseController } from "../../../../../../../shared/infrastructure/http/core/baseController";
+import { type IJSONWebToken, JSONWebToken } from "../../../../../../../shared/lib/jsonWebToken";
+import type { IUserDTO } from "../../../../dtos/userDTO";
+import type { UpdateRoleRequest } from "../../../../dtos/userRequestSchema";
+import { type IUserRoleService, UserRoleService } from "../../../../shared/service/userRoleService";
+import { UpdateUserRoleUseCase } from "../../../../useCases/user/updateUserRoleUseCase";
 
 export class UpdateUserRoleController extends BaseController {
   private _jsonWebToken: IJSONWebToken;

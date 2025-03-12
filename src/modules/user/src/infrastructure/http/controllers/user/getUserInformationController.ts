@@ -1,11 +1,11 @@
 import type { Request, Response } from "express";
-import { ForbiddenError } from "../../../../../../shared/core/errors";
-import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
-import { JSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
-import type { IUserDTO } from "../../../dtos/userDTO";
-import type { GetUserRequest } from "../../../dtos/userRequestSchema";
-import { UserRoleService } from "../../../shared/service/userRoleService";
-import { GetUserByPropertyUseCase } from "../../../useCases/user/getUserByPropertyUseCase";
+import { ForbiddenError } from "../../../../../../../shared/core/errors";
+import { BaseController } from "../../../../../../../shared/infrastructure/http/core/baseController";
+import { JSONWebToken } from "../../../../../../../shared/lib/jsonWebToken";
+import type { IUserDTO } from "../../../../dtos/userDTO";
+import type { GetUserRequest } from "../../../../dtos/userRequestSchema";
+import { UserRoleService } from "../../../../shared/service/userRoleService";
+import { GetUserByPropertyUseCase } from "../../../../useCases/user/getUserByPropertyUseCase";
 
 export class GetUserInformationController extends BaseController {
   private _getUserByProperty: GetUserByPropertyUseCase;

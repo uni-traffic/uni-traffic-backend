@@ -1,13 +1,12 @@
 import type { Request, Response } from "express";
-import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
+import { BaseController } from "../../../../../../../shared/infrastructure/http/core/baseController";
 
 export class LogOutUserController extends BaseController {
   protected async executeImpl(req: Request, res: Response): Promise<void> {
+    const cookieOptions = this._getCookieOptions();
     res.clearCookie("accessToken", {
-      httpOnly: true,
-      signed: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "none"
+      ...cookieOptions,
+      maxAge: undefined
     });
 
     this.ok(res, { message: "Logged out!" });

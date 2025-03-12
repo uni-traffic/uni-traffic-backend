@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import type { CookieOptions, Request, Response } from "express";
 import {
   BadRequest,
   ConflictError,
@@ -43,11 +43,10 @@ export abstract class BaseController {
     }
 
     if (error instanceof UnauthorizedError) {
+      const cookieOptions = this._getCookieOptions();
       res.clearCookie("accessToken", {
-        httpOnly: true,
-        signed: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "none"
+        ...cookieOptions,
+        maxAge: undefined
       });
 
       return this.jsonResponse(res, 401, error.message);
@@ -85,5 +84,15 @@ export abstract class BaseController {
     return accessTokenFromCookie
       ? accessTokenFromCookie
       : accessTokenFromHeaders!.replace("Bearer ", "");
+  }
+
+  protected _getCookieOptions(): CookieOptions {
+    return {
+      httpOnly: true,
+      maxAge: 12 * 60 * 60 * 1000,
+      signed: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production"
+    };
   }
 }
