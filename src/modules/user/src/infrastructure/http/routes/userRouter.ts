@@ -1,9 +1,9 @@
 import { type Request, type Response, Router } from "express";
 import { validateRequest } from "zod-express-middleware";
 import { GetUserRequestSchema, UpdateUserRoleSchema } from "../../../dtos/userRequestSchema";
-import { GetUserInformationController } from "../controllers/getUserInformationController";
-import { MyProfileController } from "../controllers/myProfileController";
-import { UpdateUserRoleController } from "../controllers/updateUserRoleController";
+import { GetUserInformationController } from "../controllers/user/getUserInformationController";
+import { MyProfileController } from "../controllers/user/myProfileController";
+import { UpdateUserRoleController } from "../controllers/user/updateUserRoleController";
 
 const userRouter = Router();
 

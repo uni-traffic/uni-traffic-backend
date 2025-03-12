@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import type { CookieOptions, Request, Response } from "express";
 import {
   BadRequest,
   ConflictError,
@@ -85,5 +85,15 @@ export abstract class BaseController {
     return accessTokenFromCookie
       ? accessTokenFromCookie
       : accessTokenFromHeaders!.replace("Bearer ", "");
+  }
+
+  protected _getCookieOptions(): CookieOptions {
+    return {
+      httpOnly: true,
+      maxAge: 12 * 60 * 60 * 1000,
+      signed: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production"
+    };
   }
 }

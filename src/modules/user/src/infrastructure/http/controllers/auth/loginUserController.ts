@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
-import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
-import type { IUserLoginResponse } from "../../../dtos/userDTO";
-import type { LoginRequest } from "../../../dtos/userRequestSchema";
-import { LoginUserUseCase } from "../../../useCases/auth/loginUserUseCase";
+import { BaseController } from "../../../../../../../shared/infrastructure/http/core/baseController";
+import type { IUserLoginResponse } from "../../../../dtos/userDTO";
+import type { LoginRequest } from "../../../../dtos/userRequestSchema";
+import { LoginUserUseCase } from "../../../../useCases/auth/loginUserUseCase";
 
 export class LoginUserController extends BaseController {
   private _userLoginUseCase: LoginUserUseCase;
@@ -16,13 +16,7 @@ export class LoginUserController extends BaseController {
     const requestBody: LoginRequest = req.body;
     const accessToken = await this._userLoginUseCase.execute(requestBody);
 
-    res.cookie("accessToken", accessToken.accessToken, {
-      httpOnly: true,
-      maxAge: 12 * 60 * 60 * 1000,
-      signed: true,
-      sameSite: "none",
-      secure: process.env.NODE_ENV === "production"
-    });
+    res.cookie("accessToken", accessToken.accessToken, this._getCookieOptions());
 
     this.ok<IUserLoginResponse>(res, accessToken);
   }

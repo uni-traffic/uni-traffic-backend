@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
-import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
-import { type IJSONWebToken, JSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
-import type { IUserDTO } from "../../../dtos/userDTO";
-import { GetUserByIdUseCase } from "../../../useCases/user/getUserByIdUseCase";
+import { BaseController } from "../../../../../../../shared/infrastructure/http/core/baseController";
+import { type IJSONWebToken, JSONWebToken } from "../../../../../../../shared/lib/jsonWebToken";
+import type { IUserDTO } from "../../../../dtos/userDTO";
+import { GetUserByIdUseCase } from "../../../../useCases/user/getUserByIdUseCase";
 
 export class MyProfileController extends BaseController {
   private _jsonWebToken: IJSONWebToken;

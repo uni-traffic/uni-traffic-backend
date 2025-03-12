@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
-import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
-import type { IUserLoginResponse } from "../../../dtos/userDTO";
-import { GoogleSignInUseCase } from "../../../useCases/auth/googleSignInUseCase";
+import { BaseController } from "../../../../../../../shared/infrastructure/http/core/baseController";
+import type { IUserLoginResponse } from "../../../../dtos/userDTO";
+import { GoogleSignInUseCase } from "../../../../useCases/auth/googleSignInUseCase";
 
 export class GoogleSignInController extends BaseController {
   private _googleSignInUseCase: GoogleSignInUseCase;
@@ -19,13 +19,7 @@ export class GoogleSignInController extends BaseController {
       clientType: requestBody.clientType
     });
 
-    res.cookie("accessToken", response.accessToken, {
-      httpOnly: true,
-      maxAge: 12 * 60 * 60 * 1000,
-      signed: true,
-      sameSite: "none",
-      secure: process.env.NODE_ENV === "production"
-    });
+    res.cookie("accessToken", response.accessToken, this._getCookieOptions());
 
     this.ok<IUserLoginResponse>(res, response);
   }

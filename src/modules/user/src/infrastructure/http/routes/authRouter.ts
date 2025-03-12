@@ -1,10 +1,10 @@
 import { type Request, type Response, Router } from "express";
 import { validateRequest } from "zod-express-middleware";
 import { GoogleSignInSchema, LoginSchema, RegisterSchema } from "../../../dtos/userRequestSchema";
-import { GoogleSignInController } from "../controllers/googleSignInController";
-import { LogOutUserController } from "../controllers/logOutUserController";
-import { LoginUserController } from "../controllers/loginUserController";
-import { RegisterUserController } from "../controllers/registerUserController";
+import { GoogleSignInController } from "../controllers/auth/googleSignInController";
+import { LogOutUserController } from "../controllers/auth/logOutUserController";
+import { LoginUserController } from "../controllers/auth/loginUserController";
+import { RegisterUserController } from "../controllers/auth/registerUserController";
 
 /**
  * ROUTE: /api/v1/auth

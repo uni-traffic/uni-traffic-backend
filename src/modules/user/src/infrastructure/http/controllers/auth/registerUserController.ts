@@ -1,11 +1,11 @@
 import type { Request, Response } from "express";
-import { ForbiddenError } from "../../../../../../shared/core/errors";
-import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
-import { type IJSONWebToken, JSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
-import type { IUserDTO } from "../../../dtos/userDTO";
-import type { RegisterRequest } from "../../../dtos/userRequestSchema";
-import { type IUserRoleService, UserRoleService } from "../../../shared/service/userRoleService";
-import { RegisterUserUseCase } from "../../../useCases/auth/registerUserUseCase";
+import { ForbiddenError } from "../../../../../../../shared/core/errors";
+import { BaseController } from "../../../../../../../shared/infrastructure/http/core/baseController";
+import { type IJSONWebToken, JSONWebToken } from "../../../../../../../shared/lib/jsonWebToken";
+import type { IUserDTO } from "../../../../dtos/userDTO";
+import type { RegisterRequest } from "../../../../dtos/userRequestSchema";
+import { type IUserRoleService, UserRoleService } from "../../../../shared/service/userRoleService";
+import { RegisterUserUseCase } from "../../../../useCases/auth/registerUserUseCase";
 
 export class RegisterUserController extends BaseController {
   private _jsonWebToken: IJSONWebToken;
