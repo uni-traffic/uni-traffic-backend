@@ -1,14 +1,17 @@
 import { db } from "../../../../shared/infrastructure/database/prisma";
 import type { IViolationRecord } from "../domain/models/violationRecord/classes/violationRecord";
+import { ViolationRecordStatus } from "../domain/models/violationRecord/classes/violationRecordStatus"; 
 import {
   type IViolationRecordMapper,
   ViolationRecordMapper
 } from "../domain/models/violationRecord/mapper";
 import type { ViolationRecordGetRequest } from "../dtos/violationRecordRequestSchema";
+import { ViolationRecordStatus as PrismaViolationRecordStatus } from "@prisma/client"; 
 
 export interface IViolationRecordRepository {
   createViolationRecord(violationRecord: IViolationRecord): Promise<IViolationRecord | null>;
   getViolationRecordByProperty(params: ViolationRecordGetRequest): Promise<IViolationRecord[]>;
+  updateViolationRecordStatus(violationRecordId: string, newStatus: ViolationRecordStatus): Promise<IViolationRecord | null>;
 }
 
 export class ViolationRecordRepository implements IViolationRecordRepository {
@@ -55,7 +58,7 @@ export class ViolationRecordRepository implements IViolationRecordRepository {
           ...{ violationId: violationId || undefined },
           ...{ reportedById: reportedById || undefined },
           ...{ vehicleId: vehicleId || undefined },
-          ...{ status: status || undefined }
+          ...{ status: status as PrismaViolationRecordStatus || undefined }
         },
         include: { reporter: true, user: true, vehicle: true, violation: true }
       });
@@ -65,6 +68,22 @@ export class ViolationRecordRepository implements IViolationRecordRepository {
       );
     } catch {
       return [];
+    }
+  }
+
+  public async updateViolationRecordStatus(
+    violationRecordId: string,
+    newStatus: ViolationRecordStatus
+  ): Promise<IViolationRecord | null> {
+    try {
+      const updatedViolationRecord = await this._database.violationRecord.update({
+        where: { id: violationRecordId },
+        data: { status: newStatus.value as PrismaViolationRecordStatus }
+      });
+
+      return this._violationRecordMapper.toDomain(updatedViolationRecord);
+    } catch {
+      return null;
     }
   }
 }
