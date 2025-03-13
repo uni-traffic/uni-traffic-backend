@@ -33,6 +33,7 @@ export class ViolationRecordAuditLogMapper implements IViolationRecordAuditLogMa
       id: violationRecordAuditLog.id,
       actorId: violationRecordAuditLog.actorId,
       auditLogType: violationRecordAuditLog.auditLogType.value,
+      violationRecordId: violationRecordAuditLog.violationRecordId,
       details: violationRecordAuditLog.details,
       createdAt: violationRecordAuditLog.createdAt,
       actor: defaultTo(null, violationRecordAuditLog.actor),

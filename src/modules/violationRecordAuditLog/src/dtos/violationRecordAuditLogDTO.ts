@@ -5,6 +5,7 @@ export interface IViolationRecordAuditLogDTO {
   id: string;
   actorId: string;
   auditLogType: string;
+  violationRecordId: string;
   details: string;
   createdAt: Date;
   actor: IUserDTO | null;
@@ -16,4 +17,13 @@ export interface ICreateViolationRecordAuditLogProps {
   auditLogType: string;
   violationRecordId: string;
   details: string;
+}
+
+export interface GetViolationRecordAuditLogByPropertyUseCasePayload {
+  id?: string;
+  actorId?: string;
+  auditLogType?: string;
+  violationRecordId?: string;
+  count: number;
+  page: number;
 }
