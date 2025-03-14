@@ -12,7 +12,7 @@ import { ViolationRecordAuditLogService } from "../../../violationRecordAuditLog
 import type { ViolationRecordPaymentRequest } from "../../src/dtos/violationRecordPaymentRequestSchema";
 import { NotFoundError, BadRequest, UnexpectedError } from "../../../../shared/core/errors";
 import type { IViolationRecordPaymentDTO } from "../../src/dtos/violationRecordPaymentDTO";
-import { ViolationRecord } from "../../../violationRecord/src/domain/models/violationRecord/classes/violationRecord";
+import type { IViolationRecord } from "../../../violationRecord/src/domain/models/violationRecord/classes/violationRecord";
 import type { IViolationRecordPayment } from "../domain/models/violationRecordPayment/classes/violationRecordPayment";
 import { ViolationRecordPaymentMapper } from "../domain/models/violationRecordPayment/mapper";
 
@@ -20,15 +20,18 @@ export class AddViolationRecordPaymentUseCase {
   private _violationRecordRepository: IViolationRecordRepository;
   private _violationRecordPaymentRepository: IViolationRecordPaymentRepository;
   private _auditLogService: ViolationRecordAuditLogService;
+  private _violationRecordPaymentMapper: ViolationRecordPaymentMapper;
 
   public constructor(
     violationRecordRepository: IViolationRecordRepository = new ViolationRecordRepository(),
     violationRecordPaymentRepository: IViolationRecordPaymentRepository = new ViolationRecordPaymentRepository(),
-    auditLogService: ViolationRecordAuditLogService = new ViolationRecordAuditLogService()
+    auditLogService: ViolationRecordAuditLogService = new ViolationRecordAuditLogService(),
+    violationRecordPaymentMapper: ViolationRecordPaymentMapper = new ViolationRecordPaymentMapper()
   ) {
     this._violationRecordRepository = violationRecordRepository;
     this._violationRecordPaymentRepository = violationRecordPaymentRepository;
     this._auditLogService = auditLogService;
+    this._violationRecordPaymentMapper = violationRecordPaymentMapper;
   }
 
   public async execute(
@@ -44,15 +47,18 @@ export class AddViolationRecordPaymentUseCase {
     const newPayment = await this.savePayment(payment);
 
     const oldStatus = violationRecord.status.value;
-    await this.updateViolationRecordStatus(violationRecord);
+    const updatedViolationRecord = await this.updateViolationRecordStatus(violationRecord);
+
+    if (!updatedViolationRecord) {
+      throw new BadRequest("Failed to update violation record status.");
+    }
 
     await this.createAuditLog(cashierId, violationRecord.id, oldStatus, "PAID", newPayment.id);
 
-    const mapper = new ViolationRecordPaymentMapper();
-    return mapper.toDTO(newPayment);
+    return this._violationRecordPaymentMapper.toDTO(newPayment);
   }
 
-  private async getViolationRecordOrThrow(violationRecordId: string): Promise<ViolationRecord> {
+  private async getViolationRecordOrThrow(violationRecordId: string): Promise<IViolationRecord> {
     const violationRecords = await this._violationRecordRepository.getViolationRecordByProperty({
       id: violationRecordId
     });
@@ -61,11 +67,10 @@ export class AddViolationRecordPaymentUseCase {
       throw new NotFoundError("Violation record not found.");
     }
 
-    const violationRecordData = violationRecords[0];
-    return ViolationRecord.create(violationRecordData);
+    return violationRecords[0];
   }
 
-  private checkViolationRecordIsPaid(violationRecord: ViolationRecord): void {
+  private checkViolationRecordIsPaid(violationRecord: IViolationRecord): void {
     if (violationRecord.status.value === "PAID") {
       throw new BadRequest("Violation record is already paid.");
     }
@@ -77,14 +82,23 @@ export class AddViolationRecordPaymentUseCase {
     }
   }
 
-  private async updateViolationRecordStatus(violationRecord: ViolationRecord): Promise<void> {
+  private async updateViolationRecordStatus(
+    violationRecord: IViolationRecord
+  ): Promise<IViolationRecord> {
     const updatedStatusResult = ViolationRecordStatus.create("PAID");
     if (updatedStatusResult.isFailure) {
       throw new BadRequest("Failed to update violation record status.");
     }
 
     violationRecord.updateStatus(updatedStatusResult.getValue());
-    await this._violationRecordRepository.updateViolationRecord(violationRecord);
+    const updatedRecord =
+      await this._violationRecordRepository.updateViolationRecord(violationRecord);
+
+    if (!updatedRecord) {
+      throw new BadRequest("Failed to update violation record.");
+    }
+
+    return updatedRecord;
   }
 
   private createPayment(request: ViolationRecordPaymentRequest, cashierId: string) {

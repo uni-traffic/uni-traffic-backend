@@ -22,23 +22,19 @@ export class AddViolationRecordPaymentController extends BaseController {
     this._userRoleService = userRoleService;
   }
 
-  protected async executeImpl(req: Request, res: Response): Promise<void> {
-    try {
-      const cashierId = await this._verifyPermission(req);
-      const requestBody = req.body as ViolationRecordPaymentRequest;
+  protected async executeImpl(req: Request, res: Response) {
+    const cashierId = await this._verifyPermission(req);
+    const requestBody = req.body as ViolationRecordPaymentRequest;
 
-      await this._addViolationRecordPaymentUseCase.execute(
-        {
-          violationRecordId: requestBody.violationRecordId,
-          amountPaid: requestBody.amountPaid
-        },
-        cashierId
-      );
+    const paymentDTO = await this._addViolationRecordPaymentUseCase.execute(
+      {
+        violationRecordId: requestBody.violationRecordId,
+        amountPaid: requestBody.amountPaid
+      },
+      cashierId
+    );
 
-      this.ok(res, "Payment processed successfully.");
-    } catch (error) {
-      this.fail(res, error instanceof Error ? error : new Error("An unexpected error occurred."));
-    }
+    this.ok(res, paymentDTO);
   }
 
   private async _verifyPermission(req: Request): Promise<string> {
