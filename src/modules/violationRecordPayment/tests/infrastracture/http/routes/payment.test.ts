@@ -5,7 +5,7 @@ import { db } from "../../../../../../shared/infrastructure/database/prisma";
 import { seedAuthenticatedUser } from "../../../../../user/tests/utils/user/seedAuthenticatedUser";
 import { seedViolationRecord } from "../../../../../violationRecord/tests/utils/violationRecord/seedViolationRecord";
 
-describe("POST /api/v1/payment", () => {
+describe("POST /api/v1/payment/violation", () => {
   let requestAPI: TestAgent;
 
   beforeAll(() => {
@@ -32,7 +32,7 @@ describe("POST /api/v1/payment", () => {
     };
 
     const response = await requestAPI
-      .post("/api/v1/payment")
+      .post("/api/v1/payment/violation")
       .set("Authorization", `Bearer ${cashier.accessToken}`)
       .send(payload);
 
@@ -43,7 +43,7 @@ describe("POST /api/v1/payment", () => {
   it("should return 400 if request body is invalid", async () => {
     const cashier = await seedAuthenticatedUser({ role: "CASHIER", expiration: "1h" });
     const response = await requestAPI
-      .post("/api/v1/payment")
+      .post("/api/v1/payment/violation")
       .set("Authorization", `Bearer ${cashier.accessToken}`)
       .send({});
 
@@ -60,7 +60,7 @@ describe("POST /api/v1/payment", () => {
     };
 
     const response = await requestAPI
-      .post("/api/v1/payment")
+      .post("/api/v1/payment/violation")
       .set("Authorization", `Bearer ${unauthorizedUser.accessToken}`)
       .send(payload);
 
@@ -80,7 +80,7 @@ describe("POST /api/v1/payment", () => {
     };
 
     const response = await requestAPI
-      .post("/api/v1/payment")
+      .post("/api/v1/payment/violation")
       .set("Authorization", `Bearer ${cashier.accessToken}`)
       .send(payload);
 

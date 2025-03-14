@@ -17,6 +17,7 @@ export interface IViolationRecord {
   reporter: IUserDTO | undefined;
   violation: IViolationDTO | undefined;
   vehicle: IVehicleDTO | undefined;
+  updateStatus(newStatus: ViolationRecordStatus): void;
 }
 
 export class ViolationRecord implements IViolationRecord {
@@ -33,32 +34,32 @@ export class ViolationRecord implements IViolationRecord {
   private readonly _violation: IViolationDTO | undefined;
   private readonly _vehicle: IVehicleDTO | undefined;
 
-  private constructor({
-    id,
-    userId,
-    reportedById,
-    violationId,
-    vehicleId,
-    remarks,
-    createdAt,
-    status,
-    user,
-    reporter,
-    violation,
-    vehicle
-  }: IViolationRecord) {
-    this._id = id;
-    this._userId = userId;
-    this._reportedById = reportedById;
-    this._violationId = violationId;
-    this._vehicleId = vehicleId;
-    this._remarks = remarks;
-    this._createdAt = createdAt;
-    this._status = status;
-    this._user = user;
-    this._reporter = reporter;
-    this._violation = violation;
-    this._vehicle = vehicle;
+  private constructor(props: {
+    id: string;
+    userId: string;
+    reportedById: string;
+    violationId: string;
+    vehicleId: string;
+    createdAt: Date;
+    remarks: ViolationRecordRemarks;
+    status: ViolationRecordStatus;
+    user?: IUserDTO;
+    reporter?: IUserDTO;
+    violation?: IViolationDTO;
+    vehicle?: IVehicleDTO;
+  }) {
+    this._id = props.id;
+    this._userId = props.userId;
+    this._reportedById = props.reportedById;
+    this._violationId = props.violationId;
+    this._vehicleId = props.vehicleId;
+    this._remarks = props.remarks;
+    this._createdAt = props.createdAt;
+    this._status = props.status;
+    this._user = props.user;
+    this._reporter = props.reporter;
+    this._violation = props.violation;
+    this._vehicle = props.vehicle;
   }
 
   get id(): string {
@@ -113,7 +114,20 @@ export class ViolationRecord implements IViolationRecord {
     this._status = newStatus;
   }
 
-  public static create(props: IViolationRecord): ViolationRecord {
+  public static create(props: {
+    id: string;
+    userId: string;
+    reportedById: string;
+    violationId: string;
+    vehicleId: string;
+    createdAt: Date;
+    remarks: ViolationRecordRemarks;
+    status: ViolationRecordStatus;
+    user?: IUserDTO;
+    reporter?: IUserDTO;
+    violation?: IViolationDTO;
+    vehicle?: IVehicleDTO;
+  }): ViolationRecord {
     return new ViolationRecord(props);
   }
 }

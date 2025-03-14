@@ -46,7 +46,8 @@ describe("AddViolationRecordPaymentUseCase", () => {
       seededCashier.id
     );
 
-    expect(result.isSuccess).toBe(true);
+    expect(result).toBeDefined();
+    expect(result.violationRecordId).toBe(mockRequestData.violationRecordId);
 
     const updatedRecord = await db.violationRecord.findUnique({
       where: { id: seededViolationRecord.id }
@@ -109,7 +110,7 @@ describe("AddViolationRecordPaymentUseCase", () => {
       seededCashier.id
     );
 
-    expect(result.isSuccess).toBe(true);
+    expect(result).toBeDefined();
 
     const auditLog = await db.violationRecordAuditLog.findFirst({
       where: { violationRecordId: seededViolationRecord.id },
@@ -118,7 +119,7 @@ describe("AddViolationRecordPaymentUseCase", () => {
 
     expect(auditLog).toBeDefined();
     expect(auditLog?.details).toBe(
-      `Violation record payment status updated. Payment ID: ${result.getValue().id}, Status changed from UNPAID to PAID by cashier ID: ${seededCashier.id}.`
+      `Violation record payment status updated. Payment ID: ${result.id}, Status changed from UNPAID to PAID by cashier ID: ${seededCashier.id}.`
     );
   });
 });

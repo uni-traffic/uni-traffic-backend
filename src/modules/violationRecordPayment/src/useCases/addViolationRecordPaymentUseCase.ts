@@ -9,9 +9,8 @@ import {
 import { ViolationRecordPaymentFactory } from "../../src/domain/models/violationRecordPayment/factory";
 import { ViolationRecordStatus } from "../../../violationRecord/src/domain/models/violationRecord/classes/violationRecordStatus";
 import { ViolationRecordAuditLogService } from "../../../violationRecordAuditLog/src/service/violationRecordAuditLogService";
-import { Result } from "../../../../shared/core/result";
 import type { ViolationRecordPaymentRequest } from "../../src/dtos/violationRecordPaymentRequestSchema";
-import { NotFoundError, BadRequest } from "../../../../shared/core/errors";
+import { NotFoundError, BadRequest, UnexpectedError } from "../../../../shared/core/errors";
 import type { IViolationRecordPaymentDTO } from "../../src/dtos/violationRecordPaymentDTO";
 import { ViolationRecord } from "../../../violationRecord/src/domain/models/violationRecord/classes/violationRecord";
 import type { IViolationRecordPayment } from "../domain/models/violationRecordPayment/classes/violationRecordPayment";
@@ -35,25 +34,22 @@ export class AddViolationRecordPaymentUseCase {
   public async execute(
     request: ViolationRecordPaymentRequest,
     cashierId: string
-  ): Promise<Result<IViolationRecordPaymentDTO>> {
+  ): Promise<IViolationRecordPaymentDTO> {
     const violationRecord = await this.getViolationRecordOrThrow(request.violationRecordId);
 
     this.validateAmountPaid(request.amountPaid, violationRecord.violation!.penalty);
     this.checkViolationRecordIsPaid(violationRecord);
 
-    const oldStatus = violationRecord.status.value;
-
-    this.updateViolationRecordStatus(violationRecord);
-    await this._violationRecordRepository.updateViolationRecord(violationRecord);
-
     const payment = this.createPayment(request, cashierId);
-
     const newPayment = await this.savePayment(payment);
+
+    const oldStatus = violationRecord.status.value;
+    await this.updateViolationRecordStatus(violationRecord);
 
     await this.createAuditLog(cashierId, violationRecord.id, oldStatus, "PAID", newPayment.id);
 
     const mapper = new ViolationRecordPaymentMapper();
-    return Result.ok(mapper.toDTO(newPayment));
+    return mapper.toDTO(newPayment);
   }
 
   private async getViolationRecordOrThrow(violationRecordId: string): Promise<ViolationRecord> {
@@ -66,7 +62,6 @@ export class AddViolationRecordPaymentUseCase {
     }
 
     const violationRecordData = violationRecords[0];
-
     return ViolationRecord.create(violationRecordData);
   }
 
@@ -82,13 +77,14 @@ export class AddViolationRecordPaymentUseCase {
     }
   }
 
-  private updateViolationRecordStatus(violationRecord: ViolationRecord): void {
+  private async updateViolationRecordStatus(violationRecord: ViolationRecord): Promise<void> {
     const updatedStatusResult = ViolationRecordStatus.create("PAID");
     if (updatedStatusResult.isFailure) {
       throw new BadRequest("Failed to update violation record status.");
     }
 
     violationRecord.updateStatus(updatedStatusResult.getValue());
+    await this._violationRecordRepository.updateViolationRecord(violationRecord);
   }
 
   private createPayment(request: ViolationRecordPaymentRequest, cashierId: string) {
@@ -132,7 +128,7 @@ export class AddViolationRecordPaymentUseCase {
     });
 
     if (!auditLogResult) {
-      throw new BadRequest("Failed to create audit log.");
+      throw new UnexpectedError("Failed to create audit log.");
     }
   }
 }

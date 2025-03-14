@@ -6,7 +6,7 @@ import { AddViolationRecordPaymentController } from "../controllers/addViolation
 const paymentRouter = Router();
 
 paymentRouter.post(
-  "/",
+  "/violation",
   validateRequest({ body: ViolationRecordPaymentRequestSchema }),
   (req: Request, res: Response) => {
     new AddViolationRecordPaymentController().execute(req, res);
