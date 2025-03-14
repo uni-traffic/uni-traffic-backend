@@ -1,15 +1,12 @@
 import { faker } from "@faker-js/faker";
 import { VehicleStatus } from "../../../../../../vehicle/src/domain/models/vehicle/classes/vehicleStatus";
-import {
-  type IViolationRecord,
-  ViolationRecord
-} from "../../../../../src/domain/models/violationRecord/classes/violationRecord";
+import { ViolationRecord } from "../../../../../src/domain/models/violationRecord/classes/violationRecord";
 import { ViolationRecordRemarks } from "../../../../../src/domain/models/violationRecord/classes/violationRecordRemarks";
 import { ViolationRecordStatus } from "../../../../../src/domain/models/violationRecord/classes/violationRecordStatus";
 
 describe("ViolationRecord", () => {
   it("should create a ViolationRecord", () => {
-    const mockViolationRecordData: IViolationRecord = {
+    const mockViolationRecordData = {
       id: faker.string.uuid(),
       userId: faker.string.uuid(),
       reportedById: faker.string.uuid(),

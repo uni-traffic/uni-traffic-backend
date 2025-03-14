@@ -5,10 +5,12 @@ import {
   ViolationRecordMapper
 } from "../domain/models/violationRecord/mapper";
 import type { ViolationRecordGetRequest } from "../dtos/violationRecordRequestSchema";
+import type { ViolationRecordStatus as PrismaViolationRecordStatus } from "@prisma/client";
 
 export interface IViolationRecordRepository {
   createViolationRecord(violationRecord: IViolationRecord): Promise<IViolationRecord | null>;
   getViolationRecordByProperty(params: ViolationRecordGetRequest): Promise<IViolationRecord[]>;
+  updateViolationRecord(violationRecord: IViolationRecord): Promise<IViolationRecord | null>;
 }
 
 export class ViolationRecordRepository implements IViolationRecordRepository {
@@ -55,7 +57,7 @@ export class ViolationRecordRepository implements IViolationRecordRepository {
           ...{ violationId: violationId || undefined },
           ...{ reportedById: reportedById || undefined },
           ...{ vehicleId: vehicleId || undefined },
-          ...{ status: status || undefined }
+          ...{ status: (status as PrismaViolationRecordStatus) || undefined }
         },
         include: { reporter: true, user: true, vehicle: true, violation: true }
       });
@@ -65,6 +67,28 @@ export class ViolationRecordRepository implements IViolationRecordRepository {
       );
     } catch {
       return [];
+    }
+  }
+
+  public async updateViolationRecord(
+    violationRecord: IViolationRecord
+  ): Promise<IViolationRecord | null> {
+    try {
+      const updatedViolationRecord = await this._database.violationRecord.update({
+        where: { id: violationRecord.id },
+        data: {
+          status: violationRecord.status.value as PrismaViolationRecordStatus,
+          remarks: violationRecord.remarks.value,
+          userId: violationRecord.userId,
+          reportedById: violationRecord.reportedById,
+          violationId: violationRecord.violationId,
+          vehicleId: violationRecord.vehicleId
+        }
+      });
+
+      return this._violationRecordMapper.toDomain(updatedViolationRecord);
+    } catch {
+      return null;
     }
   }
 }
