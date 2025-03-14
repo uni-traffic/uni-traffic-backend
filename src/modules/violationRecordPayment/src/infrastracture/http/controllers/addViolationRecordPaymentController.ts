@@ -5,9 +5,6 @@ import { type IJSONWebToken, JSONWebToken } from "../../../../../../shared/lib/j
 import { UserRoleService } from "../../../../../user/src/shared/service/userRoleService";
 import type { ViolationRecordPaymentRequest } from "../../../dtos/violationRecordPaymentRequestSchema";
 import { AddViolationRecordPaymentUseCase } from "../../../useCases/addViolationRecordPaymentUseCase";
-import { ViolationRecordRepository } from "../../../../../violationRecord/src/repositories/violationRecordRepository";
-import { ViolationRecordPaymentRepository } from "../../../repositories/addViolationRecordPaymentRepository";
-import { ViolationRecordAuditLogService } from "../../../../../violationRecordAuditLog/src/service/violationRecordAuditLogService";
 
 export class AddViolationRecordPaymentController extends BaseController {
   private _addViolationRecordPaymentUseCase: AddViolationRecordPaymentUseCase;
@@ -15,11 +12,7 @@ export class AddViolationRecordPaymentController extends BaseController {
   private _userRoleService: UserRoleService;
 
   public constructor(
-    addViolationRecordPaymentUseCase = new AddViolationRecordPaymentUseCase(
-      new ViolationRecordRepository(),
-      new ViolationRecordPaymentRepository(),
-      new ViolationRecordAuditLogService()
-    ),
+    addViolationRecordPaymentUseCase = new AddViolationRecordPaymentUseCase(),
     jsonWebToken = new JSONWebToken(),
     userRoleService = new UserRoleService()
   ) {
@@ -34,7 +27,7 @@ export class AddViolationRecordPaymentController extends BaseController {
       const cashierId = await this._verifyPermission(req);
       const requestBody = req.body as ViolationRecordPaymentRequest;
 
-      const result = await this._addViolationRecordPaymentUseCase.execute(
+      await this._addViolationRecordPaymentUseCase.execute(
         {
           violationRecordId: requestBody.violationRecordId,
           amountPaid: requestBody.amountPaid
@@ -42,11 +35,7 @@ export class AddViolationRecordPaymentController extends BaseController {
         cashierId
       );
 
-      if (result.isSuccess) {
-        this.ok(res, "Payment processed successfully.");
-      } else {
-        this.fail(res, new Error(result.getErrorMessage() || "Failed to process payment."));
-      }
+      this.ok(res, "Payment processed successfully.");
     } catch (error) {
       this.fail(res, error instanceof Error ? error : new Error("An unexpected error occurred."));
     }

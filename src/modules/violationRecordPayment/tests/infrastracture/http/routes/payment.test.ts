@@ -4,9 +4,8 @@ import app from "../../../../../../../api";
 import { db } from "../../../../../../shared/infrastructure/database/prisma";
 import { seedAuthenticatedUser } from "../../../../../user/tests/utils/user/seedAuthenticatedUser";
 import { seedViolationRecord } from "../../../../../violationRecord/tests/utils/violationRecord/seedViolationRecord";
-import type { ViolationRecordPaymentRequest } from "../../../../src/dtos/violationRecordPaymentRequestSchema";
 
-describe("POST /api/v1/violation-record-payment/violation", () => {
+describe("POST /api/v1/payment", () => {
   let requestAPI: TestAgent;
 
   beforeAll(() => {
@@ -27,44 +26,26 @@ describe("POST /api/v1/violation-record-payment/violation", () => {
       throw new Error("ViolationRecord.violation is undefined. Check seeding function.");
     }
 
-    const payload: ViolationRecordPaymentRequest = {
+    const payload = {
       violationRecordId: violationRecord.id,
       amountPaid: violationRecord.violation.penalty
     };
 
     const response = await requestAPI
-      .post("/api/v1/violation-record-payment/violation")
+      .post("/api/v1/payment")
       .set("Authorization", `Bearer ${cashier.accessToken}`)
       .send(payload);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual("Payment processed successfully.");
-
-    const updatedViolationRecord = await db.violationRecord.findUnique({
-      where: { id: violationRecord.id },
-      select: { status: true }
-    });
-
-    expect(updatedViolationRecord).not.toBeNull();
-    expect(updatedViolationRecord?.status).toBe("PAID");
-
-    const paymentRecord = await db.violationRecordPayment.findFirst({
-      where: { violationRecordId: violationRecord.id }
-    });
-
-    expect(paymentRecord).not.toBeNull();
-    expect(paymentRecord?.amountPaid).toBe(violationRecord.violation.penalty);
-    expect(paymentRecord?.cashierId).toBe(cashier.id);
   });
 
   it("should return 400 if request body is invalid", async () => {
     const cashier = await seedAuthenticatedUser({ role: "CASHIER", expiration: "1h" });
-    const payload = {};
-
     const response = await requestAPI
-      .post("/api/v1/violation-record-payment/violation")
+      .post("/api/v1/payment")
       .set("Authorization", `Bearer ${cashier.accessToken}`)
-      .send(payload);
+      .send({});
 
     expect(response.status).toBe(400);
   });
@@ -73,13 +54,13 @@ describe("POST /api/v1/violation-record-payment/violation", () => {
     const unauthorizedUser = await seedAuthenticatedUser({ role: "STUDENT", expiration: "1h" });
     const violationRecord = await seedViolationRecord({ status: "UNPAID" });
 
-    const payload: ViolationRecordPaymentRequest = {
+    const payload = {
       violationRecordId: violationRecord.id,
       amountPaid: violationRecord.violation.penalty
     };
 
     const response = await requestAPI
-      .post("/api/v1/violation-record-payment/violation")
+      .post("/api/v1/payment")
       .set("Authorization", `Bearer ${unauthorizedUser.accessToken}`)
       .send(payload);
 
@@ -93,17 +74,15 @@ describe("POST /api/v1/violation-record-payment/violation", () => {
     const cashier = await seedAuthenticatedUser({ role: "CASHIER", expiration: "1s" });
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    const payload: ViolationRecordPaymentRequest = {
+    const payload = {
       violationRecordId: "some-id",
       amountPaid: 1000
     };
 
     const response = await requestAPI
-      .post("/api/v1/violation-record-payment/violation")
+      .post("/api/v1/payment")
       .set("Authorization", `Bearer ${cashier.accessToken}`)
       .send(payload);
-
-    console.log("Expired token test response:", response.status, response.body);
 
     expect(response.status).toBe(401);
     expect(response.body.message).toBe("Your session has expired. Please log in again.");

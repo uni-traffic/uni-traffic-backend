@@ -13,7 +13,7 @@ import {
   ViolationRecordPayment
 } from "./classes/violationRecordPayment";
 import { UnexpectedError } from "../../../../../../shared/core/errors";
-import { User, ViolationRecord } from "@prisma/client";
+import type { User, ViolationRecord } from "@prisma/client";
 
 export interface IViolationRecordPaymentFactoryProps {
   id?: string;

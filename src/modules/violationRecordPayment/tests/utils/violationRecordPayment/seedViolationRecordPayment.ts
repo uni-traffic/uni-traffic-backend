@@ -1,6 +1,5 @@
 import { faker } from "@faker-js/faker";
 import { defaultTo } from "rambda";
-import type { ViolationRecordPayment as ViolationRecordPaymentSchema } from "@prisma/client";
 import { db } from "../../../../../shared/infrastructure/database/prisma";
 import { uniTrafficId } from "../../../../../shared/lib/uniTrafficId";
 import type { IUserRawObject } from "../../../../user/src/domain/models/user/constant";

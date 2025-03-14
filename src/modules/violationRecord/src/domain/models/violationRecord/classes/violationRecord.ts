@@ -27,7 +27,7 @@ export class ViolationRecord implements IViolationRecord {
   private readonly _vehicleId: string;
   private readonly _remarks: ViolationRecordRemarks;
   private readonly _createdAt: Date;
-  private readonly _status: ViolationRecordStatus;
+  private _status: ViolationRecordStatus;
   private readonly _user: IUserDTO | undefined;
   private readonly _reporter: IUserDTO | undefined;
   private readonly _violation: IViolationDTO | undefined;
@@ -109,7 +109,11 @@ export class ViolationRecord implements IViolationRecord {
     return this._vehicle;
   }
 
-  public static create(props: IViolationRecord): IViolationRecord {
+  public updateStatus(newStatus: ViolationRecordStatus): void {
+    this._status = newStatus;
+  }
+
+  public static create(props: IViolationRecord): ViolationRecord {
     return new ViolationRecord(props);
   }
 }
