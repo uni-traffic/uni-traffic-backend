@@ -13,26 +13,36 @@ export const ViolationRecordCreateSchema = z
   });
 export type ViolationRecordCreateRequest = z.infer<typeof ViolationRecordCreateSchema>;
 
-export const ViolationRecordRequestSchema = z
-  .object({
-    id: z.string().optional(),
-    vehicleId: z.string().optional(),
-    userId: z.string().optional(),
-    violationId: z.string().optional(),
-    reportedById: z.string().optional(),
-    status: z.enum(["UNPAID", "PAID"]).optional()
-  })
-  .refine(
-    (data) =>
-      data.id ||
-      data.vehicleId ||
-      data.userId ||
-      data.violationId ||
-      data.reportedById ||
-      data.status,
-    {
-      message:
-        "At least one of 'vehicleId', 'userId', 'reportedBy', or 'violationId' must be provided."
-    }
-  );
+export const ViolationRecordRequestSchema = z.object({
+  id: z.string().optional(),
+  vehicleId: z.string().optional(),
+  userId: z.string().optional(),
+  violationId: z.string().optional(),
+  reportedById: z.string().optional(),
+  status: z.enum(["UNPAID", "PAID"]).optional(),
+  count: z
+    .string()
+    .refine(
+      (value) => {
+        const num = Number(value);
+        return !Number.isNaN(num) && Number.isInteger(num) && num > 0;
+      },
+      {
+        message: '"count" must be a valid positive whole number'
+      }
+    )
+    .optional(),
+  page: z
+    .string()
+    .refine(
+      (value) => {
+        const num = Number(value);
+        return !Number.isNaN(num) && Number.isInteger(num) && num > 0;
+      },
+      {
+        message: '"page" must be a valid positive whole number'
+      }
+    )
+    .optional()
+});
 export type ViolationRecordGetRequest = z.infer<typeof ViolationRecordRequestSchema>;

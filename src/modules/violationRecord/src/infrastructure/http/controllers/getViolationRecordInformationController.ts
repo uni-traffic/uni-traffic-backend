@@ -4,10 +4,7 @@ import { BaseController } from "../../../../../../shared/infrastructure/http/cor
 import { type IJSONWebToken, JSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
 import { UserRoleService } from "../../../../../user/src/shared/service/userRoleService";
 import type { IViolationRecordDTO } from "../../../dtos/violationRecordDTO";
-import type {
-  ViolationRecordCreateRequest,
-  ViolationRecordGetRequest
-} from "../../../dtos/violationRecordRequestSchema";
+import type { ViolationRecordGetRequest } from "../../../dtos/violationRecordRequestSchema";
 import { GetViolationRecordInformationUseCase } from "../../../useCases/getViolationRecordUseCase";
 
 export class GetViolationRecordController extends BaseController {
@@ -30,7 +27,7 @@ export class GetViolationRecordController extends BaseController {
     await this._verifyPermission(req);
 
     const violationRecordDTO = await this._getViolationRecordInformationUseCase.execute(
-      req.query as ViolationRecordCreateRequest
+      req.query as ViolationRecordGetRequest
     );
 
     this.ok<IViolationRecordDTO[]>(res, violationRecordDTO);
@@ -40,12 +37,15 @@ export class GetViolationRecordController extends BaseController {
     const accessToken = this._getAccessToken(req);
     const { id: tokenUserId } = this._jsonWebToken.verify<{ id: string }>(accessToken);
 
-    const hasAdminRole = await this._userRoleService.hasAdminRole(tokenUserId);
-    const hasSecurityRole = await this._userRoleService.hasSecurityRole(tokenUserId);
-
     const requestQuery = req.query as ViolationRecordGetRequest;
 
-    if (!hasAdminRole && !hasSecurityRole && requestQuery.userId !== tokenUserId) {
+    const hasRequiredRole = await this._userRoleService.hasGivenRoles(tokenUserId, [
+      "ADMIN",
+      "SUPERADMIN",
+      "CASHIER",
+      "SECURITY"
+    ]);
+    if (!hasRequiredRole && requestQuery.userId !== tokenUserId) {
       throw new ForbiddenError("You do not have the required permissions to perform this action.");
     }
 

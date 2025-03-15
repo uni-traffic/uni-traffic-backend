@@ -1,15 +1,15 @@
+import type { ViolationRecordStatus as PrismaViolationRecordStatus } from "@prisma/client";
 import { db } from "../../../../shared/infrastructure/database/prisma";
 import type { IViolationRecord } from "../domain/models/violationRecord/classes/violationRecord";
 import {
   type IViolationRecordMapper,
   ViolationRecordMapper
 } from "../domain/models/violationRecord/mapper";
-import type { ViolationRecordGetRequest } from "../dtos/violationRecordRequestSchema";
-import type { ViolationRecordStatus as PrismaViolationRecordStatus } from "@prisma/client";
+import type { GetViolationRecordByProperty } from "../dtos/violationRecordDTO";
 
 export interface IViolationRecordRepository {
   createViolationRecord(violationRecord: IViolationRecord): Promise<IViolationRecord | null>;
-  getViolationRecordByProperty(params: ViolationRecordGetRequest): Promise<IViolationRecord[]>;
+  getViolationRecordByProperty(params: GetViolationRecordByProperty): Promise<IViolationRecord[]>;
   updateViolationRecord(violationRecord: IViolationRecord): Promise<IViolationRecord | null>;
 }
 
@@ -42,15 +42,20 @@ export class ViolationRecordRepository implements IViolationRecordRepository {
   }
 
   public async getViolationRecordByProperty(
-    params: ViolationRecordGetRequest
+    params: GetViolationRecordByProperty
   ): Promise<IViolationRecord[]> {
-    const { id, userId, violationId, reportedById, vehicleId, status } = params;
-    if (!id && !userId && !violationId && !reportedById && !vehicleId && !status) {
-      return [];
+    const { id, userId, violationId, reportedById, vehicleId, status, page, count } = params;
+    let take: number | undefined = undefined;
+    let skip: number | undefined = undefined;
+    if (page && count) {
+      take = count * page;
+      skip = take * (page - 1);
     }
 
     try {
       const violationRecordRaw = await this._database.violationRecord.findMany({
+        take: take,
+        skip: skip,
         where: {
           ...{ id: id || undefined },
           ...{ userId: userId || undefined },

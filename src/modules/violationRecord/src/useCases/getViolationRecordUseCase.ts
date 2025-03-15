@@ -4,7 +4,7 @@ import {
   type IViolationRecordMapper,
   ViolationRecordMapper
 } from "../domain/models/violationRecord/mapper";
-import type { IViolationRecordDTO } from "../dtos/violationRecordDTO";
+import type { GetViolationRecordByProperty, IViolationRecordDTO } from "../dtos/violationRecordDTO";
 import type { ViolationRecordGetRequest } from "../dtos/violationRecordRequestSchema";
 import {
   type IViolationRecordRepository,
@@ -26,18 +26,27 @@ export class GetViolationRecordInformationUseCase {
   public async execute(payload: ViolationRecordGetRequest): Promise<IViolationRecordDTO[]> {
     const violationRecord = await this._getViolationRecordDetails(payload);
 
-    return violationRecord.map(record => this._violationRecordMapper.toDTO(record));
+    return violationRecord.map((record) => this._violationRecordMapper.toDTO(record));
   }
 
   private async _getViolationRecordDetails(
     payload: ViolationRecordGetRequest
   ): Promise<IViolationRecord[]> {
-    const violationRecords =
-      await this._violationRecordRepository.getViolationRecordByProperty(payload);
+    const violationRecords = await this._violationRecordRepository.getViolationRecordByProperty(
+      this._refinePayload(payload)
+    );
     if (!violationRecords || violationRecords.length === 0) {
       throw new NotFoundError("Violation Records not found");
     }
 
     return violationRecords;
+  }
+
+  private _refinePayload(payload: ViolationRecordGetRequest): GetViolationRecordByProperty {
+    return {
+      ...payload,
+      count: payload.count ? Number(payload.count) : undefined,
+      page: payload.page ? Number(payload.page) : undefined
+    };
   }
 }

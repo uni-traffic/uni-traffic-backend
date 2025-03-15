@@ -25,3 +25,14 @@ export interface ICreateViolationRecordInputUseCase {
   stickerNumber?: string;
   remarks: string;
 }
+
+export type GetViolationRecordByProperty = {
+  id?: string;
+  vehicleId?: string;
+  userId?: string;
+  violationId?: string;
+  reportedById?: string;
+  status?: string;
+  count?: number;
+  page?: number;
+};
