@@ -9,6 +9,7 @@ import type { IVehicleRawObject } from "../../../../vehicle/src/domain/models/ve
 import { seedVehicle } from "../../../../vehicle/tests/utils/vehicle/seedVehicle";
 import type { IViolationRawObject } from "../../../../violation/src/domain/models/violation/constant";
 import { seedViolation } from "../../../../violation/tests/utils/violation/seedViolation";
+import { seedViolationRecordPayment } from "../../../../violationRecordPayment/tests/utils/violationRecordPayment/seedViolationRecordPayment";
 import type { IViolationRecordFactoryProps } from "../../../src/domain/models/violationRecord/factory";
 
 export const seedViolationRecord = async ({
@@ -28,7 +29,7 @@ export const seedViolationRecord = async ({
   const seededViolation = await seedViolation({});
   const seededReporter = await seedUser({ role: "SECURITY" });
 
-  return db.violationRecord.create({
+  const result = await db.violationRecord.create({
     data: {
       id,
       remarks: faker.lorem.sentence({ min: 1, max: 15 }),
@@ -45,4 +46,13 @@ export const seedViolationRecord = async ({
       violation: true
     }
   });
+  if (status === "PAID") {
+    await seedViolationRecordPayment({
+      violationRecordId: id,
+      amountPaid: seededViolation.penalty,
+      remarks: "none"
+    });
+  }
+
+  return result;
 };

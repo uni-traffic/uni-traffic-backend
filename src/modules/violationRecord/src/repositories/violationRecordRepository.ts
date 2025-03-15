@@ -64,7 +64,17 @@ export class ViolationRecordRepository implements IViolationRecordRepository {
           ...{ vehicleId: vehicleId || undefined },
           ...{ status: (status as PrismaViolationRecordStatus) || undefined }
         },
-        include: { reporter: true, user: true, vehicle: true, violation: true }
+        include: {
+          reporter: true,
+          user: true,
+          vehicle: true,
+          violation: true,
+          violationRecordPayment: {
+            include: {
+              cashier: true
+            }
+          }
+        }
       });
 
       return violationRecordRaw.map((violationRecord) =>
