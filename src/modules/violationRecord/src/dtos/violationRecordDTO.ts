@@ -1,6 +1,7 @@
 import type { IUserDTO } from "../../../user/src/dtos/userDTO";
 import type { IVehicleDTO } from "../../../vehicle/src/dtos/vehicleDTO";
 import type { IViolationDTO } from "../../../violation/src/dtos/violationDTO";
+import type { IViolationRecordPaymentDTO } from "../../../violationRecordPayment/src/dtos/violationRecordPaymentDTO";
 
 export interface IViolationRecordDTO {
   id: string;
@@ -15,6 +16,7 @@ export interface IViolationRecordDTO {
   reporter: IUserDTO | null;
   violation: IViolationDTO | null;
   vehicle: IVehicleDTO | null;
+  payment: IViolationRecordPaymentDTO | null;
 }
 
 export interface ICreateViolationRecordInputUseCase {
@@ -25,3 +27,14 @@ export interface ICreateViolationRecordInputUseCase {
   stickerNumber?: string;
   remarks: string;
 }
+
+export type GetViolationRecordByProperty = {
+  id?: string;
+  vehicleId?: string;
+  userId?: string;
+  violationId?: string;
+  reportedById?: string;
+  status?: string;
+  count?: number;
+  page?: number;
+};

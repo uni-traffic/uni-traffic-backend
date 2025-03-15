@@ -1,4 +1,4 @@
-import type { User, Vehicle, Violation } from "@prisma/client";
+import type { User, Vehicle, Violation, ViolationRecordPayment } from "@prisma/client";
 import { defaultTo } from "rambda";
 import { UnexpectedError } from "../../../../../../shared/core/errors";
 import { Result } from "../../../../../../shared/core/result";
@@ -12,6 +12,9 @@ import type { IVehicleDTO } from "../../../../../vehicle/src/dtos/vehicleDTO";
 import { ViolationFactory } from "../../../../../violation/src/domain/models/violation/factory";
 import { ViolationMapper } from "../../../../../violation/src/domain/models/violation/mapper";
 import type { IViolationDTO } from "../../../../../violation/src/dtos/violationDTO";
+import { ViolationRecordPaymentFactory } from "../../../../../violationRecordPayment/src/domain/models/violationRecordPayment/factory";
+import { ViolationRecordPaymentMapper } from "../../../../../violationRecordPayment/src/domain/models/violationRecordPayment/mapper";
+import type { IViolationRecordPaymentDTO } from "../../../../../violationRecordPayment/src/dtos/violationRecordPaymentDTO";
 import { type IViolationRecord, ViolationRecord } from "./classes/violationRecord";
 import { ViolationRecordRemarks } from "./classes/violationRecordRemarks";
 import { ViolationRecordStatus } from "./classes/violationRecordStatus";
@@ -29,6 +32,7 @@ export interface IViolationRecordFactoryProps {
   reporter?: User;
   violation?: Violation;
   vehicle?: Vehicle;
+  violationRecordPayment?: ViolationRecordPayment | null;
 }
 
 export class ViolationRecordFactory {
@@ -61,6 +65,10 @@ export class ViolationRecordFactory {
       ? ViolationRecordFactory._getVehicleDTOFromPersistence(props.vehicle)
       : undefined;
 
+    const paymentOrUndefined = props.violationRecordPayment
+      ? ViolationRecordFactory._getViolationPaymentDTOFromPersistence(props.violationRecordPayment)
+      : undefined;
+
     return Result.ok<IViolationRecord>(
       ViolationRecord.create({
         ...props,
@@ -71,7 +79,8 @@ export class ViolationRecordFactory {
         createdAt: defaultTo(new Date(), props.createdAt),
         reporter: reporterOrUndefined,
         violation: violationOrUndefined,
-        vehicle: vehicleOrUndefined
+        vehicle: vehicleOrUndefined,
+        payment: paymentOrUndefined
       })
     );
   }
@@ -101,5 +110,18 @@ export class ViolationRecordFactory {
     }
 
     return new ViolationMapper().toDTO(vehicleDomainOrError.getValue());
+  }
+
+  private static _getViolationPaymentDTOFromPersistence(
+    violationPayment: ViolationRecordPayment
+  ): IViolationRecordPaymentDTO {
+    const paymentOrError = ViolationRecordPaymentFactory.create(violationPayment);
+    if (paymentOrError.isFailure) {
+      throw new UnexpectedError(
+        "Error converting ViolationRecordPayment from persistence to Domain"
+      );
+    }
+
+    return new ViolationRecordPaymentMapper().toDTO(paymentOrError.getValue());
   }
 }

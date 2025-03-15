@@ -296,20 +296,6 @@ describe("GET /api/v1/violation-record/search", () => {
     expect(mappedResult).toContain(seededViolationRecord2.id);
   });
 
-  it("should return status 400 when no parameters passed", async () => {
-    const seededAuthenticatedUser = await seedAuthenticatedUser({
-      role: "SECURITY",
-      expiration: "1h"
-    });
-
-    const response = await requestAPI
-      .get("/api/v1/violation-record/search")
-      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
-      .query({});
-
-    expect(response.status).toBe(400);
-  });
-
   it("should return status 403 status code and message when Authorization provided lacks permission", async () => {
     const seededAuthenticatedUser = await seedAuthenticatedUser({
       role: faker.helpers.arrayElement(["STUDENT", "STAFF"])

@@ -1,8 +1,8 @@
 import type { Role } from "@prisma/client";
 import { seedUser } from "../src/modules/user/tests/utils/user/seedUser";
 import { seedVehicle } from "../src/modules/vehicle/tests/utils/vehicle/seedVehicle";
+import { seedViolationRecord } from "../src/modules/violationRecord/tests/utils/violationRecord/seedViolationRecord";
 import { db } from "../src/shared/infrastructure/database/prisma";
-import { uniTrafficId } from "../src/shared/lib/uniTrafficId";
 
 export const seedVehicleAndOwnerData = async () => {
   const OWNER_DATA = [
@@ -117,30 +117,22 @@ export const seedVehicleAndOwnerData = async () => {
     ]);
 
     const seededReporter = await seedUser({ role: "SECURITY" });
-
-    await db.violationRecord.create({
-      data: {
-        id: uniTrafficId(),
-        violationId: "1",
-        reportedById: seededReporter.id,
-        remarks: "Driving without VVP or VPS",
-        vehicleId: seededVehicles[0].id,
-        userId: seededUsers[0].id,
-        status: "UNPAID"
-      }
+    await seedViolationRecord({
+      violationId: "1",
+      reportedById: seededReporter.id,
+      remarks: "Driving without VVP or VPS",
+      vehicleId: seededVehicles[0].id,
+      userId: seededUsers[0].id,
+      status: "UNPAID"
     });
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    await db.violationRecord.create({
-      data: {
-        id: uniTrafficId(),
-        violationId: "3",
-        reportedById: seededReporter.id,
-        remarks:
-          "Parking in inappropriate locations, such as driveways, walkways, pathways, and main roadways",
-        vehicleId: seededVehicles[0].id,
-        userId: seededUsers[0].id,
-        status: "PAID"
-      }
+    await seedViolationRecord({
+      violationId: "3",
+      reportedById: seededReporter.id,
+      remarks:
+        "Parking in inappropriate locations, such as driveways, walkways, pathways, and main roadways",
+      vehicleId: seededVehicles[0].id,
+      userId: seededUsers[0].id,
+      status: "PAID"
     });
   } catch (error) {
     console.log(error);

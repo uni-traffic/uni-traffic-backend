@@ -51,7 +51,7 @@ export class ViolationRecordAuditLogRepository implements IViolationRecordAuditL
       const violationRecordAuditLogPropertyDetails =
         await this._database.violationRecordAuditLog.findMany({
           take: count * page,
-          skip: page * (page - 1),
+          skip: count * (page - 1),
           where: {
             ...{ id: id || undefined },
             ...{ actorId: actorId || undefined },

@@ -1,6 +1,7 @@
 import type { IUserDTO } from "../../../../../../user/src/dtos/userDTO";
 import type { IVehicleDTO } from "../../../../../../vehicle/src/dtos/vehicleDTO";
 import type { IViolationDTO } from "../../../../../../violation/src/dtos/violationDTO";
+import type { IViolationRecordPaymentDTO } from "../../../../../../violationRecordPayment/src/dtos/violationRecordPaymentDTO";
 import type { ViolationRecordRemarks } from "./violationRecordRemarks";
 import type { ViolationRecordStatus } from "./violationRecordStatus";
 
@@ -17,6 +18,7 @@ export interface IViolationRecord {
   reporter: IUserDTO | undefined;
   violation: IViolationDTO | undefined;
   vehicle: IVehicleDTO | undefined;
+  payment: IViolationRecordPaymentDTO | undefined;
   updateStatus(newStatus: ViolationRecordStatus): void;
 }
 
@@ -33,6 +35,7 @@ export class ViolationRecord implements IViolationRecord {
   private readonly _reporter: IUserDTO | undefined;
   private readonly _violation: IViolationDTO | undefined;
   private readonly _vehicle: IVehicleDTO | undefined;
+  private readonly _payment: IViolationRecordPaymentDTO | undefined;
 
   private constructor(props: {
     id: string;
@@ -47,6 +50,7 @@ export class ViolationRecord implements IViolationRecord {
     reporter?: IUserDTO;
     violation?: IViolationDTO;
     vehicle?: IVehicleDTO;
+    payment?: IViolationRecordPaymentDTO;
   }) {
     this._id = props.id;
     this._userId = props.userId;
@@ -60,6 +64,7 @@ export class ViolationRecord implements IViolationRecord {
     this._reporter = props.reporter;
     this._violation = props.violation;
     this._vehicle = props.vehicle;
+    this._payment = props.payment;
   }
 
   get id(): string {
@@ -110,6 +115,10 @@ export class ViolationRecord implements IViolationRecord {
     return this._vehicle;
   }
 
+  get payment(): IViolationRecordPaymentDTO | undefined {
+    return this._payment;
+  }
+
   public updateStatus(newStatus: ViolationRecordStatus): void {
     this._status = newStatus;
   }
@@ -127,6 +136,7 @@ export class ViolationRecord implements IViolationRecord {
     reporter?: IUserDTO;
     violation?: IViolationDTO;
     vehicle?: IVehicleDTO;
+    payment?: IViolationRecordPaymentDTO;
   }): ViolationRecord {
     return new ViolationRecord(props);
   }

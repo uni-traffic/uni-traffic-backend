@@ -42,7 +42,8 @@ export class ViolationRecordMapper implements IViolationRecordMapper {
       user: defaultTo(null, violationRecord.user),
       reporter: defaultTo(null, violationRecord.reporter),
       violation: defaultTo(null, violationRecord.violation),
-      vehicle: defaultTo(null, violationRecord.vehicle)
+      vehicle: defaultTo(null, violationRecord.vehicle),
+      payment: defaultTo(null, violationRecord.payment)
     };
   }
 }

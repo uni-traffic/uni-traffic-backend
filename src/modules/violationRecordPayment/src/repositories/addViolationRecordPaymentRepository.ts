@@ -31,6 +31,9 @@ export class ViolationRecordPaymentRepository implements IViolationRecordPayment
         data: {
           ...paymentPersistence,
           amountPaid: Number(paymentPersistence.amountPaid)
+        },
+        include: {
+          cashier: true
         }
       });
 

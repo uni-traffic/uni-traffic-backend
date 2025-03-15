@@ -19,7 +19,9 @@ export const seedViolationRecordPayment = async ({
   cashier?: Partial<IUserRawObject>;
   violationRecord?: Partial<IViolationRecordRawObject>;
 }) => {
-  const seededViolationRecord = await seedViolationRecord({});
+  const seededViolationRecordId = violationRecordId
+    ? violationRecordId
+    : (await seedViolationRecord({})).id;
   const seededCashier = await seedUser({ role: "STAFF" });
 
   return db.violationRecordPayment.create({
@@ -29,7 +31,7 @@ export const seedViolationRecordPayment = async ({
       remarks,
       timePaid,
       cashierId: defaultTo(seededCashier.id, cashierId),
-      violationRecordId: defaultTo(seededViolationRecord.id, violationRecordId)
+      violationRecordId: seededViolationRecordId
     },
     include: {
       cashier: true,
