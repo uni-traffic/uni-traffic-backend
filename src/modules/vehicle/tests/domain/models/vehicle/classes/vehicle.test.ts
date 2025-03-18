@@ -22,7 +22,7 @@ describe("Vehicle", () => {
       type: VehicleType.create(
         faker.helpers.arrayElement(VehicleType.validVehicleTypes)
       ).getValue(),
-      status: VehicleStatus.create("PENDING").getValue(),
+      status: VehicleStatus.create("REGISTERED").getValue(),
       images: VehicleImages.create(
         Array.from({ length: 3 }).map(() => faker.image.url())
       ).getValue(),
