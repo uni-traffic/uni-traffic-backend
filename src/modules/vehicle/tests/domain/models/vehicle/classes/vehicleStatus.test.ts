@@ -10,8 +10,8 @@ describe("VehicleStatus", () => {
     expect(vehicleStatusOrFailure.getValue().value).toBe(validStatus);
   });
 
-  it("should match a valid vehicle status 'PENDING'", () => {
-    const validStatus = "PENDING";
+  it("should match a valid vehicle status 'EXPIRED'", () => {
+    const validStatus = "EXPIRED";
     const vehicleStatusOrFailure = VehicleStatus.create(validStatus);
 
     expect(vehicleStatusOrFailure.isSuccess).toBe(true);
