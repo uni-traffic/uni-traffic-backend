@@ -1,24 +1,37 @@
 import { faker } from "@faker-js/faker";
+import request from "supertest";
 import type TestAgent from "supertest/lib/agent";
 import app from "../../../../../../../api";
-import request from "supertest";
-import { seedAuthenticatedUser } from "../../../../../user/tests/utils/user/seedAuthenticatedUser";
 import { db } from "../../../../../../shared/infrastructure/database/prisma";
-import type { VehicleApplicationGetRequest } from "../../../../src/dtos/vehicleApplicationRequestSchema";
-import { seedVehicleApplication } from "../../../utils/seedVehicleApplication";
+import { FileService } from "../../../../../file/src/service/fileService";
+import { seedAuthenticatedUser } from "../../../../../user/tests/utils/user/seedAuthenticatedUser";
 import { seedUser } from "../../../../../user/tests/utils/user/seedUser";
 import type { IVehicleApplicationDTO } from "../../../../src/dtos/vehicleApplicationDTO";
+import type { VehicleApplicationGetRequest } from "../../../../src/dtos/vehicleApplicationRequestSchema";
+import { seedVehicleApplication } from "../../../utils/seedVehicleApplication";
 
 describe("GET /api/v1/vehicle-application/search", () => {
   let requestAPI: TestAgent;
 
-  beforeAll(() => {
-    requestAPI = request.agent(app);
-  });
-
   beforeEach(async () => {
     await db.vehicleApplication.deleteMany();
     await db.user.deleteMany();
+  });
+
+  beforeAll(() => {
+    requestAPI = request.agent(app);
+
+    jest.spyOn(FileService.prototype, "getSignedUrl").mockResolvedValue({
+      signedUrl: "https://mocked-url.com/signed-url"
+    });
+
+    jest.spyOn(FileService.prototype, "uploadFile").mockResolvedValue({
+      path: "/mocked/path/file.jpg"
+    });
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
   });
 
   it("should return status 200 status code and vehicle application when valid id is provided", async () => {
@@ -37,7 +50,6 @@ describe("GET /api/v1/vehicle-application/search", () => {
       .get("/api/v1/vehicle-application/search")
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query(payload);
-
     const responseBody = response.body;
 
     expect(response.status).toBe(200);

@@ -52,3 +52,13 @@ export interface GetViolationVehicleByProperty {
   count: number;
   page: number;
 }
+
+export interface IVehicleApplicationLinks {
+  schoolCredential: string;
+  licenseImage: string;
+  certificateOfRegistration: string;
+  officialReceipt: string;
+  frontImage: string;
+  sideImage: string;
+  backImage: string;
+}

@@ -1,15 +1,28 @@
 import { faker } from "@faker-js/faker";
+import { NotFoundError } from "../../../../shared/core/errors";
 import { db } from "../../../../shared/infrastructure/database/prisma";
+import { FileService } from "../../../file/src/service/fileService";
 import { seedUser } from "../../../user/tests/utils/user/seedUser";
 import { GetVehicleApplicationByPropertyUseCase } from "../../src/useCases/getVehicleApplicationByPropertyUseCase";
 import { seedVehicleApplication } from "../utils/seedVehicleApplication";
-import { NotFoundError } from "../../../../shared/core/errors";
 
 describe("GetVehicleApplicationByPropertyUseCase", () => {
   let getVehicleApplicationByPropertyUseCase: GetVehicleApplicationByPropertyUseCase;
 
-  beforeAll(async () => {
+  beforeAll(() => {
+    jest.spyOn(FileService.prototype, "getSignedUrl").mockResolvedValue({
+      signedUrl: "https://mocked-url.com/signed-url"
+    });
+
+    jest.spyOn(FileService.prototype, "uploadFile").mockResolvedValue({
+      path: "/mocked/path/file.jpg"
+    });
+
     getVehicleApplicationByPropertyUseCase = new GetVehicleApplicationByPropertyUseCase();
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
   });
 
   beforeEach(async () => {
@@ -17,10 +30,12 @@ describe("GetVehicleApplicationByPropertyUseCase", () => {
   });
 
   it("should return number of violation record audit log with count given", async () => {
-    await seedVehicleApplication({});
-    await seedVehicleApplication({});
-    await seedVehicleApplication({});
-    await seedVehicleApplication({});
+    await Promise.all([
+      seedVehicleApplication({}),
+      seedVehicleApplication({}),
+      seedVehicleApplication({}),
+      seedVehicleApplication({})
+    ]);
 
     const result = await getVehicleApplicationByPropertyUseCase.execute({
       count: "3",
