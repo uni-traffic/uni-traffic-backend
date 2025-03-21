@@ -70,8 +70,24 @@ export class VehicleApplicationMapper implements IVehicleApplicationMapper {
         type: vehicleApplication.schoolMember.type,
         schoolCredential: vehicleApplication.schoolMember.schoolCredential
       },
-      driver: vehicleApplication.driver,
-      vehicle: vehicleApplication.vehicle,
+      driver: {
+        firstName: vehicleApplication.driver.firstName,
+        lastName: vehicleApplication.driver.lastName,
+        licenseId: vehicleApplication.driver.licenseId,
+        licenseImage: vehicleApplication.driver.licenseImage
+      },
+      vehicle: {
+        make: vehicleApplication.vehicle.make,
+        series: vehicleApplication.vehicle.series,
+        type: vehicleApplication.vehicle.type,
+        model: vehicleApplication.vehicle.model,
+        licensePlate: vehicleApplication.vehicle.licensePlate,
+        certificateOfRegistration: vehicleApplication.vehicle.certificateOfRegistration,
+        officialReceipt: vehicleApplication.vehicle.officialReceipt,
+        frontImage: vehicleApplication.vehicle.frontImage,
+        backImage: vehicleApplication.vehicle.backImage,
+        sideImage: vehicleApplication.vehicle.sideImage
+      },
       status: vehicleApplication.status.value,
       applicantId: vehicleApplication.applicantId,
       applicant: vehicleApplication.applicant,

@@ -2,6 +2,6 @@ import type { Prisma, User, VehicleApplication, VehicleApplicationPayment } from
 
 export interface IVehicleApplicationRawObject extends VehicleApplication {
   applicant?: User;
-  payment?: VehicleApplicationPayment;
+  payment?: VehicleApplicationPayment | null;
 }
 export type IVehicleApplicationSchema = Prisma.VehicleApplicationUncheckedCreateInput;

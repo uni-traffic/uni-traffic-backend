@@ -40,3 +40,25 @@ export interface IVehicleApplicationDTO {
    * TODO: ADD AUDIT LOG
    */
 }
+
+export interface GetViolationVehicleByProperty {
+  id?: string;
+  schoolId?: string;
+  userType?: string;
+  driverLicenseId?: string;
+  licensePlate?: string;
+  status?: string;
+  applicantId?: string;
+  count: number;
+  page: number;
+}
+
+export interface IVehicleApplicationLinks {
+  schoolCredential: string;
+  licenseImage: string;
+  certificateOfRegistration: string;
+  officialReceipt: string;
+  frontImage: string;
+  sideImage: string;
+  backImage: string;
+}

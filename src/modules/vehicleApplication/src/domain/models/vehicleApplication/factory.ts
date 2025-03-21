@@ -46,7 +46,7 @@ export interface IVehicleApplicationProps {
   applicantId: string;
   applicant?: User;
 
-  payment?: VehicleApplicationPayment;
+  payment?: VehicleApplicationPayment | null;
 }
 
 export class VehicleApplicationFactory {
