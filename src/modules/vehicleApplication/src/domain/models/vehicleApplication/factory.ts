@@ -38,8 +38,8 @@ export interface IVehicleApplicationProps {
   backImage: string;
 
   status?: string;
-  stickerNumber: string | null;
-  remarks: string | null;
+  stickerNumber?: string | null;
+  remarks?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
 
@@ -91,7 +91,7 @@ export class VehicleApplicationFactory {
     }
 
     const vehicleApplicationStatus = VehicleApplicationStatus.create(
-      defaultTo("PENDING_SECURITY_CLEARANCE", params.status)
+      defaultTo("PENDING_FOR_SECURITY_APPROVAL", params.status)
     );
     if (vehicleApplicationStatus.isFailure) {
       return Result.fail(vehicleApplicationStatus.getErrorMessage()!);
@@ -117,6 +117,8 @@ export class VehicleApplicationFactory {
         createdAt: defaultTo(new Date(), params.createdAt),
         updatedAt: defaultTo(new Date(), params.updatedAt),
         applicant: applicantOrError,
+        stickerNumber: defaultTo(null, params.stickerNumber),
+        remarks: defaultTo(null, params.remarks),
         payment: payment
       })
     );

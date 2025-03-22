@@ -28,3 +28,32 @@ export const VehicleApplicationRequestSchema = z.object({
   )
 });
 export type VehicleApplicationGetRequest = z.infer<typeof VehicleApplicationRequestSchema>;
+
+export const VehicleApplicationCreateRequestSchema = z.object({
+  schoolId: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
+  userType: z.string().refine((value) => value === "STUDENT" || value === "STAFF", {
+    message: "userType must be either 'STUDENT' or 'STAFF'"
+  }),
+  schoolCredential: z.string(),
+
+  driverFirstName: z.string(),
+  driverLastName: z.string(),
+  driverLicenseId: z.string(),
+  driverLicenseImage: z.string(),
+
+  make: z.string(),
+  series: z.string(),
+  type: z.string(),
+  model: z.string(),
+  licensePlate: z.string(),
+  certificateOfRegistration: z.string(),
+  officialReceipt: z.string(),
+  frontImage: z.string(),
+  sideImage: z.string(),
+  backImage: z.string(),
+
+  remarks: z.string().max(150).optional()
+});
+export type VehicleApplicationCreateRequest = z.infer<typeof VehicleApplicationCreateRequestSchema>;
