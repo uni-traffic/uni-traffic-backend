@@ -11,13 +11,6 @@ describe("VehicleApplicationPayment", () => {
       amountDueOrError.getValue()
     );
 
-    if (amountDueOrError.isFailure) {
-      throw new Error(`AmountDue creation failed: ${amountDueOrError.getErrorMessage()}`);
-    }
-    if (cashTenderedOrError.isFailure) {
-      throw new Error(`CashTendered creation failed: ${cashTenderedOrError.getErrorMessage()}`);
-    }
-
     const mockVehicleApplicationPaymentData = {
       id: faker.string.uuid(),
       cashierId: faker.string.uuid(),
