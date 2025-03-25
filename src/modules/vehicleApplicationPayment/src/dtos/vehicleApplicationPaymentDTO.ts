@@ -9,7 +9,7 @@ export interface IVehicleApplicationPaymentDTO {
   change: number;
   totalAmountPaid: number;
 
-  date: string;
+  date: Date;
 
   cashierId: string;
   cashier: IUserDTO | null;
