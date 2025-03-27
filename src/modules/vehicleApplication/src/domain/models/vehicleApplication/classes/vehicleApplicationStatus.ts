@@ -5,6 +5,14 @@ export class VehicleApplicationStatus {
   private readonly _value: string;
   public static readonly validStatuses = Object.values<string>(VehicleApplicationStatusSchema);
 
+  private static readonly allowedTransitions: Record<string, string[]> = {
+    PENDING_FOR_SECURITY_APPROVAL: ["PENDING_FOR_PAYMENT", "DENIED"],
+    PENDING_FOR_PAYMENT: ["PENDING_FOR_STICKER", "DENIED"],
+    PENDING_FOR_STICKER: ["APPROVED", "DENIED"],
+    APPROVED: [],
+    DENIED: []
+  };
+
   private constructor(value: string) {
     this._value = value;
   }
@@ -16,6 +24,10 @@ export class VehicleApplicationStatus {
       );
     }
     return Result.ok(new VehicleApplicationStatus(status));
+  }
+
+  public canTransitionTo(newStatus: string): boolean {
+    return VehicleApplicationStatus.allowedTransitions[this._value].includes(newStatus);
   }
 
   public get value(): string {

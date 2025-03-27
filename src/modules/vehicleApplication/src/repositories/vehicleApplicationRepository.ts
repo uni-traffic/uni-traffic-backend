@@ -14,6 +14,11 @@ export interface IVehicleApplicationRepository {
   createVehicleApplication(
     vehicleApplication: IVehicleApplication
   ): Promise<IVehicleApplication | null>;
+  updateVehicleApplicationStatus(
+    vehicleApplication: IVehicleApplication
+  ): Promise<IVehicleApplication | null>;
+  getVehicleApplicationById(vehicleId: string): Promise<IVehicleApplication | null>;
+  getVehicleApplicationByIds(vehicleIds: string[]): Promise<IVehicleApplication[]>;
 }
 
 export class VehicleApplicationRepository implements IVehicleApplicationRepository {
@@ -82,5 +87,49 @@ export class VehicleApplicationRepository implements IVehicleApplicationReposito
     } catch {
       return null;
     }
+  }
+
+  public async updateVehicleApplicationStatus(
+    vehicleApplication: IVehicleApplication
+  ): Promise<IVehicleApplication | null> {
+    try {
+      const vehicleApplicationPersistence =
+        this._vehicleApplicationMapper.toPersistence(vehicleApplication);
+
+      const newVehicleApplication = await this._database.vehicleApplication.update({
+        where: {
+          id: vehicleApplication.id
+        },
+        data: vehicleApplicationPersistence
+      });
+
+      return this._vehicleApplicationMapper.toDomain(newVehicleApplication);
+    } catch {
+      return null;
+    }
+  }
+
+  public async getVehicleApplicationById(vehicleId: string): Promise<IVehicleApplication | null> {
+    const vehicleApplication = await this.getVehicleApplicationByIds([vehicleId]);
+
+    if (vehicleApplication.length === 0) {
+      return null;
+    }
+
+    return vehicleApplication[0];
+  }
+
+  public async getVehicleApplicationByIds(vehicleIds: string[]): Promise<IVehicleApplication[]> {
+    const vehicleApplicationRaw = await this._database.vehicleApplication.findMany({
+      where: {
+        id: {
+          in: vehicleIds
+        }
+      }
+    });
+
+    return vehicleApplicationRaw.map((vehicleApplcation) =>
+      this._vehicleApplicationMapper.toDomain(vehicleApplcation)
+    );
   }
 }

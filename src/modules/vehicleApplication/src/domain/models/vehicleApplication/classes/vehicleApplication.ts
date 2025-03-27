@@ -1,3 +1,4 @@
+import { BadRequest } from "../../../../../../../shared/core/errors";
 import type { IUserDTO } from "../../../../../../user/src/dtos/userDTO";
 import type { IVehicleApplicationPaymentDTO } from "../../../../../../vehicleApplicationPayment/src/dtos/vehicleApplicationPaymentDTO";
 import type { VehicleApplicationDriver } from "./vehicleApplicationDriver";
@@ -8,7 +9,7 @@ import type { VehicleApplicationVehicle } from "./vehicleApplicationVehicle";
 export interface IVehicleApplication {
   id: string;
   stickerNumber: string | null;
-  remarks: string | null;
+  remarks: string | undefined;
   createdAt: Date;
   updatedAt: Date;
 
@@ -16,6 +17,7 @@ export interface IVehicleApplication {
   vehicle: VehicleApplicationVehicle;
   schoolMember: VehicleApplicationSchoolMember;
   status: VehicleApplicationStatus;
+  updateStatus(newStatus: VehicleApplicationStatus, remarks?: string): void;
 
   applicantId: string;
   applicant?: IUserDTO;
@@ -29,9 +31,9 @@ export class VehicleApplication implements IVehicleApplication {
   private readonly _driver: VehicleApplicationDriver;
   private readonly _vehicle: VehicleApplicationVehicle;
 
-  private readonly _status: VehicleApplicationStatus;
+  private _status: VehicleApplicationStatus;
   private readonly _stickerNumber: string | null;
-  private readonly _remarks: string | null;
+  private _remarks: string | undefined;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date;
 
@@ -48,7 +50,7 @@ export class VehicleApplication implements IVehicleApplication {
 
     status: VehicleApplicationStatus;
     stickerNumber: string | null;
-    remarks: string | null;
+    remarks: string | undefined;
     createdAt: Date;
     updatedAt: Date;
 
@@ -97,7 +99,7 @@ export class VehicleApplication implements IVehicleApplication {
     return this._stickerNumber;
   }
 
-  get remarks(): string | null {
+  get remarks(): string | undefined {
     return this._remarks;
   }
 
@@ -121,6 +123,21 @@ export class VehicleApplication implements IVehicleApplication {
     return this._payment;
   }
 
+  public updateStatus(newStatus: VehicleApplicationStatus, remarks?: string): void {
+    if (!this.status.canTransitionTo(newStatus.value)) {
+      throw new BadRequest(`Invalid transition from ${this.status.value} to ${newStatus.value}`);
+    }
+
+    if (newStatus.value === "DENIED" && (!remarks || remarks.trim() === "")) {
+      throw new BadRequest("Remarks are required when setting status to DENIED.");
+    }
+
+    this._status = newStatus;
+    if (newStatus.value === "DENIED") {
+      this._remarks = remarks;
+    }
+  }
+
   public static create(props: {
     id: string;
 
@@ -130,7 +147,7 @@ export class VehicleApplication implements IVehicleApplication {
 
     status: VehicleApplicationStatus;
     stickerNumber: string | null;
-    remarks: string | null;
+    remarks: string | undefined;
     createdAt: Date;
     updatedAt: Date;
 

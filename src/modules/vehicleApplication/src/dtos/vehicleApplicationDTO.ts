@@ -4,7 +4,7 @@ import type { IVehicleApplicationPaymentDTO } from "../../../vehicleApplicationP
 export interface IVehicleApplicationDTO {
   id: string;
   stickerNumber: string | null;
-  remarks: string | null;
+  remarks: string | undefined;
   createdAt: Date;
   updatedAt: Date;
   schoolMember: {
