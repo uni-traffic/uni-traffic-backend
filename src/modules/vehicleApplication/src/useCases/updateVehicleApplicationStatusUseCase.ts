@@ -26,16 +26,16 @@ export class UpdateVehicleApplicationStatusUseCase {
     vehicleApplicationId,
     status
   }: { vehicleApplicationId: string; status: string }) {
-    const vehicleApplcation = await this._getVehicleApplicationFromDatabase(vehicleApplicationId);
+    const vehicleApplication = await this._getVehicleApplicationFromDatabase(vehicleApplicationId);
     const newStatus = this.getVehicleApplicationNewStatus(status);
     const updatedVehicleApplication = this.updateVehicleApplicationStatus(
-      vehicleApplcation,
+      vehicleApplication,
       newStatus
     );
-    const savedVehicleApplcationStatus =
+    const saveVehicleApplication =
       await this._saveVehicleApplicationToDatabase(updatedVehicleApplication);
 
-    return this._vehicleApplicationMapper.toDTO(savedVehicleApplcationStatus);
+    return this._vehicleApplicationMapper.toDTO(saveVehicleApplication);
   }
 
   private async _getVehicleApplicationFromDatabase(
@@ -43,7 +43,6 @@ export class UpdateVehicleApplicationStatusUseCase {
   ): Promise<IVehicleApplication> {
     const vehicleApplication =
       await this._vehicleApplicationRepository.getVehicleApplicationById(vehicleApplicationId);
-
     if (!vehicleApplication) {
       throw new NotFoundError("Vehicle Application Not Found");
     }
@@ -53,7 +52,6 @@ export class UpdateVehicleApplicationStatusUseCase {
 
   private getVehicleApplicationNewStatus(status: string): VehicleApplicationStatus {
     const newStatus = VehicleApplicationStatus.create(status);
-
     if (newStatus.isFailure) {
       throw new BadRequest(newStatus.getErrorMessage()!);
     }
@@ -62,28 +60,27 @@ export class UpdateVehicleApplicationStatusUseCase {
   }
 
   private updateVehicleApplicationStatus(
-    vehicleApplcation: IVehicleApplication,
+    vehicleApplication: IVehicleApplication,
     status: VehicleApplicationStatus,
     remarks?: string
   ): IVehicleApplication {
-    vehicleApplcation.updateStatus(status, remarks);
-
-    if (vehicleApplcation.status.value !== status.value) {
+    vehicleApplication.updateStatus(status, remarks);
+    if (vehicleApplication.status.value !== status.value) {
       throw new UnexpectedError("Something went wrong updating vehicle application status.");
     }
 
-    return vehicleApplcation;
+    return vehicleApplication;
   }
 
   private async _saveVehicleApplicationToDatabase(
-    vehicleApplcation: IVehicleApplication
+    vehicleApplication: IVehicleApplication
   ): Promise<IVehicleApplication> {
-    const savedVehicleApplcation =
-      await this._vehicleApplicationRepository.updateVehicleApplicationStatus(vehicleApplcation);
-    if (!savedVehicleApplcation) {
+    const savedVehicleApplication =
+      await this._vehicleApplicationRepository.updateVehicleApplicationStatus(vehicleApplication);
+    if (!savedVehicleApplication) {
       throw new UnexpectedError("Failed to update Vehicle Application");
     }
 
-    return savedVehicleApplcation;
+    return savedVehicleApplication;
   }
 }

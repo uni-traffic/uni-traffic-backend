@@ -1,10 +1,10 @@
 import { faker } from "@faker-js/faker";
+import { BadRequest, NotFoundError } from "../../../../shared/core/errors";
 import { db } from "../../../../shared/infrastructure/database/prisma";
+import { VehicleApplicationStatus } from "../../src/domain/models/vehicleApplication/classes/vehicleApplicationStatus";
 import { VehicleApplicationRepository } from "../../src/repositories/vehicleApplicationRepository";
 import { UpdateVehicleApplicationStatusUseCase } from "../../src/useCases/updateVehicleApplicationStatusUseCase";
 import { seedVehicleApplication } from "../utils/seedVehicleApplication";
-import { BadRequest, NotFoundError } from "../../../../shared/core/errors";
-import { VehicleApplicationStatus } from "../../src/domain/models/vehicleApplication/classes/vehicleApplicationStatus";
 
 describe("UpdateVehicleApplicationStatusUseCase", () => {
   let updateVehicleApplicationStatusUseCase: UpdateVehicleApplicationStatusUseCase;
@@ -92,9 +92,9 @@ describe("UpdateVehicleApplicationStatusUseCase", () => {
     );
   });
 
-  it("should throw an BadRequest if the status is DENIED and the vehicle application status goes backward update", async () => {
+  it("should throw an BadRequest if the status is REJECTED and the vehicle application status goes backward update", async () => {
     const seededVehicleApplication = await seedVehicleApplication({
-      status: "DENIED"
+      status: "REJECTED"
     });
     const newStatus = "PENDING_FOR_SECURITY_APPROVAL";
 
@@ -108,7 +108,7 @@ describe("UpdateVehicleApplicationStatusUseCase", () => {
     );
   });
 
-  it("should throw an BadRequest if the status is DENIED and there's no remarks", async () => {
+  it("should throw an BadRequest if the status is REJECTED and there's no remarks", async () => {
     const seededVehicleApplication = await seedVehicleApplication({
       status: "PENDING_FOR_SECURITY_APPROVAL"
     });
@@ -116,9 +116,9 @@ describe("UpdateVehicleApplicationStatusUseCase", () => {
     await expect(
       updateVehicleApplicationStatusUseCase.execute({
         vehicleApplicationId: seededVehicleApplication.id,
-        status: "DENIED"
+        status: "REJECTED"
       })
-    ).rejects.toThrow(new BadRequest("Remarks are required when setting status to DENIED."));
+    ).rejects.toThrow(new BadRequest("Remarks are required when setting status to REJECTED."));
   });
 
   it("should throw an BadRequest if the vehicle application status goes backward update status", async () => {

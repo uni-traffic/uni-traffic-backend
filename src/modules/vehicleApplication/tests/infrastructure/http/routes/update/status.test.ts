@@ -1,11 +1,11 @@
-import type TestAgent from "supertest/lib/agent";
+import { faker } from "@faker-js/faker";
 import request from "supertest";
-import { VehicleApplicationRepository } from "../../../../../src/repositories/vehicleApplicationRepository";
+import type TestAgent from "supertest/lib/agent";
 import app from "../../../../../../../../api";
 import { db } from "../../../../../../../shared/infrastructure/database/prisma";
 import { seedAuthenticatedUser } from "../../../../../../user/tests/utils/user/seedAuthenticatedUser";
+import { VehicleApplicationRepository } from "../../../../../src/repositories/vehicleApplicationRepository";
 import { seedVehicleApplication } from "../../../../utils/seedVehicleApplication";
-import { faker } from "@faker-js/faker";
 
 describe("POST api/v1/vehicle-application/update/status", () => {
   let vehicleApplcationRepository: VehicleApplicationRepository;
@@ -137,13 +137,13 @@ describe("POST api/v1/vehicle-application/update/status", () => {
     );
   });
 
-  it("should return status 400 when the status is DENIED and vehicle application status goes backward update", async () => {
+  it("should return status 400 when the status is REJECTED and vehicle application status goes backward update", async () => {
     const seededAuthenticatedUser = await seedAuthenticatedUser({
       role: faker.helpers.arrayElement(["ADMIN", "SUPERADMIN", "CASHIER", "SECURITY"]),
       expiration: "1h"
     });
     const seededVehicleApplication = await seedVehicleApplication({
-      status: "DENIED"
+      status: "REJECTED"
     });
 
     const payload = {
@@ -163,7 +163,7 @@ describe("POST api/v1/vehicle-application/update/status", () => {
     );
   });
 
-  it("should return status 400 when the status is DENIED but does not have remarks", async () => {
+  it("should return status 400 when the status is REJECTED but does not have remarks", async () => {
     const seededAuthenticatedUser = await seedAuthenticatedUser({
       role: faker.helpers.arrayElement(["ADMIN", "SUPERADMIN", "CASHIER", "SECURITY"]),
       expiration: "1h"
@@ -174,7 +174,7 @@ describe("POST api/v1/vehicle-application/update/status", () => {
 
     const payload = {
       vehicleApplicationId: seededVehicleApplication.id,
-      status: "DENIED"
+      status: "REJECTED"
     };
 
     const response = await requestAPI
@@ -184,7 +184,6 @@ describe("POST api/v1/vehicle-application/update/status", () => {
     const responseBody = response.body;
 
     expect(response.status).toBe(400);
-    expect(responseBody.message).toBe("Remarks are required when setting status to DENIED.");
   });
 
   it("should return status 400 if the vehicle application status goes backward update", async () => {

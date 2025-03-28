@@ -2,8 +2,8 @@ import { faker } from "@faker-js/faker";
 import { db } from "../../../../../shared/infrastructure/database/prisma";
 import { seedUser } from "../../../../user/tests/utils/user/seedUser";
 import {
-  VehicleApplicationRepository,
-  type IVehicleApplicationRepository
+  type IVehicleApplicationRepository,
+  VehicleApplicationRepository
 } from "../../../src/repositories/vehicleApplicationRepository";
 import { seedVehicleApplication } from "../../utils/seedVehicleApplication";
 
@@ -186,7 +186,7 @@ describe("VehicleApplicationRepository.getVehicleApplicationByProperty", () => {
       status: "APPROVED"
     });
     const seededVehicleApplication5 = await seedVehicleApplication({
-      status: "DENIED"
+      status: "REJECTED"
     });
     const seededVehicleApplication6 = await seedVehicleApplication({
       status: "PENDING_FOR_PAYMENT"

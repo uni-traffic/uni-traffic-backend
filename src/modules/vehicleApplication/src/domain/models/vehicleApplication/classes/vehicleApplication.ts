@@ -128,12 +128,12 @@ export class VehicleApplication implements IVehicleApplication {
       throw new BadRequest(`Invalid transition from ${this.status.value} to ${newStatus.value}`);
     }
 
-    if (newStatus.value === "DENIED" && (!remarks || remarks.trim() === "")) {
-      throw new BadRequest("Remarks are required when setting status to DENIED.");
+    if (newStatus.value === "REJECTED" && (!remarks || remarks.trim() === "")) {
+      throw new BadRequest("Remarks are required when setting status to REJECTED.");
     }
 
     this._status = newStatus;
-    if (newStatus.value === "DENIED") {
+    if (newStatus.value === "REJECTED") {
       this._remarks = remarks;
     }
   }

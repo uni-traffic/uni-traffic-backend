@@ -7,7 +7,7 @@ describe("VehicleApplicationPayment", () => {
   it("should create a VehicleApplicationPayment", () => {
     const amountDueOrError = AmountDue.create(faker.number.int({ min: 100, max: 1000 }));
     const cashTenderedOrError = CashTendered.create(
-      faker.number.int({ min: 100, max: 1000 }),
+      faker.number.int({ min: amountDueOrError.getValue().value, max: 1000 }),
       amountDueOrError.getValue()
     );
 

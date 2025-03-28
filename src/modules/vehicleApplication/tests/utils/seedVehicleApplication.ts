@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import type { VehicleType } from "@prisma/client";
+import { VehicleApplicationStatus, type VehicleType } from "@prisma/client";
 import { v4 as uuid } from "uuid";
 import { db } from "../../../../shared/infrastructure/database/prisma";
 import { uniTrafficId } from "../../../../shared/lib/uniTrafficId";
@@ -27,13 +27,7 @@ export const seedVehicleApplication = async ({
   frontImage = faker.image.url(),
   sideImage = faker.image.url(),
   backImage = faker.image.url(),
-  status = faker.helpers.arrayElement([
-    "APPROVED",
-    "PENDING_FOR_STICKER",
-    "PENDING_FOR_PAYMENT",
-    "PENDING_FOR_SECURITY_APPROVAL",
-    "DENIED"
-  ]),
+  status = faker.helpers.arrayElement(Object.values(VehicleApplicationStatus)),
   stickerNumber = faker.number.int({ min: 1_000_000, max: 9_999_999 }).toString(),
   remarks = faker.lorem.sentence(),
   createdAt = faker.date.past(),
