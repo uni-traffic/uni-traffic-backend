@@ -171,7 +171,7 @@ enum VehicleApplicationStatus {
   PENDING_FOR_STICKER
   PENDING_FOR_PAYMENT
   PENDING_FOR_SECURITY_APPROVAL
-  DENIED
+  REJECTED
 }
 
 enum UserType {

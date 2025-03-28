@@ -50,7 +50,7 @@ export const createVehicleApplicationDomainObject = ({
   vehicle: VehicleApplicationVehicle;
   status: VehicleApplicationStatus;
   stickerNumber: string | null;
-  remarks: string | null;
+  remarks: string | undefined;
   createdAt: Date;
   updatedAt: Date;
   applicantId: string;

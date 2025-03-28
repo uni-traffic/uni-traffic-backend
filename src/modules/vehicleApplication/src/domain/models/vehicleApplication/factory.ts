@@ -118,7 +118,7 @@ export class VehicleApplicationFactory {
         updatedAt: defaultTo(new Date(), params.updatedAt),
         applicant: applicantOrError,
         stickerNumber: defaultTo(null, params.stickerNumber),
-        remarks: defaultTo(null, params.remarks),
+        remarks: defaultTo(undefined, params.remarks),
         payment: payment
       })
     );

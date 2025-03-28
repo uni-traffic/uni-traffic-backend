@@ -199,7 +199,7 @@ describe("GetVehicleApplicationByPropertyUseCase", () => {
       status: "APPROVED"
     });
     const seededVehicleApplication5 = await seedVehicleApplication({
-      status: "DENIED"
+      status: "REJECTED"
     });
     const seededVehicleApplication6 = await seedVehicleApplication({
       status: "PENDING_FOR_PAYMENT"

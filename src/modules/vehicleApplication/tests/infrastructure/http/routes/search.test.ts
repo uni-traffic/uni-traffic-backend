@@ -311,7 +311,7 @@ describe("GET /api/v1/vehicle-application/search", () => {
       status: "APPROVED"
     });
     const seededVehicleApplication5 = await seedVehicleApplication({
-      status: "DENIED"
+      status: "REJECTED"
     });
     const seededVehicleApplication6 = await seedVehicleApplication({
       status: "PENDING_FOR_PAYMENT"

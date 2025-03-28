@@ -37,8 +37,8 @@ describe("VehicleApplicationStatus", () => {
     expect(vehicleStatusOrFailure.getValue().value).toBe(validStatus);
   });
 
-  it("should match a valid vehicle status 'DENIED'", () => {
-    const validStatus = "DENIED";
+  it("should match a valid vehicle status 'REJECTED'", () => {
+    const validStatus = "REJECTED";
     const vehicleStatusOrFailure = VehicleApplicationStatus.create(validStatus);
 
     expect(vehicleStatusOrFailure.isSuccess).toBe(true);
@@ -47,7 +47,7 @@ describe("VehicleApplicationStatus", () => {
   });
 
   it("should not match an invalid vehicle status", () => {
-    const invalidStatus = "REJECTED";
+    const invalidStatus = "DENIED";
     const vehicleStatusOrFailure = VehicleApplicationStatus.create(invalidStatus);
 
     expect(vehicleStatusOrFailure.isSuccess).toBe(false);

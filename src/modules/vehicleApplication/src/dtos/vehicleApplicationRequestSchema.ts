@@ -1,4 +1,5 @@
 import z from "zod";
+import { VehicleApplicationStatus } from "../domain/models/vehicleApplication/classes/vehicleApplicationStatus";
 
 export const VehicleApplicationRequestSchema = z.object({
   id: z.string().optional(),
@@ -57,3 +58,25 @@ export const VehicleApplicationCreateRequestSchema = z.object({
   remarks: z.string().max(150).optional()
 });
 export type VehicleApplicationCreateRequest = z.infer<typeof VehicleApplicationCreateRequestSchema>;
+
+export const UpdateVehicleApplicationStatusSchema = z
+  .object({
+    vehicleApplicationId: z.string({ message: '"id" of the vehicle application must be provided' }),
+    status: z.string().refine((value) => VehicleApplicationStatus.validStatuses.includes(value), {
+      message: `"status" must be one of: ${VehicleApplicationStatus.validStatuses.join(", ")}`
+    }),
+    remarks: z.string().optional()
+  })
+  .refine(
+    (data) => {
+      return !(data.status === "REJECTED" && !data.remarks);
+    },
+    {
+      message: '"remarks" must be provided when status is REJECTED',
+      path: ["remarks"]
+    }
+  );
+
+export type UpdateVehicleApplicationStatusRequest = z.infer<
+  typeof UpdateVehicleApplicationStatusSchema
+>;

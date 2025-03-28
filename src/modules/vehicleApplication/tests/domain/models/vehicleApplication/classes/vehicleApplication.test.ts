@@ -91,7 +91,7 @@ describe("VehicleApplication", () => {
         faker.helpers.arrayElement(VehicleApplicationStatus.validStatuses)
       ).getValue(),
       stickerNumber: null,
-      remarks: null,
+      remarks: undefined,
       createdAt: faker.date.past(),
       updatedAt: faker.date.recent(),
       applicantId: faker.string.uuid(),
@@ -108,7 +108,7 @@ describe("VehicleApplication", () => {
     expect(vehicleApplication.vehicle).toBe(validProps.vehicle);
     expect(vehicleApplication.status.value).toBe(validProps.status.value);
     expect(vehicleApplication.stickerNumber).toBeNull();
-    expect(vehicleApplication.remarks).toBeNull();
+    expect(vehicleApplication.remarks).toBeUndefined();
     expect(vehicleApplication.createdAt).toBe(validProps.createdAt);
     expect(vehicleApplication.updatedAt).toBe(validProps.updatedAt);
     expect(vehicleApplication.applicantId).toBe(validProps.applicantId);
