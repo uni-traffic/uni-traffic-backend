@@ -41,6 +41,10 @@ export class ViolationRecordRepository implements IViolationRecordRepository {
     }
   }
 
+  /** TODO:
+   * Implement a search that matches records where:
+   * - The given id matches any record containing the provided value in the corresponding property.
+   */
   public async getViolationRecordByProperty(
     params: GetViolationRecordByProperty
   ): Promise<IViolationRecord[]> {

@@ -16,6 +16,9 @@ export class ViolationRepository implements IViolationRepository {
     this._violationMapper = violationMapper;
   }
 
+  /** TODO:
+   * 1. Implement a getViolationByProperty
+   */
   public async getAllViolations(): Promise<IViolation[]> {
     const violationsRaw = await this._database.violation.findMany();
 

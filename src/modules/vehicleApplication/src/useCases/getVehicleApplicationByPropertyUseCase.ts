@@ -16,6 +16,13 @@ import {
   VehicleApplicationRepository
 } from "../repositories/vehicleApplicationRepository";
 
+/** TODO:
+ * 1. Return an image not found link when failed to create a signed URL's
+ * 2. Allow multiple parameters of status; e.g. [APPROVED, REJECTED etc.]
+ * 3. Add sort by date param: sort the result by for 1 asc or 2 desc
+ * 4. Add a hasNext property on returned object for pagination purposes.
+ */
+
 export class GetVehicleApplicationByPropertyUseCase {
   private _vehicleApplicationRepository: IVehicleApplicationRepository;
   private _vehicleApplicationMapper: IVehicleApplicationMapper;

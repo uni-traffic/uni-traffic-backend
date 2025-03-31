@@ -1,4 +1,6 @@
+import type { User, ViolationRecord } from "@prisma/client";
 import { defaultTo } from "rambda";
+import { UnexpectedError } from "../../../../../../shared/core/errors";
 import { Result } from "../../../../../../shared/core/result";
 import { uniTrafficId } from "../../../../../../shared/lib/uniTrafficId";
 import { UserFactory } from "../../../../../user/src/domain/models/user/factory";
@@ -7,13 +9,16 @@ import type { IUserDTO } from "../../../../../user/src/dtos/userDTO";
 import { ViolationRecordFactory } from "../../../../../violationRecord/src/domain/models/violationRecord/factory";
 import { ViolationRecordMapper } from "../../../../../violationRecord/src/domain/models/violationRecord/mapper";
 import type { IViolationRecordDTO } from "../../../../../violationRecord/src/dtos/violationRecordDTO";
-import { ViolationRecordPaymentRemarks } from "./classes/violationRecordPaymentRemarks";
 import {
   type IViolationRecordPayment,
   ViolationRecordPayment
 } from "./classes/violationRecordPayment";
-import { UnexpectedError } from "../../../../../../shared/core/errors";
-import type { User, ViolationRecord } from "@prisma/client";
+import { ViolationRecordPaymentRemarks } from "./classes/violationRecordPaymentRemarks";
+
+/** TODO:
+ * 1. Merge in single Payment object (Optional).
+ * 2. Add cashTendered and change.
+ */
 
 export interface IViolationRecordPaymentFactoryProps {
   id?: string;

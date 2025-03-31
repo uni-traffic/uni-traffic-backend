@@ -14,6 +14,11 @@ import {
   VehicleApplicationRepository
 } from "../repositories/vehicleApplicationRepository";
 
+/** TODO:
+ * 1. Ensure files given exist.
+ * 2. Move the files from temp to uploads. Add application id to the file
+ */
+
 export class CreateVehicleApplicationUseCase {
   private _vehicleApplicationRepository: IVehicleApplicationRepository;
   private _vehicleApplicationMapper: IVehicleApplicationMapper;

@@ -140,6 +140,11 @@ export class UserRepository implements IUserRepository {
     }
   }
 
+  /** TODO:
+   * Implement a search that matches records where:
+   * - The given id, firstName, lastName, username, or email
+   *   matches any record containing the provided value in the corresponding property.
+   */
   public async getUserByProperty(params: GetUserByPropertyUseCasePayload): Promise<IUser[]> {
     const { id, firstName, lastName, username, email, role, count, page } = params;
 

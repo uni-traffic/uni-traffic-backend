@@ -10,6 +10,10 @@ import type { FileUploadRequestSchema } from "../dtos/fileRequestSchema";
 dotenv.config();
 // [UTE007]
 
+/** TODO:
+ * 1. Upload the file inside the /temp folder first.
+ */
+
 export class UploadFileUseCase {
   private _storageService: IStorageService;
   private readonly _bucketName: string;

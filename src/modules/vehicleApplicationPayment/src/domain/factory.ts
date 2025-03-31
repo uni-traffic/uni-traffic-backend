@@ -1,4 +1,6 @@
+import type { User, VehicleApplication } from "@prisma/client";
 import { defaultTo } from "rambda";
+import { UnexpectedError } from "../../../../shared/core/errors";
 import { Result } from "../../../../shared/core/result";
 import { uniTrafficId } from "../../../../shared/lib/uniTrafficId";
 import { UserFactory } from "../../../user/src/domain/models/user/factory";
@@ -13,8 +15,13 @@ import {
   type IVehicleApplicationPayment,
   VehicleApplicationPayment
 } from "./classes/vehicleApplicationPayment";
-import { UnexpectedError } from "../../../../shared/core/errors";
-import type { User, VehicleApplication } from "@prisma/client";
+
+/** TODO:
+ *  Make the change optional parameter change?: number
+ *  So when we are creating a new VehicleApplicationPayment
+ *  change will be calculated upon creation and skip calculation
+ *  if data come from db.
+ */
 
 export interface IVehicleApplicationPaymentFactoryProps {
   id?: string;

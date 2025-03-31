@@ -30,6 +30,11 @@ export class VehicleApplicationRepository implements IVehicleApplicationReposito
     this._vehicleApplicationMapper = vehicleApplicationMapper;
   }
 
+  /** TODO:
+   * Implement a search that matches records where:
+   *   - If the given license plate is '145', return all records where the license plate contains '145' (e.g., '145TAW', 'XYZ145').
+   *   - If the given id is '123', return all records where the id contains '123' (e.g., '123ABC', 'XYZ123').
+   */
   public async getVehicleApplicationByProperty(
     params: GetViolationVehicleByProperty
   ): Promise<IVehicleApplication[]> {

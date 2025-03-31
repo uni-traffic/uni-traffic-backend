@@ -42,6 +42,12 @@ export class VehicleRepository implements IVehicleRepository {
     return vehiclesRaw.map((vehicle) => this._vehicleMapper.toDomain(vehicle));
   }
 
+  /** TODO:
+   * 1. Implement a search that matches records where:
+   *     - If the given license plate is '145', return all records where the license plate contains '145' (e.g., '145TAW', 'XYZ145').
+   *     - If the given stickerNumber is '123', return all records where the stickerNumber contains '123' (e.g., '123ABC', 'XYZ123').
+   * 2. Return an Array of IVehicle instead.
+   */
   public async getVehicleByProperty(params: VehicleRequest): Promise<IVehicle | null> {
     const { id, stickerNumber, licensePlate } = params;
     if (!id && !stickerNumber && !licensePlate) {
