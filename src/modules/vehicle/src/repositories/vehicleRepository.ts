@@ -8,6 +8,8 @@ export interface IVehicleRepository {
   getVehicleById(vehicleId: string): Promise<IVehicle | null>;
   getVehiclesByIds(vehicleIds: string[]): Promise<IVehicle[]>;
   getVehicleByProperty(params: VehicleRequest): Promise<IVehicle | null>;
+  createVehicle(vehicle: IVehicle): Promise<IVehicle | null>;
+  createVehicles(vehicles: IVehicle[]): Promise<IVehicle[]>;
 }
 
 export class VehicleRepository implements IVehicleRepository {
@@ -69,6 +71,30 @@ export class VehicleRepository implements IVehicleRepository {
       return this._vehicleMapper.toDomain(vehicleRaw);
     } catch {
       return null;
+    }
+  }
+  public async createVehicle(vehicle: IVehicle): Promise<IVehicle | null> {
+    const createdVehicles = await this.createVehicles([vehicle]);
+
+    if (createdVehicles.length === 0) {
+      return null;
+    }
+
+    return createdVehicles[0];
+  }
+  public async createVehicles(vehicles: IVehicle[]): Promise<IVehicle[]> {
+    try {
+      const createdVehiclesRaw = await this._database.$transaction(
+        vehicles.map((vehicle) => {
+          return this._database.vehicle.create({
+            data: this._vehicleMapper.toPersistence(vehicle)
+          });
+        })
+      );
+
+      return createdVehiclesRaw.map((vehicle) => this._vehicleMapper.toDomain(vehicle));
+    } catch {
+      return [];
     }
   }
 }
