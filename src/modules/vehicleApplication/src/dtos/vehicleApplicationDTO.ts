@@ -62,3 +62,8 @@ export interface IVehicleApplicationLinks {
   sideImage: string;
   backImage: string;
 }
+
+export interface IUpdateVehicleApplicationProps {
+  vehicleApplicationId: string;
+  status: string;
+}
