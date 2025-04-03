@@ -1,53 +1,27 @@
-import { BadRequest, NotFoundError } from "../../../../../shared/core/errors";
-import type { IVehicleApplication } from "../../domain/models/vehicleApplication/classes/vehicleApplication";
-import { VehicleApplicationStatus } from "../../domain/models/vehicleApplication/classes/vehicleApplicationStatus";
-import type { IUpdateVehicleApplicationProps } from "../../dtos/vehicleApplicationDTO";
-import {
-  type IVehicleApplicationRepository,
-  VehicleApplicationRepository
-} from "../../repositories/vehicleApplicationRepository";
+import type {
+  IUpdateVehicleApplicationProps,
+  IVehicleApplicationDTO
+} from "../../dtos/vehicleApplicationDTO";
+import { UpdateVehicleApplicationStatusUseCase } from "../../useCases/updateVehicleApplicationStatusUseCase";
 
 export interface IVehicleApplicationService {
   updateStatus(
     vehicleApplicationId: IUpdateVehicleApplicationProps
-  ): Promise<IVehicleApplication | null>;
+  ): Promise<IVehicleApplicationDTO>;
 }
 
 export class VehicleApplicationService implements IVehicleApplicationService {
-  private _vehicleApplicationRepository: IVehicleApplicationRepository;
+  private _updateVehicleApplicationStatusUseCase: UpdateVehicleApplicationStatusUseCase;
 
   public constructor(
-    vehicleApplicationRepository: IVehicleApplicationRepository = new VehicleApplicationRepository()
+    updateVehicleApplicationStatusUseCase: UpdateVehicleApplicationStatusUseCase = new UpdateVehicleApplicationStatusUseCase()
   ) {
-    this._vehicleApplicationRepository = vehicleApplicationRepository;
+    this._updateVehicleApplicationStatusUseCase = updateVehicleApplicationStatusUseCase;
   }
 
   public async updateStatus(
-    vehicleApplicationId: IUpdateVehicleApplicationProps
-  ): Promise<IVehicleApplication> {
-    const vehicleApplication = await this._vehicleApplicationRepository.getVehicleApplicationById(
-      vehicleApplicationId.vehicleApplicationId
-    );
-
-    if (!vehicleApplication) {
-      throw new NotFoundError("Vehicle Application not found");
-    }
-
-    if (vehicleApplication.status.value === "PENDING_FOR_STICKER") {
-      throw new BadRequest("Vehicle Application Status is already pending for sticker");
-    }
-
-    vehicleApplication.updateStatus(
-      VehicleApplicationStatus.create("PENDING_FOR_STICKER").getValue()
-    );
-
-    const updatedVehicleApplication =
-      await this._vehicleApplicationRepository.updateVehicleApplicationStatus(vehicleApplication);
-
-    if (!updatedVehicleApplication) {
-      throw new BadRequest("Failed to updated vehicle application");
-    }
-
-    return updatedVehicleApplication;
+    params: IUpdateVehicleApplicationProps
+  ): Promise<IVehicleApplicationDTO> {
+    return this._updateVehicleApplicationStatusUseCase.execute(params);
   }
 }

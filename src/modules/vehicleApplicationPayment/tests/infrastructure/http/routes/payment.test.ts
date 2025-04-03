@@ -26,10 +26,12 @@ describe("POST /api/v1/payment/vehicle-application", () => {
       status: "PENDING_FOR_PAYMENT"
     });
 
+    const amountDue = faker.number.float({ min: 500, max: 5000 });
+
     const payload: VehicleApplicationPaymentRequest = {
       vehicleApplicationId: seededVehicleApplication.id,
-      amountDue: 500,
-      cashTendered: 501
+      amountDue: amountDue,
+      cashTendered: faker.number.float({ min: amountDue, max: 10000 })
     };
 
     const response = await requestAPI
@@ -40,6 +42,11 @@ describe("POST /api/v1/payment/vehicle-application", () => {
 
     expect(response.status).toBe(200);
     expect(responseBody.vehicleApplication.id).toBe(seededVehicleApplication.id);
+    expect(responseBody.amountDue.toFixed(4)).toBe(payload.amountDue.toFixed(4));
+    expect(responseBody.cashTendered.toFixed(4)).toBe(payload.cashTendered.toFixed(4));
+    expect(responseBody.change.toFixed(4)).toBe(
+      (payload.cashTendered - payload.amountDue).toFixed(4)
+    );
 
     const updatedRecord = await db.vehicleApplication.findUnique({
       where: { id: seededVehicleApplication.id }
@@ -47,6 +54,51 @@ describe("POST /api/v1/payment/vehicle-application", () => {
 
     expect(updatedRecord).toBeDefined();
     expect(updatedRecord?.status).toBe("PENDING_FOR_STICKER");
+  });
+
+  it("should return status 400 and throw an error when cashTendered is less than amount due", async () => {
+    const seededcashier = await seedAuthenticatedUser({ role: "CASHIER", expiration: "1h" });
+    const seededVehicleApplication = await seedVehicleApplication({
+      status: "PENDING_FOR_PAYMENT"
+    });
+
+    const amountDue = faker.number.float({ min: 500, max: 5000 });
+
+    const payload: VehicleApplicationPaymentRequest = {
+      vehicleApplicationId: seededVehicleApplication.id,
+      amountDue: amountDue,
+      cashTendered: faker.number.float({ min: 100, max: 499 })
+    };
+
+    const response = await requestAPI
+      .post("/api/v1/payment/vehicle-application")
+      .set("Authorization", `Bearer ${seededcashier.accessToken}`)
+      .send(payload);
+    const responseBody = response.body;
+
+    expect(response.status).toBe(400);
+    expect(responseBody.message).toBe("Cash tendered is less than the required amount due.");
+  });
+
+  it("should return status 404 and throw an error vehicle application id does not exist", async () => {
+    const seededcashier = await seedAuthenticatedUser({ role: "CASHIER", expiration: "1h" });
+
+    const amountDue = faker.number.float({ min: 500, max: 5000 });
+
+    const payload: VehicleApplicationPaymentRequest = {
+      vehicleApplicationId: faker.string.uuid(),
+      amountDue: amountDue,
+      cashTendered: faker.number.float({ min: amountDue, max: 10000 })
+    };
+
+    const response = await requestAPI
+      .post("/api/v1/payment/vehicle-application")
+      .set("Authorization", `Bearer ${seededcashier.accessToken}`)
+      .send(payload);
+    const responseBody = response.body;
+
+    expect(response.status).toBe(404);
+    expect(responseBody.message).toBe("Vehicle Application not found.");
   });
 
   it("should return status 400 when no parameters passed", async () => {

@@ -26,7 +26,7 @@ describe("VehicleApplicationService", () => {
     const result = await service.updateStatus(requestParams);
 
     expect(result).not.toBeNull();
-    expect(result?.status.value).toBe("PENDING_FOR_STICKER");
+    expect(result?.status).toBe("PENDING_FOR_STICKER");
   });
 
   it("should fail to update the vehicle application status if vehicle id does not exist", async () => {
@@ -36,7 +36,7 @@ describe("VehicleApplicationService", () => {
     };
 
     await expect(service.updateStatus(requestParams)).rejects.toThrow(
-      new NotFoundError("Vehicle Application not found")
+      new NotFoundError("Vehicle Application Not Found")
     );
   });
 
@@ -50,7 +50,9 @@ describe("VehicleApplicationService", () => {
     };
 
     await expect(service.updateStatus(requestParams)).rejects.toThrow(
-      new BadRequest("Vehicle Application Status is already pending for sticker")
+      new BadRequest(
+        `Invalid transition from ${seededVehicleApplication.status} to ${requestParams.status}`
+      )
     );
   });
 });
