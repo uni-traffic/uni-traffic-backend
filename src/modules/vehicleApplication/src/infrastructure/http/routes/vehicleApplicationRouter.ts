@@ -2,12 +2,14 @@ import { type Request, type Response, Router } from "express";
 import { validateRequest } from "zod-express-middleware";
 import {
   UpdateVehicleApplicationStatusSchema,
+  UpdateVehicleApplicationStickerSchema,
   VehicleApplicationCreateRequestSchema,
   VehicleApplicationRequestSchema
 } from "../../../dtos/vehicleApplicationRequestSchema";
 import { CreateVehicleApplicationController } from "../controller/createVehicleApplicationController";
 import { GetVehicleApplicationController } from "../controller/getVehicleApplicationController";
 import { UpdateVehicleApplicationStatusController } from "../controller/updateVehicleApplicationStatusController";
+import { UpdateVehicleApplicationStickerController } from "../controller/updateVehicleApplicationStickerController";
 
 const vehicleApplicationRouter = Router();
 
@@ -32,6 +34,14 @@ vehicleApplicationRouter.post(
   validateRequest({ body: UpdateVehicleApplicationStatusSchema }),
   (req: Request, res: Response) => {
     new UpdateVehicleApplicationStatusController().execute(req, res);
+  }
+);
+
+vehicleApplicationRouter.post(
+  "/update/sticker",
+  validateRequest({ body: UpdateVehicleApplicationStickerSchema }),
+  (req: Request, res: Response) => {
+    new UpdateVehicleApplicationStickerController().execute(req, res);
   }
 );
 

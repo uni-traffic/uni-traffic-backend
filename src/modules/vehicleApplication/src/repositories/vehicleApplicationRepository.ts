@@ -17,6 +17,9 @@ export interface IVehicleApplicationRepository {
   updateVehicleApplicationStatus(
     vehicleApplication: IVehicleApplication
   ): Promise<IVehicleApplication | null>;
+  updateVehicleApplicationSticker(
+    vehicleApplication: IVehicleApplication
+  ): Promise<IVehicleApplication | null>;
   getVehicleApplicationById(vehicleId: string): Promise<IVehicleApplication | null>;
   getVehicleApplicationByIds(vehicleIds: string[]): Promise<IVehicleApplication[]>;
 }
@@ -35,6 +38,7 @@ export class VehicleApplicationRepository implements IVehicleApplicationReposito
    *   - If the given license plate is '145', return all records where the license plate contains '145' (e.g., '145TAW', 'XYZ145').
    *   - If the given id is '123', return all records where the id contains '123' (e.g., '123ABC', 'XYZ123').
    */
+
   public async getVehicleApplicationByProperty(
     params: GetViolationVehicleByProperty
   ): Promise<IVehicleApplication[]> {
@@ -113,6 +117,31 @@ export class VehicleApplicationRepository implements IVehicleApplicationReposito
       });
 
       return this._vehicleApplicationMapper.toDomain(newVehicleApplication);
+    } catch {
+      return null;
+    }
+  }
+
+  public async updateVehicleApplicationSticker(
+    vehicleApplication: IVehicleApplication
+  ): Promise<IVehicleApplication | null> {
+    try {
+      const vehicleApplicationPersistence =
+        this._vehicleApplicationMapper.toPersistence(vehicleApplication);
+
+      const updatedVehicleApplication = await this._database.vehicleApplication.update({
+        where: {
+          id: vehicleApplication.id
+        },
+        data: {
+          stickerNumber: vehicleApplicationPersistence.stickerNumber,
+          status: vehicleApplicationPersistence.status,
+          remarks: vehicleApplicationPersistence.remarks,
+          updatedAt: new Date()
+        }
+      });
+
+      return this._vehicleApplicationMapper.toDomain(updatedVehicleApplication);
     } catch {
       return null;
     }
