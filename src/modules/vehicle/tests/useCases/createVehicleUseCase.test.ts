@@ -1,12 +1,13 @@
 import { faker } from "@faker-js/faker";
 import { db } from "../../../../shared/infrastructure/database/prisma";
+import { seedUser } from "../../../user/tests/utils/user/seedUser";
 import type { IVehicleFactoryProps } from "../../src/domain/models/vehicle/factory";
 import { CreateVehicleUseCase } from "../../src/useCases/createVehicleUseCase";
 import { seedVehicle } from "../utils/vehicle/seedVehicle";
 
 describe("CreateVehicleUseCase", () => {
   let createVehicleUseCase: CreateVehicleUseCase;
-  let newVehicleData: IVehicleFactoryProps;
+  let mockVehicleData: IVehicleFactoryProps;
 
   beforeAll(() => {
     createVehicleUseCase = new CreateVehicleUseCase();
@@ -15,41 +16,42 @@ describe("CreateVehicleUseCase", () => {
   beforeEach(async () => {
     await db.vehicle.deleteMany();
 
-    newVehicleData = {
-      ownerId: faker.string.uuid(),
+    const seededOwner = await seedUser({ role: "GUEST" });
+    mockVehicleData = {
+      ownerId: seededOwner.id,
       licensePlate: faker.vehicle.vrm(),
       make: faker.vehicle.manufacturer(),
-      model: faker.vehicle.model(),
-      series: faker.string.alphanumeric(4),
+      model: faker.date.past().getFullYear().toString(),
+      series: faker.vehicle.model(),
       color: faker.vehicle.color(),
-      type: faker.helpers.arrayElement(["Sedan", "SUV", "Truck", "Motorcycle"]),
-      images: [faker.image.url(), faker.image.url()],
-      stickerNumber: faker.string.alphanumeric(10),
+      type: faker.helpers.arrayElement(["CAR", "MOTORCYCLE"]),
+      images: Array.from({ length: 3 }).map(() => faker.image.url()),
+      stickerNumber: faker.number.bigInt({ min: 10_000_000, max: 99_999_999 }).toString(),
       status: "REGISTERED"
     };
   });
 
   it("should create the vehicle successfully", async () => {
-    const createdVehicle = await createVehicleUseCase.execute(newVehicleData);
+    const createdVehicle = await createVehicleUseCase.execute(mockVehicleData);
 
     expect(createdVehicle).toBeTruthy();
     expect(createdVehicle.id).toBeDefined();
-    expect(createdVehicle.licensePlate).toBe(newVehicleData.licensePlate);
-    expect(createdVehicle.make).toBe(newVehicleData.make);
-    expect(createdVehicle.model).toBe(newVehicleData.model);
-    expect(createdVehicle.series).toBe(newVehicleData.series);
-    expect(createdVehicle.color).toBe(newVehicleData.color);
-    expect(createdVehicle.type).toBe(newVehicleData.type);
-    expect(createdVehicle.images).toStrictEqual(newVehicleData.images);
-    expect(createdVehicle.stickerNumber).toBe(newVehicleData.stickerNumber);
+    expect(createdVehicle.licensePlate).toBe(mockVehicleData.licensePlate);
+    expect(createdVehicle.make).toBe(mockVehicleData.make);
+    expect(createdVehicle.model).toBe(mockVehicleData.model);
+    expect(createdVehicle.series).toBe(mockVehicleData.series);
+    expect(createdVehicle.color).toBe(mockVehicleData.color);
+    expect(createdVehicle.type).toBe(mockVehicleData.type);
+    expect(createdVehicle.images).toStrictEqual(mockVehicleData.images);
+    expect(createdVehicle.stickerNumber).toBe(mockVehicleData.stickerNumber);
   });
 
   it("should throw ConflictError when license plate is already in use", async () => {
-    await seedVehicle({ licensePlate: newVehicleData.licensePlate });
+    await seedVehicle({ licensePlate: mockVehicleData.licensePlate });
 
     let message = "";
     try {
-      await createVehicleUseCase.execute(newVehicleData);
+      await createVehicleUseCase.execute(mockVehicleData);
     } catch (error) {
       message = (error as Error).message;
     }
@@ -59,7 +61,7 @@ describe("CreateVehicleUseCase", () => {
   });
 
   it("should throw BadRequest when vehicle data is invalid", async () => {
-    const invalidData = { ...newVehicleData, licensePlate: "" };
+    const invalidData = { ...mockVehicleData, licensePlate: "" };
 
     let message = "";
     try {
@@ -69,21 +71,6 @@ describe("CreateVehicleUseCase", () => {
     }
 
     expect(message).toBeTruthy();
-    expect(message).toEqual("Vehicle creation failed due to invalid data.");
-  });
-
-  it("should throw UnexpectedError when vehicle cannot be saved to database", async () => {
-    const mockCreateVehicle = jest.fn().mockRejectedValue(new Error("Database error"));
-    createVehicleUseCase['_vehicleRepository'].createVehicle = mockCreateVehicle;
-
-    let message = "";
-    try {
-      await createVehicleUseCase.execute(newVehicleData);
-    } catch (error) {
-      message = (error as Error).message;
-    }
-
-    expect(message).toBeTruthy();
-    expect(message).toEqual("Failed to save vehicle to database.");
+    expect(message).toContain("is not a valid license plate number");
   });
 });

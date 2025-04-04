@@ -1,8 +1,8 @@
 import { BadRequest, ConflictError, UnexpectedError } from "../../../../shared/core/errors";
+import type { IVehicle } from "../domain/models/vehicle/classes/vehicle";
 import { type IVehicleFactoryProps, VehicleFactory } from "../domain/models/vehicle/factory";
 import { type IVehicleMapper, VehicleMapper } from "../domain/models/vehicle/mapper";
-import { type IVehicleDTO } from "../dtos/vehicleDTO";
-import type { IVehicle } from "../domain/models/vehicle/classes/vehicle";
+import type { IVehicleDTO } from "../dtos/vehicleDTO";
 import { type IVehicleRepository, VehicleRepository } from "../repositories/vehicleRepository";
 
 export class CreateVehicleUseCase {
@@ -27,7 +27,7 @@ export class CreateVehicleUseCase {
     type,
     images,
     stickerNumber,
-    status = "REGISTERED",
+    status = "REGISTERED"
   }: IVehicleFactoryProps): Promise<IVehicleDTO> {
     await this._ensureVehicleDoesNotExist(licensePlate);
 
@@ -41,9 +41,8 @@ export class CreateVehicleUseCase {
       type,
       images,
       stickerNumber,
-      status,
+      status
     });
-
     const savedVehicle = await this._saveVehicleToDatabase(vehicle);
 
     return this._vehicleMapper.toDTO(savedVehicle);
@@ -66,7 +65,7 @@ export class CreateVehicleUseCase {
     type,
     images,
     stickerNumber,
-    status,
+    status
   }: IVehicleFactoryProps): IVehicle {
     const vehicleOrError = VehicleFactory.create({
       ownerId,
@@ -78,9 +77,8 @@ export class CreateVehicleUseCase {
       type,
       images,
       stickerNumber,
-      status,
+      status
     });
-
     if (vehicleOrError.isFailure) {
       throw new BadRequest(vehicleOrError.getErrorMessage()!);
     }

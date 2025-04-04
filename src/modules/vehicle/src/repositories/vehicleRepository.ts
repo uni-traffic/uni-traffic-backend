@@ -23,7 +23,6 @@ export class VehicleRepository implements IVehicleRepository {
 
   public async getVehicleById(vehicleId: string): Promise<IVehicle | null> {
     const vehicles = await this.getVehiclesByIds([vehicleId]);
-
     if (vehicles.length === 0) {
       return null;
     }
@@ -75,7 +74,6 @@ export class VehicleRepository implements IVehicleRepository {
   }
   public async createVehicle(vehicle: IVehicle): Promise<IVehicle | null> {
     const createdVehicles = await this.createVehicles([vehicle]);
-
     if (createdVehicles.length === 0) {
       return null;
     }
