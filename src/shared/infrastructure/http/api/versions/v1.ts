@@ -8,6 +8,7 @@ import { violationRecordRouter } from "../../../../../modules/violationRecord/sr
 import { violationRecordAuditLogRouter } from "../../../../../modules/violationRecordAuditLog/src/infrastructure/http/routes/violationRecordAuditLogRouter";
 import { paymentRouter } from "../../../../../modules/violationRecordPayment/src/infrastracture/http/routes/paymentRouter";
 import { vehicleApplicationRouter } from "../../../../../modules/vehicleApplication/src/infrastructure/http/routes/vehicleApplicationRouter";
+import { vehicleApplicationPaymentRouter } from "../../../../../modules/vehicleApplicationPayment/src/infrastructure/http/routes/paymentRouter";
 
 const v1Router = Router();
 
@@ -23,5 +24,6 @@ v1Router.use("/payment", paymentRouter);
 v1Router.use("/audit-log/violation-record", violationRecordAuditLogRouter);
 v1Router.use("/files", fileRouter);
 v1Router.use("/vehicle-application", vehicleApplicationRouter);
+v1Router.use("/payment", vehicleApplicationPaymentRouter);
 
 export { v1Router };
