@@ -6,7 +6,7 @@ import { AddVehicleApplicationPaymentController } from "../controller/addVehicle
 const vehicleApplicationPaymentRouter = Router();
 
 vehicleApplicationPaymentRouter.post(
-  "/vehicle-application",
+  "/sticker",
   validateRequest({ body: VehicleApplicationPaymentRequestSchema }),
   (req: Request, res: Response) => {
     new AddVehicleApplicationPaymentController().execute(req, res);

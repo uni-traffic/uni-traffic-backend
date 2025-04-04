@@ -1,13 +1,13 @@
+import { faker } from "@faker-js/faker";
 import request from "supertest";
 import type TestAgent from "supertest/lib/agent";
 import app from "../../../../../../../api";
 import { db } from "../../../../../../shared/infrastructure/database/prisma";
-import { seedVehicleApplication } from "../../../../../vehicleApplication/tests/utils/seedVehicleApplication";
 import { seedAuthenticatedUser } from "../../../../../user/tests/utils/user/seedAuthenticatedUser";
+import { seedVehicleApplication } from "../../../../../vehicleApplication/tests/utils/seedVehicleApplication";
 import type { VehicleApplicationPaymentRequest } from "../../../../src/dtos/vehicleApplicationPaymentRequestSchema";
-import { faker } from "@faker-js/faker";
 
-describe("POST /api/v1/payment/vehicle-application", () => {
+describe("POST /api/v1/payment/sticker", () => {
   let requestAPI: TestAgent;
 
   beforeAll(() => {
@@ -15,13 +15,11 @@ describe("POST /api/v1/payment/vehicle-application", () => {
   });
 
   beforeEach(async () => {
-    await db.vehicleApplicationPayment.deleteMany();
-    await db.vehicleApplication.deleteMany();
     await db.user.deleteMany();
   });
 
   it("should return status 200 and create a vehicle application payment", async () => {
-    const seededcashier = await seedAuthenticatedUser({ role: "CASHIER", expiration: "1h" });
+    const seededCashier = await seedAuthenticatedUser({ role: "CASHIER", expiration: "1h" });
     const seededVehicleApplication = await seedVehicleApplication({
       status: "PENDING_FOR_PAYMENT"
     });
@@ -35,8 +33,8 @@ describe("POST /api/v1/payment/vehicle-application", () => {
     };
 
     const response = await requestAPI
-      .post("/api/v1/payment/vehicle-application")
-      .set("Authorization", `Bearer ${seededcashier.accessToken}`)
+      .post("/api/v1/payment/sticker")
+      .set("Authorization", `Bearer ${seededCashier.accessToken}`)
       .send(payload);
     const responseBody = response.body;
 
@@ -57,7 +55,7 @@ describe("POST /api/v1/payment/vehicle-application", () => {
   });
 
   it("should return status 400 and throw an error when cashTendered is less than amount due", async () => {
-    const seededcashier = await seedAuthenticatedUser({ role: "CASHIER", expiration: "1h" });
+    const seededCashier = await seedAuthenticatedUser({ role: "CASHIER", expiration: "1h" });
     const seededVehicleApplication = await seedVehicleApplication({
       status: "PENDING_FOR_PAYMENT"
     });
@@ -71,8 +69,8 @@ describe("POST /api/v1/payment/vehicle-application", () => {
     };
 
     const response = await requestAPI
-      .post("/api/v1/payment/vehicle-application")
-      .set("Authorization", `Bearer ${seededcashier.accessToken}`)
+      .post("/api/v1/payment/sticker")
+      .set("Authorization", `Bearer ${seededCashier.accessToken}`)
       .send(payload);
     const responseBody = response.body;
 
@@ -81,7 +79,7 @@ describe("POST /api/v1/payment/vehicle-application", () => {
   });
 
   it("should return status 404 and throw an error vehicle application id does not exist", async () => {
-    const seededcashier = await seedAuthenticatedUser({ role: "CASHIER", expiration: "1h" });
+    const seededCashier = await seedAuthenticatedUser({ role: "CASHIER", expiration: "1h" });
 
     const amountDue = faker.number.float({ min: 500, max: 5000 });
 
@@ -92,8 +90,8 @@ describe("POST /api/v1/payment/vehicle-application", () => {
     };
 
     const response = await requestAPI
-      .post("/api/v1/payment/vehicle-application")
-      .set("Authorization", `Bearer ${seededcashier.accessToken}`)
+      .post("/api/v1/payment/sticker")
+      .set("Authorization", `Bearer ${seededCashier.accessToken}`)
       .send(payload);
     const responseBody = response.body;
 
@@ -102,18 +100,18 @@ describe("POST /api/v1/payment/vehicle-application", () => {
   });
 
   it("should return status 400 when no parameters passed", async () => {
-    const seededcashier = await seedAuthenticatedUser({ role: "CASHIER", expiration: "1h" });
+    const seededCashier = await seedAuthenticatedUser({ role: "CASHIER", expiration: "1h" });
 
     const response = await requestAPI
-      .post("/api/v1/payment/vehicle-application")
-      .set("Authorization", `Bearer ${seededcashier.accessToken}`)
+      .post("/api/v1/payment/sticker")
+      .set("Authorization", `Bearer ${seededCashier.accessToken}`)
       .send({});
 
     expect(response.status).toBe(400);
   });
 
   it("should return status 403 if user lacks permission", async () => {
-    const seededcashier = await seedAuthenticatedUser({ role: "STUDENT", expiration: "1h" });
+    const seededCashier = await seedAuthenticatedUser({ role: "STUDENT", expiration: "1h" });
     const seededVehicleApplication = await seedVehicleApplication({
       status: "PENDING_FOR_PAYMENT"
     });
@@ -125,8 +123,8 @@ describe("POST /api/v1/payment/vehicle-application", () => {
     };
 
     const response = await requestAPI
-      .post("/api/v1/payment/vehicle-application")
-      .set("Authorization", `Bearer ${seededcashier.accessToken}`)
+      .post("/api/v1/payment/sticker")
+      .set("Authorization", `Bearer ${seededCashier.accessToken}`)
       .send(payload);
     const responseBody = response.body;
 
@@ -137,12 +135,12 @@ describe("POST /api/v1/payment/vehicle-application", () => {
   });
 
   it("should return status 401 if the provided Authorization token is expired", async () => {
-    const seededcashier = await seedAuthenticatedUser({ role: "CASHIER", expiration: "1s" });
+    const seededCashier = await seedAuthenticatedUser({ role: "CASHIER", expiration: "1s" });
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const response = await requestAPI
-      .post("/api/v1/payment/vehicle-application")
-      .set("Authorization", `Bearer ${seededcashier.accessToken}`)
+      .post("/api/v1/payment/sticker")
+      .set("Authorization", `Bearer ${seededCashier.accessToken}`)
       .send({
         vehicleApplicationId: faker.string.uuid(),
         amountDue: 500,
@@ -156,7 +154,7 @@ describe("POST /api/v1/payment/vehicle-application", () => {
 
   it("should return status 401 if the provided Authorization is malformed", async () => {
     const response = await requestAPI
-      .post("/api/v1/payment/vehicle-application")
+      .post("/api/v1/payment/sticker")
       .set("Authorization", `Bearer ${faker.internet.jwt()}`)
       .send({
         vehicleApplicationId: faker.string.uuid(),

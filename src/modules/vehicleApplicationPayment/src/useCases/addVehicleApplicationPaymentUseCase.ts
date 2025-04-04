@@ -49,35 +49,32 @@ export class AddVehicleApplicationPaymentUseCase {
       request.vehicleApplicationId
     );
 
-    this._validateCashTendered(request.cashTendered, request.amountDue);
-    this._checkVehicleApplicationForPayment(vehicleApplication);
+    this._ensureCashTenderedIsNotLessThanAmountDue(request.cashTendered, request.amountDue);
+    this._ensureVehicleApplicationIsPendingForPayment(vehicleApplication);
 
-    const payment = this._createPayment(request, cashierId);
-    const newPayment = await this._savePayment(payment);
+    const newPayment = this._createPayment(request, cashierId);
+    const savedPayment = await this._savePayment(newPayment);
 
     await this._updateVehicleApplicationStatus(vehicleApplication);
 
-    return this._vehicleApplicationPaymentMapper.toDTO(newPayment);
+    return this._vehicleApplicationPaymentMapper.toDTO(savedPayment);
   }
 
   private async _getVehicleApplicationOrThrow(
     vehicleApplicationId: string
   ): Promise<IVehicleApplication> {
     const vehicleApplication =
-      await this._vehicleApplicationRepository.getVehicleApplicationByProperty({
-        id: vehicleApplicationId,
-        count: 1,
-        page: 1
-      });
-
-    if (!vehicleApplication.length) {
+      await this._vehicleApplicationRepository.getVehicleApplicationById(vehicleApplicationId);
+    if (!vehicleApplication) {
       throw new NotFoundError("Vehicle Application not found.");
     }
 
-    return vehicleApplication[0];
+    return vehicleApplication;
   }
 
-  private _checkVehicleApplicationForPayment(vehicleApplication: IVehicleApplication): void {
+  private _ensureVehicleApplicationIsPendingForPayment(
+    vehicleApplication: IVehicleApplication
+  ): void {
     if (vehicleApplication.status.value !== "PENDING_FOR_PAYMENT") {
       throw new BadRequest(
         "Payment can be only be processed for application with status PENDING_FOR_PAYMENT"
@@ -85,7 +82,7 @@ export class AddVehicleApplicationPaymentUseCase {
     }
   }
 
-  private _validateCashTendered(cashTendered: number, amountDue: number) {
+  private _ensureCashTenderedIsNotLessThanAmountDue(cashTendered: number, amountDue: number) {
     if (cashTendered < amountDue) {
       throw new BadRequest("Cash tendered is less than the required amount due.");
     }
@@ -112,7 +109,6 @@ export class AddVehicleApplicationPaymentUseCase {
     payment: IVehicleApplicationPayment
   ): Promise<IVehicleApplicationPayment> {
     const savedPayment = await this._vehicleApplicationPaymentRepository.createPayment(payment);
-
     if (!savedPayment) {
       throw new BadRequest("Failed to process payment");
     }
@@ -123,22 +119,19 @@ export class AddVehicleApplicationPaymentUseCase {
   private async _updateVehicleApplicationStatus(
     vehicleApplication: IVehicleApplication
   ): Promise<IVehicleApplicationDTO> {
-    const updateStatusResult = VehicleApplicationStatus.create("PENDING_FOR_STICKER");
-
-    if (updateStatusResult.isFailure) {
+    const newStatus = VehicleApplicationStatus.create("PENDING_FOR_STICKER");
+    if (newStatus.isFailure) {
       throw new UnexpectedError("Failed to update vehicle application status.");
     }
 
-    const newStatus = updateStatusResult.getValue();
-    const toUpdateStatus = await this._vehicleApplicationService.updateStatus({
+    const updatedVehicleApplication = await this._vehicleApplicationService.updateStatus({
       vehicleApplicationId: vehicleApplication.id,
-      status: newStatus.value
+      status: newStatus.getValue().value
     });
-
-    if (!toUpdateStatus) {
+    if (!updatedVehicleApplication) {
       throw new BadRequest("Failed to update vehicle application status.");
     }
 
-    return toUpdateStatus;
+    return updatedVehicleApplication;
   }
 }
