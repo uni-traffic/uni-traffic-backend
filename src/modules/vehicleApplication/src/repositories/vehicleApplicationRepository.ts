@@ -14,10 +14,7 @@ export interface IVehicleApplicationRepository {
   createVehicleApplication(
     vehicleApplication: IVehicleApplication
   ): Promise<IVehicleApplication | null>;
-  updateVehicleApplicationStatus(
-    vehicleApplication: IVehicleApplication
-  ): Promise<IVehicleApplication | null>;
-  updateVehicleApplicationSticker(
+  updateVehicleApplication(
     vehicleApplication: IVehicleApplication
   ): Promise<IVehicleApplication | null>;
   getVehicleApplicationById(vehicleId: string): Promise<IVehicleApplication | null>;
@@ -102,7 +99,7 @@ export class VehicleApplicationRepository implements IVehicleApplicationReposito
     }
   }
 
-  public async updateVehicleApplicationStatus(
+  public async updateVehicleApplication(
     vehicleApplication: IVehicleApplication
   ): Promise<IVehicleApplication | null> {
     try {
@@ -117,31 +114,6 @@ export class VehicleApplicationRepository implements IVehicleApplicationReposito
       });
 
       return this._vehicleApplicationMapper.toDomain(newVehicleApplication);
-    } catch {
-      return null;
-    }
-  }
-
-  public async updateVehicleApplicationSticker(
-    vehicleApplication: IVehicleApplication
-  ): Promise<IVehicleApplication | null> {
-    try {
-      const vehicleApplicationPersistence =
-        this._vehicleApplicationMapper.toPersistence(vehicleApplication);
-
-      const updatedVehicleApplication = await this._database.vehicleApplication.update({
-        where: {
-          id: vehicleApplication.id
-        },
-        data: {
-          stickerNumber: vehicleApplicationPersistence.stickerNumber,
-          status: vehicleApplicationPersistence.status,
-          remarks: vehicleApplicationPersistence.remarks,
-          updatedAt: new Date()
-        }
-      });
-
-      return this._vehicleApplicationMapper.toDomain(updatedVehicleApplication);
     } catch {
       return null;
     }

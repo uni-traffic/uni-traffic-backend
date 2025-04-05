@@ -130,7 +130,7 @@ export class UpdateVehicleApplicationStickerUseCase {
     vehicleApplication: IVehicleApplication
   ): Promise<IVehicleApplication> {
     const savedVehicleApplication =
-      await this._vehicleApplicationRepository.updateVehicleApplicationSticker(vehicleApplication);
+      await this._vehicleApplicationRepository.updateVehicleApplication(vehicleApplication);
     if (!savedVehicleApplication) {
       throw new UnexpectedError("Failed to update Vehicle Application sticker");
     }
