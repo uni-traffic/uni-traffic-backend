@@ -6,6 +6,9 @@ import { uniTrafficId } from "../../../../../../shared/lib/uniTrafficId";
 import { UserFactory } from "../../../../../user/src/domain/models/user/factory";
 import { UserMapper } from "../../../../../user/src/domain/models/user/mapper";
 import type { IUserDTO } from "../../../../../user/src/dtos/userDTO";
+import { VehicleApplicationPaymentFactory } from "../../../../../vehicleApplicationPayment/src/domain/factory";
+import { VehicleApplicationPaymentMapper } from "../../../../../vehicleApplicationPayment/src/domain/mapper";
+import type { IVehicleApplicationPaymentDTO } from "../../../../../vehicleApplicationPayment/src/dtos/vehicleApplicationPaymentDTO";
 import { type IVehicleApplication, VehicleApplication } from "./classes/vehicleApplication";
 import { VehicleApplicationDriver } from "./classes/vehicleApplicationDriver";
 import { VehicleApplicationSchoolMember } from "./classes/vehicleApplicationSchoolMember";
@@ -104,7 +107,9 @@ export class VehicleApplicationFactory {
     /**
      * TODO: convert VehicleApplicationPayment to DTO here
      */
-    const payment = undefined;
+    const payment = params.payment
+      ? VehicleApplicationFactory._getVehicleApplicationPaymentDTOFromPersistence(params.payment)
+      : undefined;
 
     return Result.ok(
       VehicleApplication.create({
@@ -131,5 +136,17 @@ export class VehicleApplicationFactory {
     }
 
     return new UserMapper().toDTO(userDomainOrError.getValue());
+  }
+
+  private static _getVehicleApplicationPaymentDTOFromPersistence(
+    vehicleApplicationPayment: VehicleApplicationPayment
+  ): IVehicleApplicationPaymentDTO {
+    const vehicleApplicationPaymentOrError =
+      VehicleApplicationPaymentFactory.create(vehicleApplicationPayment);
+    if (vehicleApplicationPaymentOrError.isFailure) {
+      throw new UnexpectedError(vehicleApplicationPaymentOrError.getErrorMessage()!);
+    }
+
+    return new VehicleApplicationPaymentMapper().toDTO(vehicleApplicationPaymentOrError.getValue());
   }
 }
