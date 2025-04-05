@@ -79,7 +79,7 @@ export class UpdateVehicleApplicationStatusUseCase {
     vehicleApplication: IVehicleApplication
   ): Promise<IVehicleApplication> {
     const savedVehicleApplication =
-      await this._vehicleApplicationRepository.updateVehicleApplicationStatus(vehicleApplication);
+      await this._vehicleApplicationRepository.updateVehicleApplication(vehicleApplication);
     if (!savedVehicleApplication) {
       throw new UnexpectedError("Failed to update Vehicle Application");
     }

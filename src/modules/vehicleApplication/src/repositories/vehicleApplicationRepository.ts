@@ -14,7 +14,7 @@ export interface IVehicleApplicationRepository {
   createVehicleApplication(
     vehicleApplication: IVehicleApplication
   ): Promise<IVehicleApplication | null>;
-  updateVehicleApplicationStatus(
+  updateVehicleApplication(
     vehicleApplication: IVehicleApplication
   ): Promise<IVehicleApplication | null>;
   getVehicleApplicationById(vehicleId: string): Promise<IVehicleApplication | null>;
@@ -35,6 +35,7 @@ export class VehicleApplicationRepository implements IVehicleApplicationReposito
    *   - If the given license plate is '145', return all records where the license plate contains '145' (e.g., '145TAW', 'XYZ145').
    *   - If the given id is '123', return all records where the id contains '123' (e.g., '123ABC', 'XYZ123').
    */
+
   public async getVehicleApplicationByProperty(
     params: GetViolationVehicleByProperty
   ): Promise<IVehicleApplication[]> {
@@ -98,7 +99,7 @@ export class VehicleApplicationRepository implements IVehicleApplicationReposito
     }
   }
 
-  public async updateVehicleApplicationStatus(
+  public async updateVehicleApplication(
     vehicleApplication: IVehicleApplication
   ): Promise<IVehicleApplication | null> {
     try {

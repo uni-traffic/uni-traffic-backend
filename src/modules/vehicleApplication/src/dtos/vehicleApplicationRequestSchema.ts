@@ -80,3 +80,20 @@ export const UpdateVehicleApplicationStatusSchema = z
 export type UpdateVehicleApplicationStatusRequest = z.infer<
   typeof UpdateVehicleApplicationStatusSchema
 >;
+
+export const UpdateVehicleApplicationStickerSchema = z.object({
+  vehicleApplicationId: z.string({
+    message: '"id" of the vehicle application must be provided'
+  }),
+  stickerNumber: z
+    .string({
+      message: "Sticker number is required"
+    })
+    .min(1, {
+      message: "Sticker number cannot be empty"
+    })
+});
+
+export type UpdateVehicleApplicationStickerRequest = z.infer<
+  typeof UpdateVehicleApplicationStickerSchema
+>;

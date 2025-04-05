@@ -18,6 +18,7 @@ export interface IVehicleApplication {
   schoolMember: VehicleApplicationSchoolMember;
   status: VehicleApplicationStatus;
   updateStatus(newStatus: VehicleApplicationStatus, remarks?: string): void;
+  updateStickerNumber(newStickerNumber: string): void;
 
   applicantId: string;
   applicant?: IUserDTO;
@@ -32,7 +33,7 @@ export class VehicleApplication implements IVehicleApplication {
   private readonly _vehicle: VehicleApplicationVehicle;
 
   private _status: VehicleApplicationStatus;
-  private readonly _stickerNumber: string | null;
+  private _stickerNumber: string | null;
   private _remarks: string | undefined;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date;
@@ -136,6 +137,13 @@ export class VehicleApplication implements IVehicleApplication {
     if (newStatus.value === "REJECTED") {
       this._remarks = remarks;
     }
+  }
+
+  public updateStickerNumber(stickerNumber: string): void {
+    if (!stickerNumber || stickerNumber.trim() === "") {
+      throw new BadRequest("Sticker number is required");
+    }
+    this._stickerNumber = stickerNumber;
   }
 
   public static create(props: {
