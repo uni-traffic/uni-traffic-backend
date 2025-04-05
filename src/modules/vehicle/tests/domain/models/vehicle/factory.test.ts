@@ -51,10 +51,10 @@ describe("VehicleFactory", () => {
     expect(result.getErrorMessage()).toContain("is not a valid license plate number");
   });
 
-  it("should not create a Vehicle when license plate is invalid", () => {
+  it("should not create a Vehicle when sticker is invalid", () => {
     const mockVehicleDataWithInvalidSticker = {
       ...mockVehicleData,
-      stickerNumber: "1234567"
+      stickerNumber: ""
     };
     const result = VehicleFactory.create(mockVehicleDataWithInvalidSticker);
 

@@ -21,6 +21,6 @@ export class VehicleStickerNumber {
   }
 
   private static isValidVehicleStickerNumber(value: string): boolean {
-    return VehicleStickerNumber.STICKER_LENGTH === value.length;
+    return !(value.trim().length < 1);
   }
 }

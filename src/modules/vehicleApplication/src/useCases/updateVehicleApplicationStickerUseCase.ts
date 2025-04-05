@@ -1,4 +1,8 @@
 import { BadRequest, NotFoundError, UnexpectedError } from "../../../../shared/core/errors";
+import type { IUserDTO } from "../../../user/src/dtos/userDTO";
+import { type IUserService, UserService } from "../../../user/src/shared/service/userService";
+import type { IVehicleDTO } from "../../../vehicle/src/dtos/vehicleDTO";
+import { type IVehicleService, VehicleService } from "../../../vehicle/src/service/vehicleService";
 import type { IVehicleApplication } from "../domain/models/vehicleApplication/classes/vehicleApplication";
 import { VehicleApplicationStatus } from "../domain/models/vehicleApplication/classes/vehicleApplicationStatus";
 import {
@@ -14,13 +18,19 @@ import {
 export class UpdateVehicleApplicationStickerUseCase {
   private _vehicleApplicationRepository: IVehicleApplicationRepository;
   private _vehicleApplicationMapper: IVehicleApplicationMapper;
+  private _vehicleService: IVehicleService;
+  private _userService: IUserService;
 
   public constructor(
     vehicleApplicationRepository: IVehicleApplicationRepository = new VehicleApplicationRepository(),
-    vehicleApplicationMapper: IVehicleApplicationMapper = new VehicleApplicationMapper()
+    vehicleApplicationMapper: IVehicleApplicationMapper = new VehicleApplicationMapper(),
+    vehicleService: IVehicleService = new VehicleService(),
+    userService: IUserService = new UserService()
   ) {
     this._vehicleApplicationRepository = vehicleApplicationRepository;
     this._vehicleApplicationMapper = vehicleApplicationMapper;
+    this._vehicleService = vehicleService;
+    this._userService = userService;
   }
 
   public async execute({
@@ -28,8 +38,12 @@ export class UpdateVehicleApplicationStickerUseCase {
     stickerNumber
   }: UpdateVehicleApplicationStickerRequest) {
     const vehicleApplication = await this._getVehicleApplicationFromDatabase(vehicleApplicationId);
-    const approvedStatus = this.getApprovedStatus();
-    const updatedVehicleApplication = this.updateVehicleApplicationSticker(
+
+    await this._createNewVehicle(vehicleApplication, stickerNumber);
+    await this._updateUserRole(vehicleApplication);
+
+    const approvedStatus = this._getApprovedStatus();
+    const updatedVehicleApplication = this._updateVehicleApplicationSticker(
       vehicleApplication,
       stickerNumber,
       approvedStatus
@@ -52,15 +66,44 @@ export class UpdateVehicleApplicationStickerUseCase {
     return vehicleApplication;
   }
 
-  private getApprovedStatus(): VehicleApplicationStatus {
+  private async _createNewVehicle(
+    vehicleApplication: IVehicleApplication,
+    stickerNumber: string
+  ): Promise<IVehicleDTO> {
+    return await this._vehicleService.createVehicle({
+      ownerId: vehicleApplication.applicantId,
+      type: vehicleApplication.vehicle.type,
+      color: "",
+      images: [
+        vehicleApplication.vehicle.frontImage,
+        vehicleApplication.vehicle.backImage,
+        vehicleApplication.vehicle.sideImage
+      ],
+      licensePlate: vehicleApplication.vehicle.licensePlate,
+      make: vehicleApplication.vehicle.make,
+      model: vehicleApplication.vehicle.model,
+      series: vehicleApplication.vehicle.series,
+      stickerNumber: stickerNumber
+    });
+  }
+
+  private async _updateUserRole(vehicleApplication: IVehicleApplication): Promise<IUserDTO> {
+    return this._userService.updateUserRole({
+      userId: vehicleApplication.applicantId,
+      role: vehicleApplication.schoolMember.type
+    });
+  }
+
+  private _getApprovedStatus(): VehicleApplicationStatus {
     const statusResult = VehicleApplicationStatus.create("APPROVED");
     if (statusResult.isFailure) {
       throw new UnexpectedError("Failed to create APPROVED status");
     }
+
     return statusResult.getValue();
   }
 
-  private updateVehicleApplicationSticker(
+  private _updateVehicleApplicationSticker(
     vehicleApplication: IVehicleApplication,
     stickerNumber: string,
     approvedStatus: VehicleApplicationStatus

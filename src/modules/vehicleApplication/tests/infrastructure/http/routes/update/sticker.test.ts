@@ -3,17 +3,29 @@ import request from "supertest";
 import type TestAgent from "supertest/lib/agent";
 import app from "../../../../../../../../api";
 import { db } from "../../../../../../../shared/infrastructure/database/prisma";
+import {
+  type IUserRepository,
+  UserRepository
+} from "../../../../../../user/src/repositories/userRepository";
 import { seedAuthenticatedUser } from "../../../../../../user/tests/utils/user/seedAuthenticatedUser";
+import {
+  type IVehicleRepository,
+  VehicleRepository
+} from "../../../../../../vehicle/src/repositories/vehicleRepository";
 import { VehicleApplicationRepository } from "../../../../../src/repositories/vehicleApplicationRepository";
 import { seedVehicleApplication } from "../../../../utils/seedVehicleApplication";
 
 describe("POST api/v1/vehicle-application/update/sticker", () => {
   let vehicleApplicationRepository: VehicleApplicationRepository;
+  let vehicleRepository: IVehicleRepository;
+  let userRepository: IUserRepository;
   let requestAPI: TestAgent;
 
   beforeAll(async () => {
     requestAPI = request.agent(app);
     vehicleApplicationRepository = new VehicleApplicationRepository();
+    vehicleRepository = new VehicleRepository();
+    userRepository = new UserRepository();
   });
 
   beforeEach(async () => {
@@ -32,7 +44,7 @@ describe("POST api/v1/vehicle-application/update/sticker", () => {
 
     const payload = {
       vehicleApplicationId: seededVehicleApplication.id,
-      stickerNumber: `STICKER-${faker.string.alphanumeric(6)}`
+      stickerNumber: `${new Date().getFullYear()}${faker.number.int({ min: 1000, max: 9999 })}`
     };
 
     const response = await requestAPI
@@ -44,6 +56,17 @@ describe("POST api/v1/vehicle-application/update/sticker", () => {
     expect(response.status).toBe(200);
     expect(responseBody.stickerNumber).toBe(payload.stickerNumber);
     expect(responseBody.status).toBe("APPROVED");
+
+    const userFromDatabase = await userRepository.getUserById(seededVehicleApplication.applicantId);
+
+    expect(userFromDatabase).not.toBeNull();
+    expect(userFromDatabase!.role.value).toBe(seededVehicleApplication.userType);
+
+    const vehicleFromDatabase = await vehicleRepository.getVehicleByProperty({
+      stickerNumber: payload.stickerNumber
+    });
+
+    expect(vehicleFromDatabase).not.toBeNull();
 
     const vehicleApplicationFromDatabase =
       await vehicleApplicationRepository.getVehicleApplicationById(seededVehicleApplication.id);

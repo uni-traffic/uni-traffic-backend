@@ -11,7 +11,7 @@ describe("VehicleStickerNumber", () => {
   });
 
   it("should not match invalid sticker number", () => {
-    const invalidStickerNumber = "1234567";
+    const invalidStickerNumber = "      ";
     const vehicleOrFailure = VehicleStickerNumber.create(invalidStickerNumber);
 
     expect(vehicleOrFailure.isSuccess).toBe(false);
