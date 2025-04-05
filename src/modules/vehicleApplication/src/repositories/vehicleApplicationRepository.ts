@@ -65,7 +65,11 @@ export class VehicleApplicationRepository implements IVehicleApplicationReposito
         },
         include: {
           applicant: true,
-          payment: true
+          payment: {
+            include: {
+              cashier: true
+            }
+          }
         }
       });
 
