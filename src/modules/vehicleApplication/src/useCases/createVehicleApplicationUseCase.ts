@@ -17,6 +17,7 @@ import {
 /** TODO:
  * 1. Ensure files given exist.
  * 2. Move the files from temp to uploads. Add application id to the file
+ * 3. Ensure that the given license plate is not registered to other user.
  */
 
 export class CreateVehicleApplicationUseCase {
