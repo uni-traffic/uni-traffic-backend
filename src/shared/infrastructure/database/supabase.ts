@@ -15,16 +15,25 @@ export interface IStorageService {
 
 export class SupabaseStorageService implements IStorageService {
   private supabase;
+  private readonly _image_placeholder: string;
 
-  constructor(supabaseUrl = process.env.SUPABASE_URL, supabaseKey = process.env.SUPABASE_KEY) {
+  constructor(
+    supabaseUrl = process.env.SUPABASE_URL,
+    supabaseKey = process.env.SUPABASE_KEY,
+    image_placeholder = process.env.SUPABASE_IMAGE_PLACEHOLDER
+  ) {
     if (!supabaseUrl) {
       throw new AppError("[UTE005] Key not defined");
     }
     if (!supabaseKey) {
       throw new AppError("[UTE006] Key not defined");
     }
+    if (!image_placeholder) {
+      throw new AppError("[UTE009] Image Placeholder not defined");
+    }
 
     this.supabase = createClient(supabaseUrl, supabaseKey);
+    this._image_placeholder = image_placeholder;
   }
 
   public async uploadFile(bucket: string, path: string, fileBuffer: Buffer, mimeType: string) {
@@ -40,9 +49,9 @@ export class SupabaseStorageService implements IStorageService {
   }
 
   public async getSignedUrl(bucket: string, path: string): Promise<string> {
-    const { data, error } = await this.supabase.storage.from(bucket).createSignedUrl(path, 300);
+    const { data, error } = await this.supabase.storage.from(bucket).createSignedUrl(path, 3600);
     if (error || !data.signedUrl) {
-      throw new UnexpectedError("[UTE009] Something went wrong getting signed url");
+      return this._image_placeholder;
     }
 
     return data.signedUrl;
