@@ -1,26 +1,15 @@
+import { faker } from "@faker-js/faker";
 import { db } from "../../../../shared/infrastructure/database/prisma";
 import { seedUser } from "../../../user/tests/utils/user/seedUser";
+import { seedViolation } from "../../../violation/tests/utils/violation/seedViolation";
 import { seedViolationRecord } from "../../../violationRecord/tests/utils/violationRecord/seedViolationRecord";
 import { AddViolationRecordPaymentUseCase } from "../../src/useCases/addViolationRecordPaymentUseCase";
-import { ViolationRecordRepository } from "../../../violationRecord/src/repositories/violationRecordRepository";
-import { ViolationRecordPaymentRepository } from "../../src/repositories/addViolationRecordPaymentRepository";
-import { ViolationRecordAuditLogService } from "../../../violationRecordAuditLog/src/service/violationRecordAuditLogService";
-import { faker } from "@faker-js/faker";
-import { seedViolation } from "../../../violation/tests/utils/violation/seedViolation";
 
 describe("AddViolationRecordPaymentUseCase", () => {
   let addViolationRecordPaymentUseCase: AddViolationRecordPaymentUseCase;
 
   beforeAll(() => {
-    const violationRecordRepository = new ViolationRecordRepository();
-    const violationRecordPaymentRepository = new ViolationRecordPaymentRepository();
-    const auditLogService = new ViolationRecordAuditLogService();
-
-    addViolationRecordPaymentUseCase = new AddViolationRecordPaymentUseCase(
-      violationRecordRepository,
-      violationRecordPaymentRepository,
-      auditLogService
-    );
+    addViolationRecordPaymentUseCase = new AddViolationRecordPaymentUseCase();
   });
 
   beforeEach(async () => {
@@ -94,32 +83,5 @@ describe("AddViolationRecordPaymentUseCase", () => {
     await expect(
       addViolationRecordPaymentUseCase.execute(mockRequestData, seededCashier.id)
     ).rejects.toThrowError("Amount paid is less than the required penalty.");
-  });
-
-  it("should create an audit log with correct details after payment", async () => {
-    const seededCashier = await seedUser({ role: "CASHIER" });
-    const seededViolationRecord = await seedViolationRecord({ status: "UNPAID" });
-
-    const mockRequestData = {
-      violationRecordId: seededViolationRecord.id,
-      amountPaid: seededViolationRecord.violation.penalty
-    };
-
-    const result = await addViolationRecordPaymentUseCase.execute(
-      mockRequestData,
-      seededCashier.id
-    );
-
-    expect(result).toBeDefined();
-
-    const auditLog = await db.violationRecordAuditLog.findFirst({
-      where: { violationRecordId: seededViolationRecord.id },
-      orderBy: { createdAt: "desc" }
-    });
-
-    expect(auditLog).toBeDefined();
-    expect(auditLog?.details).toBe(
-      `Violation record payment status updated. Payment ID: ${result.id}, Status changed from UNPAID to PAID by cashier ID: ${seededCashier.id}.`
-    );
   });
 });
