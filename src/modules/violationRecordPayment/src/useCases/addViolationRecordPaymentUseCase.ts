@@ -1,36 +1,32 @@
-import {
-  ViolationRecordRepository,
-  type IViolationRecordRepository
-} from "../../../violationRecord/src/repositories/violationRecordRepository";
-import {
-  ViolationRecordPaymentRepository,
-  type IViolationRecordPaymentRepository
-} from "../../src/repositories/addViolationRecordPaymentRepository";
-import { ViolationRecordPaymentFactory } from "../../src/domain/models/violationRecordPayment/factory";
-import { ViolationRecordStatus } from "../../../violationRecord/src/domain/models/violationRecord/classes/violationRecordStatus";
-import { ViolationRecordAuditLogService } from "../../../violationRecordAuditLog/src/service/violationRecordAuditLogService";
-import type { ViolationRecordPaymentRequest } from "../../src/dtos/violationRecordPaymentRequestSchema";
-import { NotFoundError, BadRequest, UnexpectedError } from "../../../../shared/core/errors";
-import type { IViolationRecordPaymentDTO } from "../../src/dtos/violationRecordPaymentDTO";
+import { BadRequest, NotFoundError } from "../../../../shared/core/errors";
 import type { IViolationRecord } from "../../../violationRecord/src/domain/models/violationRecord/classes/violationRecord";
+import { ViolationRecordStatus } from "../../../violationRecord/src/domain/models/violationRecord/classes/violationRecordStatus";
+import {
+  type IViolationRecordRepository,
+  ViolationRecordRepository
+} from "../../../violationRecord/src/repositories/violationRecordRepository";
 import type { IViolationRecordPayment } from "../domain/models/violationRecordPayment/classes/violationRecordPayment";
+import { ViolationRecordPaymentFactory } from "../domain/models/violationRecordPayment/factory";
 import { ViolationRecordPaymentMapper } from "../domain/models/violationRecordPayment/mapper";
+import type { IViolationRecordPaymentDTO } from "../dtos/violationRecordPaymentDTO";
+import type { ViolationRecordPaymentRequest } from "../dtos/violationRecordPaymentRequestSchema";
+import {
+  type IViolationRecordPaymentRepository,
+  ViolationRecordPaymentRepository
+} from "../repositories/addViolationRecordPaymentRepository";
 
 export class AddViolationRecordPaymentUseCase {
   private _violationRecordRepository: IViolationRecordRepository;
   private _violationRecordPaymentRepository: IViolationRecordPaymentRepository;
-  private _auditLogService: ViolationRecordAuditLogService;
   private _violationRecordPaymentMapper: ViolationRecordPaymentMapper;
 
   public constructor(
     violationRecordRepository: IViolationRecordRepository = new ViolationRecordRepository(),
     violationRecordPaymentRepository: IViolationRecordPaymentRepository = new ViolationRecordPaymentRepository(),
-    auditLogService: ViolationRecordAuditLogService = new ViolationRecordAuditLogService(),
     violationRecordPaymentMapper: ViolationRecordPaymentMapper = new ViolationRecordPaymentMapper()
   ) {
     this._violationRecordRepository = violationRecordRepository;
     this._violationRecordPaymentRepository = violationRecordPaymentRepository;
-    this._auditLogService = auditLogService;
     this._violationRecordPaymentMapper = violationRecordPaymentMapper;
   }
 
@@ -46,14 +42,10 @@ export class AddViolationRecordPaymentUseCase {
     const payment = this.createPayment(request, cashierId);
     const newPayment = await this.savePayment(payment);
 
-    const oldStatus = violationRecord.status.value;
     const updatedViolationRecord = await this.updateViolationRecordStatus(violationRecord);
-
     if (!updatedViolationRecord) {
       throw new BadRequest("Failed to update violation record status.");
     }
-
-    await this.createAuditLog(cashierId, violationRecord.id, oldStatus, "PAID", newPayment.id);
 
     return this._violationRecordPaymentMapper.toDTO(newPayment);
   }
@@ -93,7 +85,6 @@ export class AddViolationRecordPaymentUseCase {
     violationRecord.updateStatus(updatedStatusResult.getValue());
     const updatedRecord =
       await this._violationRecordRepository.updateViolationRecord(violationRecord);
-
     if (!updatedRecord) {
       throw new BadRequest("Failed to update violation record.");
     }
@@ -125,24 +116,26 @@ export class AddViolationRecordPaymentUseCase {
     return savedPayment;
   }
 
-  private async createAuditLog(
-    cashierId: string,
-    violationRecordId: string,
-    oldStatus: string,
-    newStatus: string,
-    paymentId: string
-  ) {
-    const message = `Violation record payment status updated. Payment ID: ${paymentId}, Status changed from ${oldStatus} to ${newStatus} by cashier ID: ${cashierId}.`;
-
-    const auditLogResult = await this._auditLogService.createAndSaveViolationRecordAuditLog({
-      actorId: cashierId,
-      violationRecordId,
-      auditLogType: "UPDATE",
-      details: message
-    });
-
-    if (!auditLogResult) {
-      throw new UnexpectedError("Failed to create audit log.");
-    }
-  }
+  /** TODO: Apply the new audit log
+   * private async createAuditLog(
+   *     cashierId: string,
+   *     violationRecordId: string,
+   *     oldStatus: string,
+   *     newStatus: string,
+   *     paymentId: string
+   *   ) {
+   *     const message = `Violation record payment status updated. Payment ID: ${paymentId}, Status changed from ${oldStatus} to ${newStatus} by cashier ID: ${cashierId}.`;
+   *
+   *     const auditLogResult = await this._auditLogService.createAndSaveViolationRecordAuditLog({
+   *       actorId: cashierId,
+   *       violationRecordId,
+   *       auditLogType: "UPDATE",
+   *       details: message
+   *     });
+   *
+   *     if (!auditLogResult) {
+   *       throw new UnexpectedError("Failed to create audit log.");
+   *     }
+   *   }
+   */
 }
