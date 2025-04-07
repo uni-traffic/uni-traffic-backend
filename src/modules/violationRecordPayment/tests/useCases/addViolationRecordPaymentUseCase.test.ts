@@ -15,7 +15,6 @@ describe("AddViolationRecordPaymentUseCase", () => {
   beforeEach(async () => {
     await db.violationRecordPayment.deleteMany();
     await db.violationRecord.deleteMany();
-    await db.violationRecordAuditLog.deleteMany();
   });
 
   it("should successfully add a violation record payment and update status", async () => {
