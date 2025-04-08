@@ -5,7 +5,7 @@ import type { CreateAuditLogParams, IAuditLogDTO } from "../dtos/auditLogDTO";
 import { AuditLogRepository, type IAuditLogRepository } from "../repositories/auditLogRepository";
 
 export interface IAuditLogService {
-  createAndSaveAuditlog(params: CreateAuditLogParams): Promise<IAuditLogDTO>;
+  createAndSaveAuditLog(params: CreateAuditLogParams): Promise<IAuditLogDTO>;
 }
 
 export class AuditLogService implements IAuditLogService {
@@ -20,7 +20,7 @@ export class AuditLogService implements IAuditLogService {
     this._auditLogMapper = auditLogMapper;
   }
 
-  public async createAndSaveAuditlog(params: CreateAuditLogParams): Promise<IAuditLogDTO> {
+  public async createAndSaveAuditLog(params: CreateAuditLogParams): Promise<IAuditLogDTO> {
     const auditLogOrError = AuditLogFactory.create({
       actionType: params.actionType,
       details: params.details,

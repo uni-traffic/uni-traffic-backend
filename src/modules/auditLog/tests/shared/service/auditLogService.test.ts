@@ -3,7 +3,7 @@ import { seedUser } from "../../../../user/tests/utils/user/seedUser";
 import type { CreateAuditLogParams } from "../../../src/dtos/auditLogDTO";
 import { AuditLogService, type IAuditLogService } from "../../../src/service/auditLogService";
 
-describe("AuditLogSerivce", () => {
+describe("AuditLogService", () => {
   let auditLogService: IAuditLogService;
 
   beforeAll(() => {
@@ -19,7 +19,7 @@ describe("AuditLogSerivce", () => {
       objectId: "object-id"
     };
 
-    const createdAuditLog = await auditLogService.createAndSaveAuditlog(requestParams);
+    const createdAuditLog = await auditLogService.createAndSaveAuditLog(requestParams);
 
     expect(createdAuditLog).not.toBeNull();
     expect(createdAuditLog?.objectId).toBe(requestParams.objectId);
@@ -37,7 +37,7 @@ describe("AuditLogSerivce", () => {
       objectId: "object-id"
     };
 
-    await expect(auditLogService.createAndSaveAuditlog(requestParams)).rejects.toThrow(
+    await expect(auditLogService.createAndSaveAuditLog(requestParams)).rejects.toThrow(
       new UnexpectedError("Failed to save audit log.")
     );
   });
@@ -53,7 +53,7 @@ describe("AuditLogSerivce", () => {
 
     let message = "";
     try {
-      await auditLogService.createAndSaveAuditlog(requestParams);
+      await auditLogService.createAndSaveAuditLog(requestParams);
     } catch (error) {
       message = (error as Error).message;
     }
