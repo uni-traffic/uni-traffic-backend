@@ -1,5 +1,5 @@
-import { AuditLogFactory } from "../../../src/domain/models/auditLog/factory";
 import { AuditLog } from "../../../src/domain/models/auditLog/classes/auditLog";
+import { AuditLogFactory } from "../../../src/domain/models/auditLog/factory";
 import { createAuditLogPersistenceData } from "../../utils/auditLog/createAuditLogPersistenceData";
 
 describe("AuditLogFactory", () => {
@@ -12,7 +12,7 @@ describe("AuditLogFactory", () => {
 
     const auditLog = result.getValue();
     expect(auditLog.id).toBe(mockAuditLogData.id);
-    expect(auditLog.actionType).toBe(mockAuditLogData.actionType);
+    expect(auditLog.actionType.value).toBe(mockAuditLogData.actionType);
     expect(auditLog.details).toBe(mockAuditLogData.details);
     expect(auditLog.createdAt).toBe(mockAuditLogData.createdAt);
     expect(auditLog.updatedAt).toBe(mockAuditLogData.updatedAt);

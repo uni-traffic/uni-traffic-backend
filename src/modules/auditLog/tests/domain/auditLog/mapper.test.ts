@@ -14,7 +14,7 @@ describe("AuditLogMapper", () => {
     const domainObject = auditLogMapper.toDomain(persistenceData);
 
     expect(domainObject.id).toBe(persistenceData.id);
-    expect(domainObject.actionType).toBe(persistenceData.actionType);
+    expect(domainObject.actionType.value).toBe(persistenceData.actionType);
     expect(domainObject.details).toBe(persistenceData.details);
     expect(domainObject.createdAt).toBe(persistenceData.createdAt);
     expect(domainObject.updatedAt).toBe(persistenceData.updatedAt);
@@ -27,7 +27,7 @@ describe("AuditLogMapper", () => {
     const persistenceData = auditLogMapper.toPersistence(domainObject);
 
     expect(persistenceData.id).toBe(domainObject.id);
-    expect(persistenceData.actionType).toBe(domainObject.actionType);
+    expect(persistenceData.actionType).toBe(domainObject.actionType.value);
     expect(persistenceData.details).toBe(domainObject.details);
     expect(persistenceData.createdAt).toBe(domainObject.createdAt);
     expect(persistenceData.updatedAt).toBe(domainObject.updatedAt);
@@ -40,7 +40,7 @@ describe("AuditLogMapper", () => {
     const dto = auditLogMapper.toDTO(domainObject);
 
     expect(dto.id).toBe(domainObject.id);
-    expect(dto.actionType).toBe(domainObject.actionType);
+    expect(dto.actionType).toBe(domainObject.actionType.value);
     expect(dto.details).toBe(domainObject.details);
     expect(dto.createdAt).toBe(domainObject.createdAt);
     expect(dto.updatedAt).toBe(domainObject.updatedAt);

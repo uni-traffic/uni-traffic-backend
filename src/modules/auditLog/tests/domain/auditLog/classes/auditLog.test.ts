@@ -1,12 +1,15 @@
 import { faker } from "@faker-js/faker";
 import { AuditLog } from "../../../../src/domain/models/auditLog/classes/auditLog";
 import type { IAuditLog } from "../../../../src/domain/models/auditLog/classes/auditLog";
+import { AuditLogActionType } from "../../../../src/domain/models/auditLog/classes/auditLogActionType";
 
 describe("AuditLog", () => {
   it("should create an AuditLog", () => {
     const mockAuditLogData: IAuditLog = {
       id: faker.string.uuid(),
-      actionType: "CREATE",
+      actionType: AuditLogActionType.create(
+        faker.helpers.arrayElement(AuditLogActionType.validActionType)
+      ).getValue(),
       details: faker.lorem.sentence(),
       createdAt: faker.date.past(),
       updatedAt: faker.date.recent(),
