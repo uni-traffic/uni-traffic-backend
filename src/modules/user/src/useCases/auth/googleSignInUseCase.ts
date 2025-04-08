@@ -1,4 +1,5 @@
 import type { TokenPayload } from "google-auth-library";
+import { defaultTo } from "rambda";
 import { BadRequest, UnexpectedError } from "../../../../../shared/core/errors";
 import { AppKeys, type IAppKeys } from "../../../../../shared/lib/appKey";
 import { BycryptPassword, type IHashAlgorithm } from "../../../../../shared/lib/bycrypt";
@@ -36,83 +37,56 @@ export class GoogleSignInUseCase {
   }
 
   public async execute({ token, clientType }: GoogleSignInRequest): Promise<IUserLoginResponse> {
-    const tokenPayload = await this._getTokenPayload(token, clientType);
-    const user = await this._getUserFromDatabase(tokenPayload.email!);
-    const finalUser = user ? user : await this._createAndSaveUserToDatabase(tokenPayload);
-    const signedToken = this._getSignedAccessToken(finalUser.id);
+    const payload = await this._verifyToken(token, clientType);
+    const user =
+      (await this._findUserByEmail(payload.email)) ?? (await this._registerNewUser(payload));
+    const accessToken = this._generateToken(user.id);
 
-    return this._generateResponseData(signedToken, finalUser);
+    return this._buildResponse(accessToken, user);
   }
 
-  private async _getTokenPayload(
-    token: string,
-    clientType: "WEB" | "MOBILE"
-  ): Promise<TokenPayload> {
+  private async _verifyToken(token: string, clientType: "WEB" | "MOBILE"): Promise<TokenPayload> {
     return this._googleAuthClient.getPayloadFromToken(token, clientType);
   }
 
-  private async _getUserFromDatabase(email: string): Promise<IUser | null> {
+  private async _findUserByEmail(email?: string): Promise<IUser | null> {
+    if (!email) throw new UnexpectedError("No email address found in token payload");
+
     return this._userRepository.getUserByEmail(email);
   }
 
-  private async _createAndSaveUserToDatabase({
-    email,
-    given_name,
-    family_name
-  }: TokenPayload): Promise<IUser> {
-    if (!email || !given_name || !family_name) throw new Error("");
-    const newUser = await this._createUserDomain({ email, given_name, family_name });
+  private async _registerNewUser(payload: TokenPayload): Promise<IUser> {
+    if (!payload.email) throw new UnexpectedError("No email address found in token payload");
 
-    return await this._saveUserToDatabase(newUser);
-  }
-
-  private async _createUserDomain({
-    email,
-    given_name,
-    family_name
-  }: {
-    email: string;
-    given_name: string;
-    family_name: string;
-  }): Promise<IUser> {
+    const accountFirstName = payload.given_name || payload.name || payload.email.split("@")[0];
     const userOrError = UserFactory.create({
-      username: `${email}`.toLowerCase(),
-      firstName: given_name,
-      lastName: family_name,
-      email: email,
-      password: await this._hasUserPassword("ToBeRemoved")
+      username: payload.email.toLowerCase(),
+      firstName: defaultTo("", accountFirstName),
+      lastName: defaultTo("", payload.family_name),
+      email: payload.email,
+      password: await this._hashAlgorithm.generateHash("ToBeRemoved")
     });
     if (userOrError.isFailure) {
       throw new BadRequest(userOrError.getErrorMessage()!);
     }
 
-    return userOrError.getValue();
-  }
-
-  private async _hasUserPassword(rawPassword: string): Promise<string> {
-    return await this._hashAlgorithm.generateHash(rawPassword);
-  }
-
-  private async _saveUserToDatabase(user: IUser): Promise<IUser> {
-    const savedUserOrNull = await this._userRepository.createUser(user);
-    if (!savedUserOrNull) {
-      throw new UnexpectedError("Failed to save User to database");
+    const savedUser = await this._userRepository.createUser(userOrError.getValue());
+    if (!savedUser) {
+      throw new UnexpectedError("Failed to save user");
     }
 
-    return savedUserOrNull;
+    return savedUser;
   }
-  private _getSignedAccessToken(userId: string): string {
+
+  private _generateToken(userId: string): string {
     return this._jsonWebToken.sign({ id: userId });
   }
 
-  private _generateResponseData(accessToken: string, user: IUser): IUserLoginResponse {
-    const userDTO = this._userMapper.toDTO(user);
-    const plateRecognizerKey = this._appKeys.plateRecognizerKey;
-
+  private _buildResponse(accessToken: string, user: IUser): IUserLoginResponse {
     return {
-      user: userDTO,
-      appKey: plateRecognizerKey,
-      accessToken: accessToken
+      user: this._userMapper.toDTO(user),
+      appKey: this._appKeys.plateRecognizerKey,
+      accessToken
     };
   }
 }
