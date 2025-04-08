@@ -1,9 +1,9 @@
-import type { AuditLogAction } from "@prisma/client";
 import type { IUserDTO } from "../../../../../../user/src/dtos/userDTO";
+import type { AuditLogActionType } from "./auditLogActionType";
 
 export interface IAuditLog {
   id: string;
-  actionType: AuditLogAction;
+  actionType: AuditLogActionType;
   details: string;
   createdAt: Date;
   updatedAt: Date;
@@ -14,7 +14,7 @@ export interface IAuditLog {
 
 export class AuditLog implements IAuditLog {
   private readonly _id: string;
-  private readonly _actionType: AuditLogAction;
+  private readonly _actionType: AuditLogActionType;
   private readonly _details: string;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date;
@@ -46,7 +46,7 @@ export class AuditLog implements IAuditLog {
     return this._id;
   }
 
-  get actionType(): AuditLogAction {
+  get actionType(): AuditLogActionType {
     return this._actionType;
   }
 

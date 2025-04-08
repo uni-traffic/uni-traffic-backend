@@ -4,10 +4,11 @@ import type { IAuditLog } from "../../../src/domain/models/auditLog/classes/audi
 import type { IAuditLogRawObject } from "../../../src/domain/models/auditLog/constant";
 import { AuditLogFactory } from "../../../src/domain/models/auditLog/factory";
 import { createUserPersistenceData } from "../../../../user/tests/utils/user/createUserPersistenceData";
+import { AuditLogAction } from "@prisma/client";
 
 export const createAuditLogDomainObject = ({
   id = uuid(),
-  actionType = "CREATE" as const,
+  actionType = faker.helpers.arrayElement(Object.values(AuditLogAction)) as AuditLogAction,
   details = faker.lorem.sentence(),
   createdAt = faker.date.past(),
   updatedAt = faker.date.recent(),

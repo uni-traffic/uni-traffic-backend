@@ -1,15 +1,16 @@
 import { Result } from "../../../../../../shared/core/result";
 import { AuditLog } from "./classes/auditLog";
 import type { IAuditLog } from "./classes/auditLog";
-import type { AuditLogAction, User } from "@prisma/client";
+import type { User } from "@prisma/client";
 import { UserFactory } from "../../../../../user/src/domain/models/user/factory";
 import { UserMapper } from "../../../../../user/src/domain/models/user/mapper";
 import type { IUserDTO } from "../../../../../user/src/dtos/userDTO";
 import { uniTrafficId } from "../../../../../../shared/lib/uniTrafficId";
+import { AuditLogActionType } from "./classes/auditLogActionType";
 
 export interface IAuditLogFactoryProps {
   id?: string;
-  actionType: AuditLogAction;
+  actionType: string;
   details: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -28,6 +29,11 @@ export class AuditLogFactory {
       return Result.fail("Details must be less than 1000 characters");
     }
 
+    const actionTypeOrUndefined = AuditLogActionType.create(props.actionType);
+    if (actionTypeOrUndefined.isFailure) {
+      return Result.fail(actionTypeOrUndefined.getErrorMessage()!);
+    }
+
     const actorOrUndefined = props.actor
       ? AuditLogFactory._getUserDTOFromPersistence(props.actor)
       : undefined;
@@ -35,6 +41,8 @@ export class AuditLogFactory {
     return Result.ok<IAuditLog>(
       AuditLog.create({
         ...props,
+        actionType: actionTypeOrUndefined?.getValue(),
+        details: props.details,
         id: props.id ?? uniTrafficId(),
         createdAt: props.createdAt ?? new Date(),
         updatedAt: props.updatedAt ?? new Date(),
