@@ -15,6 +15,7 @@ export interface IUserRepository {
   createUser(user: IUser): Promise<IUser | null>;
   createUsers(users: IUser[]): Promise<IUser[]>;
   updateUser(user: IUser): Promise<IUser | null>;
+  getTotalUserCount(roles?: Role[]): Promise<number>; 
 }
 
 export class UserRepository implements IUserRepository {
@@ -165,5 +166,15 @@ export class UserRepository implements IUserRepository {
     } catch {
       return [];
     }
+  }
+
+  public async getTotalUserCount(roles?: Role[]): Promise<number> {
+    const userCount = await this._database.user.count({
+        where: {
+            ...(roles ? { role: { in: roles } } : {}),
+            isDeleted: false 
+        }
+    });
+    return userCount;
   }
 }
