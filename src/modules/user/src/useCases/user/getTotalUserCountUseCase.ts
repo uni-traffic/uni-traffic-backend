@@ -1,4 +1,5 @@
-import { IUserRepository } from "../../repositories/userRepository";
+import { BadRequest } from "../../../../../shared/core/errors";
+import type { IUserRepository } from "../../repositories/userRepository";
 
 export class GetTotalUserCountUseCase {
   private _userRepository: IUserRepository;
@@ -7,16 +8,34 @@ export class GetTotalUserCountUseCase {
     this._userRepository = userRepository;
   }
 
-  public async execute(type: string): Promise<{ count: number }> {
+  public async execute(type?: string): Promise<{ count: number }> {
+    this._ensureTypeIsValid(type);
+
     switch (type) {
-      case 'MANAGEMENT':
-        return { count: await this._userRepository.getTotalUserCount(['CASHIER', 'SECURITY', 'ADMIN', 'SUPERADMIN']) };
-      case 'APP_USERS':
-        return { count: await this._userRepository.getTotalUserCount(['GUEST', 'STUDENT', 'STAFF']) };
-      case 'ALL':
-        return { count: await this._userRepository.getTotalUserCount() };
+      case "MANAGEMENT":
+        return {
+          count: await this._userRepository.getTotalUserCount([
+            "CASHIER",
+            "SECURITY",
+            "ADMIN",
+            "SUPERADMIN"
+          ])
+        };
+      case "APP_USERS":
+        return {
+          count: await this._userRepository.getTotalUserCount(["GUEST", "STUDENT", "STAFF"])
+        };
       default:
-        throw new Error('Invalid user type');
+        return { count: await this._userRepository.getTotalUserCount() };
+    }
+  }
+
+  private _ensureTypeIsValid(type?: string): void {
+    const validTypes = ["ALL", "MANAGEMENT", "APP_USERS"];
+    if (type && !validTypes.includes(type)) {
+      throw new BadRequest(
+        `Invalid type: ${type}. Valid types are 'ALL', 'MANAGEMENT', 'APP_USERS', or undefined.`
+      );
     }
   }
 }

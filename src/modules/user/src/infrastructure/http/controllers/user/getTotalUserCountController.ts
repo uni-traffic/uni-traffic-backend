@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
 import { ForbiddenError } from "../../../../../../../shared/core/errors";
 import { BaseController } from "../../../../../../../shared/infrastructure/http/core/baseController";
-import { UserRepository } from "../../../../repositories/userRepository";
 import { type IJSONWebToken, JSONWebToken } from "../../../../../../../shared/lib/jsonWebToken";
+import { UserRepository } from "../../../../repositories/userRepository";
 import { type IUserRoleService, UserRoleService } from "../../../../shared/service/userRoleService";
 import { GetTotalUserCountUseCase } from "../../../../useCases/user/getTotalUserCountUseCase";
 
@@ -27,10 +27,6 @@ export class GetTotalUserCountController extends BaseController {
     await this._verifyPermission(req);
 
     const type = req.query.type as string;
-    if (!type) {
-       res.status(400).json({ message: "The 'type' query parameter is required." });
-       return;
-    }
     const result = await this._getTotalUserCountUseCase.execute(type);
 
     res.json({ count: result.count });
@@ -45,7 +41,6 @@ export class GetTotalUserCountController extends BaseController {
       "ADMIN",
       "SECURITY"
     ]);
-
     if (!hasPermission) {
       throw new ForbiddenError("You do not have the required permissions to perform this action.");
     }

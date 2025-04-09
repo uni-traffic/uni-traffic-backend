@@ -17,10 +17,16 @@ describe("GET /api/v1/user/count", () => {
     await db.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return status 200 and correct user count for 'ALL' type", async () => {
-    await seedUser({ role: "STUDENT" });
-    await seedUser({ role: "STAFF" });
-    await seedUser({ role: "SECURITY" });
+    await Promise.all([
+      seedUser({ role: "STUDENT" }),
+      seedUser({ role: "STAFF" }),
+      seedUser({ role: "SECURITY" })
+    ]);
 
     const seededAuthenticatedUser = await seedAuthenticatedUser({
       role: "ADMIN",
@@ -36,13 +42,16 @@ describe("GET /api/v1/user/count", () => {
     const responseBody = response.body;
 
     expect(response.status).toBe(200);
-    expect(responseBody.count).toBe(4); 
+    expect(responseBody.count).toBe(4);
   });
 
   it("should return status 200 and correct user count for 'MANAGEMENT' type", async () => {
-    await seedUser({ role: "ADMIN" });
-    await seedUser({ role: "SECURITY" });
-    await seedUser({ role: "SUPERADMIN" });
+    await Promise.all([
+      seedUser({ role: "STUDENT" }),
+      seedUser({ role: "STAFF" }),
+      seedUser({ role: "SECURITY" }),
+      seedUser({ role: "SUPERADMIN" })
+    ]);
 
     const seededAuthenticatedUser = await seedAuthenticatedUser({
       role: "ADMIN",
@@ -58,7 +67,7 @@ describe("GET /api/v1/user/count", () => {
     const responseBody = response.body;
 
     expect(response.status).toBe(200);
-    expect(responseBody.count).toBe(4); 
+    expect(responseBody.count).toBe(3);
   });
 
   it("should return status 200 and correct user count for 'APP_USERS' type", async () => {
@@ -80,7 +89,29 @@ describe("GET /api/v1/user/count", () => {
     const responseBody = response.body;
 
     expect(response.status).toBe(200);
-    expect(responseBody.count).toBe(3); 
+    expect(responseBody.count).toBe(3);
+  });
+
+  it("should return status 200 and count of all users", async () => {
+    await Promise.all([
+      seedUser({ role: "STUDENT" }),
+      seedUser({ role: "STAFF" }),
+      seedUser({ role: "SECURITY" }),
+      seedUser({ role: "CASHIER" }),
+      seedUser({ role: "SUPERADMIN" })
+    ]);
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "ADMIN",
+      expiration: "1h"
+    });
+
+    const response = await requestAPI
+      .get("/api/v1/user/count")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query({});
+
+    expect(response.status).toBe(200);
+    expect(response.body.count).toBe(6);
   });
 
   it("should return status 403 and message when Authorization lacks permission", async () => {
@@ -94,27 +125,12 @@ describe("GET /api/v1/user/count", () => {
       .query({
         type: "ALL"
       });
-
     const responseBody = response.body;
 
     expect(response.status).toBe(403);
     expect(responseBody.message).toBe(
       "You do not have the required permissions to perform this action."
     );
-  });
-
-  it("should return status 400 when no parameters are passed", async () => {
-    const seededAuthenticatedUser = await seedAuthenticatedUser({
-      role: "ADMIN",
-      expiration: "1h"
-    });
-
-    const response = await requestAPI
-      .get("/api/v1/user/count")
-      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
-      .query({});
-
-    expect(response.status).toBe(400);
   });
 
   it("should return status 401 when the provided Authorization is expired", async () => {
