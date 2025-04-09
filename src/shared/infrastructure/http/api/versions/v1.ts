@@ -1,4 +1,5 @@
 import { type Request, type Response, Router } from "express";
+import { auditLogRouter } from "../../../../../modules/auditLog/src/infrastructure/http/routes/auditLogRouter";
 import { fileRouter } from "../../../../../modules/file/src/infrastructure/http/routes/fileRouter";
 import { authRouter } from "../../../../../modules/user/src/infrastructure/http/routes/authRouter";
 import { userRouter } from "../../../../../modules/user/src/infrastructure/http/routes/userRouter";
@@ -23,5 +24,6 @@ v1Router.use("/payment", paymentRouter);
 v1Router.use("/files", fileRouter);
 v1Router.use("/vehicle-application", vehicleApplicationRouter);
 v1Router.use("/payment", vehicleApplicationPaymentRouter);
+v1Router.use("/audit-log", auditLogRouter);
 
 export { v1Router };

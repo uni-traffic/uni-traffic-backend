@@ -1,3 +1,4 @@
+import { db } from "../../../../../shared/infrastructure/database/prisma";
 import { seedUser } from "../../../../user/tests/utils/user/seedUser";
 import {
   AuditLogRepository,
@@ -5,11 +6,15 @@ import {
 } from "../../../src/repositories/auditLogRepository";
 import { createAuditLogDomainObject } from "../../utils/auditLog/createAuditLogDomainObject";
 
-describe("AuditLogRepository.createaAndSaveAuditLog", () => {
+describe("AuditLogRepository.createAndSaveAuditLog", () => {
   let auditLogRepository: IAuditLogRepository;
 
   beforeAll(() => {
     auditLogRepository = new AuditLogRepository();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should successfully create and save an audit log", async () => {
@@ -39,7 +44,6 @@ describe("AuditLogRepository.createaAndSaveAuditLog", () => {
     const createdAuditLog = await auditLogRepository.createAndSaveAuditLog(
       createAuditLogDomainObjectRaw
     );
-    console.log(createdAuditLog);
 
     expect(createdAuditLog).toBeNull();
   });

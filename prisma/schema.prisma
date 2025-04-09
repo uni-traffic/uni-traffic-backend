@@ -212,6 +212,9 @@ model AuditLog {
   actor   User   @relation(fields: [actorId], references: [id], onDelete: Cascade)
 
   objectId String
+
+  @@index([actorId, objectId, actionType])
+  @@index([createdAt])
 }
 
 enum AuditLogAction {
