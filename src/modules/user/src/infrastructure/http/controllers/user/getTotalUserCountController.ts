@@ -36,11 +36,7 @@ export class GetTotalUserCountController extends BaseController {
     const accessToken = this._getAccessToken(req);
     const { id } = this._jsonWebToken.verify<{ id: string }>(accessToken);
 
-    const hasPermission = await this._userRoleService.hasGivenRoles(id, [
-      "SUPERADMIN",
-      "ADMIN",
-      "SECURITY"
-    ]);
+    const hasPermission = await this._userRoleService.hasGivenRoles(id, ["SUPERADMIN", "ADMIN"]);
     if (!hasPermission) {
       throw new ForbiddenError("You do not have the required permissions to perform this action.");
     }

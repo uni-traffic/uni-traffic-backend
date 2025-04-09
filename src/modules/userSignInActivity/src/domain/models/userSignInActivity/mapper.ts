@@ -1,6 +1,6 @@
-import { IUserDTO } from "../../../../../user/src/dtos/userDTO";
+import type { IUserDTO } from "../../../../../user/src/dtos/userDTO";
 import type { IUserSignInActivityDTO } from "../../../dtos/userSignInActivityDTO";
-import type { UserSignInActivity } from "./classes/userSignInActivity";
+import type { IUserSignInActivity, UserSignInActivity } from "./classes/userSignInActivity";
 import type { IUserSignInActivityRawObject, IUserSignInActivitySchema } from "./constant";
 import { UserSignInActivityFactory } from "./factory";
 import { defaultTo } from "rambda";
@@ -12,15 +12,17 @@ export interface IUserSignInActivityMapper {
 }
 
 export class UserSignInActivityMapper implements IUserSignInActivityMapper {
-  public toPersistence(activity: UserSignInActivity): IUserSignInActivitySchema {
+  public toPersistence(activity: IUserSignInActivity): IUserSignInActivitySchema {
     return {
       id: activity.id,
       userId: activity.userId,
-      time: activity.time,
+      time: activity.time
     };
   }
 
-  public toDomain(raw: IUserSignInActivityRawObject & { user?: IUserDTO | null }): UserSignInActivity {
+  public toDomain(
+    raw: IUserSignInActivityRawObject & { user?: IUserDTO | null }
+  ): UserSignInActivity {
     return UserSignInActivityFactory.create(raw).getValue();
   }
 
@@ -29,7 +31,7 @@ export class UserSignInActivityMapper implements IUserSignInActivityMapper {
       id: activity.id,
       userId: activity.userId,
       time: activity.time,
-      user: defaultTo(null, activity.user),
+      user: defaultTo(null, activity.user)
     };
   }
 }
