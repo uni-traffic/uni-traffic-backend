@@ -1,11 +1,11 @@
-import { db } from "../../../../../shared/infrastructure/database/prisma";
-import { UserSignInActivityRepository } from "../../../src/repositories/userSignInActivityRepository";
-import { UserSignInActivityFactory } from "../../../src/domain/models/userSignInActivity/factory";
-import { seedUser } from "../../../../user/tests/utils/user/seedUser";
 import { faker } from "@faker-js/faker";
 import type { Result } from "../../../../../shared/core/result";
+import { db } from "../../../../../shared/infrastructure/database/prisma";
+import { seedUser } from "../../../../user/tests/utils/user/seedUser";
 import type { UserSignInActivity } from "../../../src/domain/models/userSignInActivity/classes/userSignInActivity";
-import { NotFoundError } from "../../../../../shared/core/errors";
+import { UserSignInActivityFactory } from "../../../src/domain/models/userSignInActivity/factory";
+import { UserSignInActivityRepository } from "../../../src/repositories/userSignInActivityRepository";
+import { createUserSignInActivityDomainObject } from "../../utils/createUserSignInActivityDomainObject";
 
 describe("UserSignInActivityRepository.create", () => {
   let repository: UserSignInActivityRepository;
@@ -17,6 +17,10 @@ describe("UserSignInActivityRepository.create", () => {
   beforeEach(async () => {
     await db.userSignInActivity.deleteMany();
     await db.user.deleteMany();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should create a new sign-in activity with hydrated user", async () => {
@@ -48,19 +52,13 @@ describe("UserSignInActivityRepository.create", () => {
     expect(dbActivity).toBeTruthy();
   });
 
-  it("should throw NotFoundError when user does not exist", async () => {
-    const activityOrError: Result<UserSignInActivity> = UserSignInActivityFactory.create({
-      id: faker.string.uuid(),
-      userId: "non-existent-user-id",
-      time: new Date()
+  it("should return null when user does not exist", async () => {
+    const userSignInActivityDomainObject = createUserSignInActivityDomainObject({
+      id: faker.string.uuid()
     });
 
-    if (activityOrError.isFailure) {
-      throw new Error("Failed to create test activity");
-    }
+    const result = await repository.create(userSignInActivityDomainObject);
 
-    const activity = activityOrError.getValue();
-
-    await expect(repository.create(activity)).rejects.toThrow(NotFoundError);
+    expect(result).toBeNull();
   });
 });

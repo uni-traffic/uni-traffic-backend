@@ -1,7 +1,7 @@
-import { db } from "../../../../../shared/infrastructure/database/prisma";
-import { UserSignInActivityRepository } from "../../../src/repositories/userSignInActivityRepository";
-import { seedUser } from "../../../../user/tests/utils/user/seedUser";
 import { faker } from "@faker-js/faker";
+import { db } from "../../../../../shared/infrastructure/database/prisma";
+import { seedUser } from "../../../../user/tests/utils/user/seedUser";
+import { UserSignInActivityRepository } from "../../../src/repositories/userSignInActivityRepository";
 
 describe("UserSignInActivityRepository.getRecentByUserId", () => {
   let repository: UserSignInActivityRepository;
@@ -12,6 +12,10 @@ describe("UserSignInActivityRepository.getRecentByUserId", () => {
 
   beforeEach(async () => {
     await db.userSignInActivity.deleteMany();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should return recent activities limited by count", async () => {

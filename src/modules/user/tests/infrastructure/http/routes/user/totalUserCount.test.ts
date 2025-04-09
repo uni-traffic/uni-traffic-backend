@@ -116,7 +116,7 @@ describe("GET /api/v1/user/count", () => {
 
   it("should return status 403 and message when Authorization lacks permission", async () => {
     const seededAuthenticatedUser = await seedAuthenticatedUser({
-      role: faker.helpers.arrayElement(["STUDENT", "STAFF", "SECURITY"])
+      role: faker.helpers.arrayElement(["STUDENT", "STAFF", "GUEST"])
     });
 
     const response = await requestAPI

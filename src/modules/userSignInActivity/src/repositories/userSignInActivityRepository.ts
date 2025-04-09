@@ -1,10 +1,9 @@
+import { db } from "../../../../shared/infrastructure/database/prisma";
 import type {
   IUserSignInActivity,
   UserSignInActivity
 } from "../domain/models/userSignInActivity/classes/userSignInActivity";
 import { UserSignInActivityMapper } from "../domain/models/userSignInActivity/mapper";
-import { db } from "../../../../shared/infrastructure/database/prisma";
-import { NotFoundError } from "../../../../shared/core/errors";
 
 interface HydrateOptions {
   user?: boolean;
@@ -30,18 +29,13 @@ export class UserSignInActivityRepository implements IUserSignInActivityReposito
   public async create(activity: IUserSignInActivity): Promise<IUserSignInActivity | null> {
     try {
       const persistenceData = this._mapper.toPersistence(activity);
-
-      const created = await db.userSignInActivity.create({
+      const savedUserRaw = await db.userSignInActivity.create({
         data: persistenceData,
         include: { user: true }
       });
 
-      return this._mapper.toDomain(created);
-    } catch (error) {
-      if (error instanceof Error && error.message.includes("Foreign key constraint")) {
-        throw new NotFoundError("User not found");
-      }
-
+      return this._mapper.toDomain(savedUserRaw);
+    } catch {
       return null;
     }
   }
