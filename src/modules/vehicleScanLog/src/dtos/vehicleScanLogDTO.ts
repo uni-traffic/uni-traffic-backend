@@ -5,5 +5,5 @@ export interface IVehicleScanLogDTO {
   securityId: string;
   licensePlate: string;
   time: Date;
-  security?: IUserDTO | null;
+  security: IUserDTO | null;
 }

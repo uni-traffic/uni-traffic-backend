@@ -17,6 +17,7 @@ describe("VehicleScanLogMapper", () => {
     expect(domainObject.securityId).toBe(persistenceData.securityId);
     expect(domainObject.licensePlate).toBe(persistenceData.licensePlate);
     expect(domainObject.time).toBe(persistenceData.time);
+    expect(domainObject.security).toBeDefined();
   });
 
   it("should map to persistence from domain", () => {

@@ -1,7 +1,8 @@
-import { VehicleScanLog } from "./classes/vehicleScanLog";
+import { defaultTo } from "rambda";
 import type { IVehicleScanLog } from "./classes/vehicleScanLog";
 import type { IVehicleScanLogRawObject, IVehicleScanLogSchema } from "./constant";
 import type { IVehicleScanLogDTO } from "../../../dtos/vehicleScanLogDTO";
+import { VehicleScanLogFactory } from "./factory";
 
 export interface IVehicleScanLogMapper {
   toPersistence(vehicleScanLog: IVehicleScanLog): IVehicleScanLogSchema;
@@ -20,13 +21,7 @@ export class VehicleScanLogMapper implements IVehicleScanLogMapper {
   }
 
   public toDomain(raw: IVehicleScanLogRawObject): IVehicleScanLog {
-    return VehicleScanLog.create({
-      id: raw.id,
-      securityId: raw.securityId,
-      licensePlate: raw.licensePlate,
-      time: raw.time,
-      security: raw.security
-    });
+    return VehicleScanLogFactory.create(raw).getValue();
   }
 
   public toDTO(vehicleScanLog: IVehicleScanLog): IVehicleScanLogDTO {
@@ -35,7 +30,7 @@ export class VehicleScanLogMapper implements IVehicleScanLogMapper {
       securityId: vehicleScanLog.securityId,
       licensePlate: vehicleScanLog.licensePlate,
       time: vehicleScanLog.time,
-      security: vehicleScanLog.security
+      security: defaultTo(null, vehicleScanLog.security) 
     };
   }
 }

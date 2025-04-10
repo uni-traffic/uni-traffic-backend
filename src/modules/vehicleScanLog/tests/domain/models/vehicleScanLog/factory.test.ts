@@ -15,6 +15,7 @@ describe("VehicleScanLogFactory", () => {
     expect(vehicleScanLog.securityId).toBe(mockData.securityId);
     expect(vehicleScanLog.licensePlate).toBe(mockData.licensePlate);
     expect(vehicleScanLog.time).toBe(mockData.time);
+    expect(vehicleScanLog.security).toBeDefined();
   });
 
   it("should fail when license plate is empty", () => {
