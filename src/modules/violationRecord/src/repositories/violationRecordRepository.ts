@@ -11,6 +11,7 @@ export interface IViolationRecordRepository {
   createViolationRecord(violationRecord: IViolationRecord): Promise<IViolationRecord | null>;
   getViolationRecordByProperty(params: GetViolationRecordByProperty): Promise<IViolationRecord[]>;
   updateViolationRecord(violationRecord: IViolationRecord): Promise<IViolationRecord | null>;
+  getTotalViolationGiven(start: Date, end: Date): Promise<{ date: Date; violationsIssued: number }[]>;
 }
 
 export class ViolationRecordRepository implements IViolationRecordRepository {
@@ -108,6 +109,38 @@ export class ViolationRecordRepository implements IViolationRecordRepository {
       return this._violationRecordMapper.toDomain(updatedViolationRecord);
     } catch {
       return null;
+    }
+  }
+
+  public async getTotalViolationGiven(
+    start: Date,
+    end: Date
+  ): Promise<{ date: Date; violationsIssued: number }[]> {
+    try {
+      const groupedViolations = await this._database.violationRecord.groupBy({
+        by: ['createdAt'],
+        where: {
+          createdAt: {
+            gte: start,
+            lte: end
+          }
+        },
+        _count: {
+          _all: true
+        },
+        orderBy: {
+          createdAt: 'asc'
+        }
+      });
+      return groupedViolations.map((record) => ({
+        date: new Date(
+          Date.UTC(record.createdAt.getFullYear(), record.createdAt.getMonth(), record.createdAt.getDate())
+        ), 
+        violationsIssued: record._count._all
+      }));
+    } catch (error) {
+      console.error(error);
+      return [];
     }
   }
 }
