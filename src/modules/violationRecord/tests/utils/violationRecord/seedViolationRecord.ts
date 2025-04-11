@@ -18,12 +18,14 @@ export const seedViolationRecord = async ({
   reportedById,
   violationId,
   vehicleId,
-  status = faker.helpers.arrayElement(["UNPAID", "PAID"])
+  status = faker.helpers.arrayElement(["UNPAID", "PAID"]),
+  createdAt
 }: Partial<IViolationRecordFactoryProps> & {
   owner?: Partial<IUserRawObject>;
   reporter?: Partial<IUserRawObject>;
   violation?: Partial<IViolationRawObject>;
   vehicle?: Partial<IVehicleRawObject>;
+  createdAt?: Date; 
 }) => {
   const seededVehicle = await seedVehicle({});
   const seededViolation = await seedViolation({});
@@ -37,7 +39,8 @@ export const seedViolationRecord = async ({
       violationId: defaultTo(seededViolation.id, violationId),
       userId: defaultTo(seededVehicle.ownerId, userId),
       reportedById: defaultTo(seededReporter.id, reportedById),
-      status: status as ViolationRecordSchema
+      status: status as ViolationRecordSchema,
+      createdAt: createdAt ?? new Date(), 
     },
     include: {
       reporter: true,
