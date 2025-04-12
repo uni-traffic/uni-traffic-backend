@@ -1,7 +1,11 @@
 import { type Request, type Response, Router } from "express";
 import { validateRequest } from "zod-express-middleware";
-import { ViolationRecordPaymentRequestSchema } from "../../../dtos/violationRecordPaymentRequestSchema";
+import {
+  ViolationRecordPaymentGetByRangeRequestSchema,
+  ViolationRecordPaymentRequestSchema
+} from "../../../dtos/violationRecordPaymentRequestSchema";
 import { AddViolationRecordPaymentController } from "../controllers/addViolationRecordPaymentController";
+import { GetTotalFineCollectedPerDayByRangeController } from "../controllers/getTotalFineCollectedByRangePerDayController";
 
 const paymentRouter = Router();
 
@@ -13,4 +17,11 @@ paymentRouter.post(
   }
 );
 
+paymentRouter.get(
+  "/violation/total",
+  validateRequest({ query: ViolationRecordPaymentGetByRangeRequestSchema }),
+  (req: Request, res: Response) => {
+    new GetTotalFineCollectedPerDayByRangeController().execute(req, res);
+  }
+);
 export { paymentRouter };

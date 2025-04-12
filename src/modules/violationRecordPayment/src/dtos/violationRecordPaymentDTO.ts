@@ -11,3 +11,13 @@ export interface IViolationRecordPaymentDTO {
   cashier: IUserDTO | null;
   violationRecord: IViolationRecordDTO | null;
 }
+
+export interface GetTotalFineCollectedPerDayByRangeUseCasePayload {
+  startDate: Date;
+  endDate: Date;
+}
+
+export type GetViolationRecordPaymentAmountAndTimePaid = {
+  amountPaid: number;
+  timePaid: Date;
+};

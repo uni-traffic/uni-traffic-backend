@@ -1,4 +1,4 @@
-import { ViolationRecordPaymentRepository } from "../../../src/repositories/addViolationRecordPaymentRepository";
+import { ViolationRecordPaymentRepository } from "../../../src/repositories/violationRecordPaymentRepository";
 import { seedUser } from "../../../../user/tests/utils/user/seedUser";
 import { seedViolationRecord } from "../../../../violationRecord/tests/utils/violationRecord/seedViolationRecord";
 import { createViolationRecordPaymentDomainObject } from "../../utils/violationRecordPayment/createViolationRecordPaymentDomainObject";

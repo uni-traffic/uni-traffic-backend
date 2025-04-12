@@ -20,3 +20,12 @@ export const ViolationRecordPaymentGetRequestSchema = z
 export type ViolationRecordPaymentGetRequest = z.infer<
   typeof ViolationRecordPaymentGetRequestSchema
 >;
+
+export const ViolationRecordPaymentGetByRangeRequestSchema = z.object({
+  startDate: z.string().optional(),
+  endDate: z.string().optional()
+});
+
+export type ViolationRecordPaymentGetByRangeRequest = z.infer<
+  typeof ViolationRecordPaymentGetByRangeRequestSchema
+>;
