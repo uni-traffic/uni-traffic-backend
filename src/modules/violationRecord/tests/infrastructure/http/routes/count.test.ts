@@ -17,6 +17,10 @@ describe("GET /api/v1/violation-record/count", () => {
     await db.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return status 200 and total violations per day within a given date range", async () => {
     const date1 = new Date("2025-04-01T08:30:00Z");
     const date2 = new Date("2025-04-02T14:45:00Z");

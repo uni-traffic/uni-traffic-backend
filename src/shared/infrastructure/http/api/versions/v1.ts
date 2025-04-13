@@ -3,6 +3,7 @@ import { auditLogRouter } from "../../../../../modules/auditLog/src/infrastructu
 import { fileRouter } from "../../../../../modules/file/src/infrastructure/http/routes/fileRouter";
 import { authRouter } from "../../../../../modules/user/src/infrastructure/http/routes/authRouter";
 import { userRouter } from "../../../../../modules/user/src/infrastructure/http/routes/userRouter";
+import { userSignInActivityRouter } from "../../../../../modules/userSignInActivity/src/infrastructure/routes/userSignInActivityRouter";
 import { vehicleRouter } from "../../../../../modules/vehicle/src/infrastracture/http/routes/vehicleRouter";
 import { vehicleApplicationRouter } from "../../../../../modules/vehicleApplication/src/infrastructure/http/routes/vehicleApplicationRouter";
 import { vehicleApplicationPaymentRouter } from "../../../../../modules/vehicleApplicationPayment/src/infrastructure/http/routes/paymentRouter";
@@ -25,5 +26,6 @@ v1Router.use("/files", fileRouter);
 v1Router.use("/vehicle-application", vehicleApplicationRouter);
 v1Router.use("/payment", vehicleApplicationPaymentRouter);
 v1Router.use("/audit-log", auditLogRouter);
+v1Router.use("/sign-in-activity", userSignInActivityRouter);
 
 export { v1Router };

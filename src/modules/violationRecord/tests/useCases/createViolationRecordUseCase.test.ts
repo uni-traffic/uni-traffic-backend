@@ -20,6 +20,10 @@ describe("CreateViolationRecordUseCase", () => {
     await seedViolation({ id: "1" });
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should successfully create a ViolationRecord when only vehicleId is provided", async () => {
     const seededSecurityUser = await seedUser({ role: "SECURITY" });
     const seededUser = await seedUser({});
