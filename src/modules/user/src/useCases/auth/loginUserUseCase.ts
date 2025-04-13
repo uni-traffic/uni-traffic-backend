@@ -2,6 +2,10 @@ import { UnauthorizedError } from "../../../../../shared/core/errors";
 import { AppKeys, type IAppKeys } from "../../../../../shared/lib/appKey";
 import { BycryptPassword, type IHashAlgorithm } from "../../../../../shared/lib/bycrypt";
 import { type IJSONWebToken, JSONWebToken } from "../../../../../shared/lib/jsonWebToken";
+import {
+  type IUserSignInActivityService,
+  UserSignInActivityService
+} from "../../../../userSignInActivity/src/service/userSignInActivityService";
 import type { IUser } from "../../domain/models/user/classes/user";
 import { type IUserMapper, UserMapper } from "../../domain/models/user/mapper";
 import type { IUserLoginResponse } from "../../dtos/userDTO";
@@ -14,24 +18,29 @@ export class LoginUserUseCase {
   private _userRepository: IUserRepository;
   private _appKeys: IAppKeys;
   private _userMapper: IUserMapper;
+  private _userSignInService: IUserSignInActivityService;
 
   public constructor(
     appKeys: IAppKeys = new AppKeys(),
     userMapper: IUserMapper = new UserMapper(),
     jsonWebToken: IJSONWebToken = new JSONWebToken(),
     hasAlgorithm: IHashAlgorithm = new BycryptPassword(),
-    userRepository: IUserRepository = new UserRepository()
+    userRepository: IUserRepository = new UserRepository(),
+    userSignInService: IUserSignInActivityService = new UserSignInActivityService()
   ) {
     this._appKeys = appKeys;
     this._userMapper = userMapper;
     this._jsonWebToken = jsonWebToken;
     this._hashAlgorithm = hasAlgorithm;
     this._userRepository = userRepository;
+    this._userSignInService = userSignInService;
   }
 
   public async execute({ username, password }: LoginRequest): Promise<IUserLoginResponse> {
     const verifiedUser = await this._verifyUser(username, password);
     const accessToken = this._getSignedAccessToken(verifiedUser.id);
+
+    await this._logSignInActivity(verifiedUser.id);
 
     return this._getResponseData(accessToken, verifiedUser);
   }
@@ -62,5 +71,9 @@ export class LoginUserUseCase {
       appKey: plateRecognizerKey,
       accessToken: accessToken
     };
+  }
+
+  private async _logSignInActivity(userId: string): Promise<void> {
+    await this._userSignInService.createAndSaveUserSignInActivity(userId);
   }
 }
