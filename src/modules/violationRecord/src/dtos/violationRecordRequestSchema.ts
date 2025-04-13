@@ -46,3 +46,9 @@ export const ViolationRecordRequestSchema = z.object({
     .optional()
 });
 export type ViolationRecordGetRequest = z.infer<typeof ViolationRecordRequestSchema>;
+
+export const GetViolationsGivenPerDayByRangeRequest = z.object({
+  startDate: z.string({ message: "Start Date is required" }),
+  endDate: z.string({ message: "End Date is required" })
+});
+export type ViolationsGivenPerDayByRange = z.infer<typeof GetViolationsGivenPerDayByRangeRequest>;

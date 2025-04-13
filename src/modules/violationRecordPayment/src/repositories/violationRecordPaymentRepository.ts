@@ -54,7 +54,7 @@ export class ViolationRecordPaymentRepository implements IViolationRecordPayment
     params: GetTotalFineCollectedPerDayByRangeUseCasePayload
   ): Promise<GetViolationRecordPaymentAmountAndTimePaid[]> {
     try {
-      const violationRecordPaymentRaw = await this._database.violationRecordPayment.findMany({
+      return await this._database.violationRecordPayment.findMany({
         where: {
           timePaid: {
             gte: params.startDate,
@@ -69,7 +69,6 @@ export class ViolationRecordPaymentRepository implements IViolationRecordPayment
           timePaid: "asc"
         }
       });
-      return violationRecordPaymentRaw;
     } catch {
       return [];
     }

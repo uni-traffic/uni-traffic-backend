@@ -5,12 +5,18 @@ import {
   type IViolationRecordMapper,
   ViolationRecordMapper
 } from "../domain/models/violationRecord/mapper";
-import type { GetViolationRecordByProperty } from "../dtos/violationRecordDTO";
+import type {
+  GetViolationRecordByProperty,
+  GetViolationsGivenPerDayByRangeParams
+} from "../dtos/violationRecordDTO";
 
 export interface IViolationRecordRepository {
   createViolationRecord(violationRecord: IViolationRecord): Promise<IViolationRecord | null>;
   getViolationRecordByProperty(params: GetViolationRecordByProperty): Promise<IViolationRecord[]>;
   updateViolationRecord(violationRecord: IViolationRecord): Promise<IViolationRecord | null>;
+  getViolationRecordGivenByRange(
+    params: GetViolationsGivenPerDayByRangeParams
+  ): Promise<{ id: string; createdAt: Date }[]>;
 }
 
 export class ViolationRecordRepository implements IViolationRecordRepository {
@@ -108,6 +114,30 @@ export class ViolationRecordRepository implements IViolationRecordRepository {
       return this._violationRecordMapper.toDomain(updatedViolationRecord);
     } catch {
       return null;
+    }
+  }
+
+  public async getViolationRecordGivenByRange(
+    params: GetViolationsGivenPerDayByRangeParams
+  ): Promise<{ id: string; createdAt: Date }[]> {
+    try {
+      return await this._database.violationRecord.findMany({
+        where: {
+          createdAt: {
+            gte: params.startDate,
+            lte: params.endDate
+          }
+        },
+        select: {
+          id: true,
+          createdAt: true
+        },
+        orderBy: {
+          createdAt: "asc"
+        }
+      });
+    } catch {
+      return [];
     }
   }
 }

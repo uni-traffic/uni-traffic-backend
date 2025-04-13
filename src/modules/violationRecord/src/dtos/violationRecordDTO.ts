@@ -38,3 +38,13 @@ export type GetViolationRecordByProperty = {
   count?: number;
   page?: number;
 };
+
+export interface GetViolationsGivenPerDayByRangeParams {
+  startDate: Date;
+  endDate: Date;
+}
+
+export interface ShortenViolationRecord {
+  id: string;
+  createdAt: Date;
+}
