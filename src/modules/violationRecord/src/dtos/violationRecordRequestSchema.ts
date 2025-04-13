@@ -47,17 +47,8 @@ export const ViolationRecordRequestSchema = z.object({
 });
 export type ViolationRecordGetRequest = z.infer<typeof ViolationRecordRequestSchema>;
 
-export const TotalViolationSchema = z.object({
-  start: z
-    .string()
-    .refine((value) => !isNaN(Date.parse(value)), {
-      message: "Start date must be a valid date string."
-    }),
-  end: z
-    .string()
-    .refine((value) => !isNaN(Date.parse(value)), {
-      message: "End date must be a valid date string."
-    })
+export const GetViolationsGivenPerDayByRangeRequest = z.object({
+  startDate: z.string({ message: "Start Date is required" }),
+  endDate: z.string({ message: "End Date is required" })
 });
-
-export type TotalViolationGetRequest = z.infer<typeof TotalViolationSchema>;
+export type ViolationsGivenPerDayByRange = z.infer<typeof GetViolationsGivenPerDayByRangeRequest>;

@@ -1,17 +1,18 @@
 import type { Request, Response } from "express";
 import { ForbiddenError } from "../../../../../../shared/core/errors";
 import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
-import { IJSONWebToken, JSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
+import { type IJSONWebToken, JSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
 import { UserRoleService } from "../../../../../user/src/shared/service/userRoleService";
-import { GetTotalViolationGiven } from "../../../useCases/getTotalViolationGivenUseCase";
+import type { ViolationsGivenPerDayByRange } from "../../../dtos/violationRecordRequestSchema";
+import { GetViolationsGivenByDateRange } from "../../../useCases/getViolationsGivenByDateRangeUseCase";
 
 export class GetTotalViolationGivenController extends BaseController {
-  private _getTotalViolationGivenUseCase: GetTotalViolationGiven;
+  private _getTotalViolationGivenUseCase: GetViolationsGivenByDateRange;
   private _jsonWebToken: IJSONWebToken;
   private _userRoleService: UserRoleService;
 
   public constructor(
-    getTotalViolationGivenUseCase = new GetTotalViolationGiven(),
+    getTotalViolationGivenUseCase = new GetViolationsGivenByDateRange(),
     jsonWebToken = new JSONWebToken(),
     userRoleService = new UserRoleService()
   ) {
@@ -24,21 +25,12 @@ export class GetTotalViolationGivenController extends BaseController {
   protected async executeImpl(req: Request, res: Response): Promise<void> {
     await this._verifyPermission(req);
 
-    const { start, end } = req.query;
-    const startDate = new Date(start as string);
-    const endDate = new Date(end as string);
-    
-    startDate.setHours(0, 0, 0, 0);
-    endDate.setHours(23, 59, 59, 999);
-
-    const result = await this._getTotalViolationGivenUseCase.execute({
-      start: startDate,
-      end: endDate,
-    });
+    const params = req.query as ViolationsGivenPerDayByRange;
+    const result = await this._getTotalViolationGivenUseCase.execute(params);
 
     const formattedResult = result.map((entry) => ({
       date: entry.date.toISOString().split("T")[0],
-      violationsIssued: entry.violationsIssued,
+      violationsIssued: entry.violationsIssued
     }));
 
     this.ok(res, formattedResult);
@@ -51,6 +43,7 @@ export class GetTotalViolationGivenController extends BaseController {
     const hasRequiredRole = await this._userRoleService.hasGivenRoles(tokenUserId, [
       "ADMIN",
       "SUPERADMIN",
+      "SECURITY"
     ]);
 
     if (!hasRequiredRole) {

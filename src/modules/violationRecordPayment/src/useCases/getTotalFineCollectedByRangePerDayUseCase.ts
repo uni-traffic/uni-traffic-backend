@@ -40,6 +40,10 @@ export class GetTotalFineCollectedPerDayByRangeUseCase {
     if (!dateRegex.test(endDate)) {
       throw new BadRequest("End date must be in YYYY-MM-DD format.");
     }
+
+    if (new Date(startDate) > new Date(endDate)) {
+      throw new BadRequest("Invalid date range. startDate date cannot be after endDate date.");
+    }
   }
 
   private _refineParams(

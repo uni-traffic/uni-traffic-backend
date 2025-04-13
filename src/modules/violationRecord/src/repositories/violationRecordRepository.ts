@@ -5,13 +5,18 @@ import {
   type IViolationRecordMapper,
   ViolationRecordMapper
 } from "../domain/models/violationRecord/mapper";
-import type { GetViolationRecordByProperty } from "../dtos/violationRecordDTO";
+import type {
+  GetViolationRecordByProperty,
+  GetViolationsGivenPerDayByRangeParams
+} from "../dtos/violationRecordDTO";
 
 export interface IViolationRecordRepository {
   createViolationRecord(violationRecord: IViolationRecord): Promise<IViolationRecord | null>;
   getViolationRecordByProperty(params: GetViolationRecordByProperty): Promise<IViolationRecord[]>;
   updateViolationRecord(violationRecord: IViolationRecord): Promise<IViolationRecord | null>;
-  getTotalViolationGiven(start: Date, end: Date): Promise<{ date: Date; violationsIssued: number }[]>;
+  getViolationRecordGivenByRange(
+    params: GetViolationsGivenPerDayByRangeParams
+  ): Promise<{ id: string; createdAt: Date }[]>;
 }
 
 export class ViolationRecordRepository implements IViolationRecordRepository {
@@ -112,34 +117,26 @@ export class ViolationRecordRepository implements IViolationRecordRepository {
     }
   }
 
-  public async getTotalViolationGiven(
-    start: Date,
-    end: Date
-  ): Promise<{ date: Date; violationsIssued: number }[]> {
+  public async getViolationRecordGivenByRange(
+    params: GetViolationsGivenPerDayByRangeParams
+  ): Promise<{ id: string; createdAt: Date }[]> {
     try {
-      const groupedViolations = await this._database.violationRecord.groupBy({
-        by: ['createdAt'],
+      return await this._database.violationRecord.findMany({
         where: {
           createdAt: {
-            gte: start,
-            lte: end
+            gte: params.startDate,
+            lte: params.endDate
           }
         },
-        _count: {
-          _all: true
+        select: {
+          id: true,
+          createdAt: true
         },
         orderBy: {
-          createdAt: 'asc'
+          createdAt: "asc"
         }
       });
-      return groupedViolations.map((record) => ({
-        date: new Date(
-          Date.UTC(record.createdAt.getFullYear(), record.createdAt.getMonth(), record.createdAt.getDate())
-        ), 
-        violationsIssued: record._count._all
-      }));
-    } catch (error) {
-      console.error(error);
+    } catch {
       return [];
     }
   }
