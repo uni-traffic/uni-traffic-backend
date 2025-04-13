@@ -13,7 +13,7 @@ import type { ViolationRecordPaymentRequest } from "../dtos/violationRecordPayme
 import {
   type IViolationRecordPaymentRepository,
   ViolationRecordPaymentRepository
-} from "../repositories/addViolationRecordPaymentRepository";
+} from "../repositories/violationRecordPaymentRepository";
 
 export class AddViolationRecordPaymentUseCase {
   private _violationRecordRepository: IViolationRecordRepository;

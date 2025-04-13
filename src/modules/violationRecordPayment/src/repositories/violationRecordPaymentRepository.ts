@@ -4,9 +4,16 @@ import {
   type IViolationRecordPaymentMapper,
   ViolationRecordPaymentMapper
 } from "../domain/models/violationRecordPayment/mapper";
+import type {
+  GetTotalFineCollectedPerDayByRangeUseCasePayload,
+  GetViolationRecordPaymentAmountAndTimePaid
+} from "../dtos/violationRecordPaymentDTO";
 
 export interface IViolationRecordPaymentRepository {
   createPayment(payment: IViolationRecordPayment): Promise<IViolationRecordPayment | null>;
+  getTotalFineCollectedPerDayByRange(
+    params: GetTotalFineCollectedPerDayByRangeUseCasePayload
+  ): Promise<GetViolationRecordPaymentAmountAndTimePaid[]>;
 }
 
 export class ViolationRecordPaymentRepository implements IViolationRecordPaymentRepository {
@@ -40,6 +47,31 @@ export class ViolationRecordPaymentRepository implements IViolationRecordPayment
       return this._violationRecordPaymentMapper.toDomain(newPayment);
     } catch {
       return null;
+    }
+  }
+
+  public async getTotalFineCollectedPerDayByRange(
+    params: GetTotalFineCollectedPerDayByRangeUseCasePayload
+  ): Promise<GetViolationRecordPaymentAmountAndTimePaid[]> {
+    try {
+      const violationRecordPaymentRaw = await this._database.violationRecordPayment.findMany({
+        where: {
+          timePaid: {
+            gte: params.startDate,
+            lte: params.endDate
+          }
+        },
+        select: {
+          timePaid: true,
+          amountPaid: true
+        },
+        orderBy: {
+          timePaid: "asc"
+        }
+      });
+      return violationRecordPaymentRaw;
+    } catch {
+      return [];
     }
   }
 }

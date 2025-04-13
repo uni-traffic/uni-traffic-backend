@@ -21,7 +21,7 @@ export const seedViolationRecordPayment = async ({
 }) => {
   const seededViolationRecordId = violationRecordId
     ? violationRecordId
-    : (await seedViolationRecord({})).id;
+    : (await seedViolationRecord({ status: "UNPAID" })).id;
   const seededCashier = await seedUser({ role: "STAFF" });
 
   return db.violationRecordPayment.create({
