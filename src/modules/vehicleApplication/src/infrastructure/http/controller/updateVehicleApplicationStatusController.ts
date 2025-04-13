@@ -1,14 +1,14 @@
 import type { Request, Response } from "express";
+import { ForbiddenError } from "../../../../../../shared/core/errors";
 import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
 import { type IJSONWebToken, JSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
 import {
   type IUserRoleService,
   UserRoleService
 } from "../../../../../user/src/shared/service/userRoleService";
-import { UpdateVehicleApplicationStatusUseCase } from "../../../useCases/updateVehicleApplicationStatusUseCase";
-import { ForbiddenError } from "../../../../../../shared/core/errors";
-import type { UpdateVehicleApplicationStatusRequest } from "../../../dtos/vehicleApplicationRequestSchema";
 import type { IVehicleApplicationDTO } from "../../../dtos/vehicleApplicationDTO";
+import type { UpdateVehicleApplicationStatusRequest } from "../../../dtos/vehicleApplicationRequestSchema";
+import { UpdateVehicleApplicationStatusUseCase } from "../../../useCases/updateVehicleApplicationStatusUseCase";
 
 export class UpdateVehicleApplicationStatusController extends BaseController {
   private _jsonWebToken: IJSONWebToken;
@@ -27,11 +27,13 @@ export class UpdateVehicleApplicationStatusController extends BaseController {
   }
 
   protected async executeImpl(req: Request, res: Response): Promise<void> {
-    await this._verifyPermission(req);
+    const userId = await this._verifyPermission(req);
 
     const requestBody = req.body as UpdateVehicleApplicationStatusRequest;
-    const updatedVehicleApplication =
-      await this._updateVehicleApplicationStatusUseCase.execute(requestBody);
+    const updatedVehicleApplication = await this._updateVehicleApplicationStatusUseCase.execute(
+      requestBody,
+      userId
+    );
 
     this.ok<IVehicleApplicationDTO>(res, updatedVehicleApplication);
   }

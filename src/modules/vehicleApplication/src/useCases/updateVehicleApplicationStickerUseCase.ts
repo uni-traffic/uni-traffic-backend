@@ -1,4 +1,8 @@
 import { BadRequest, NotFoundError, UnexpectedError } from "../../../../shared/core/errors";
+import {
+  AuditLogService,
+  type IAuditLogService
+} from "../../../auditLog/src/service/auditLogService";
 import type { IUserDTO } from "../../../user/src/dtos/userDTO";
 import { type IUserService, UserService } from "../../../user/src/shared/service/userService";
 import type { IVehicleDTO } from "../../../vehicle/src/dtos/vehicleDTO";
@@ -9,6 +13,7 @@ import {
   type IVehicleApplicationMapper,
   VehicleApplicationMapper
 } from "../domain/models/vehicleApplication/mapper";
+import type { IVehicleApplicationDTO } from "../dtos/vehicleApplicationDTO";
 import type { UpdateVehicleApplicationStickerRequest } from "../dtos/vehicleApplicationRequestSchema";
 import {
   type IVehicleApplicationRepository,
@@ -20,23 +25,26 @@ export class UpdateVehicleApplicationStickerUseCase {
   private _vehicleApplicationMapper: IVehicleApplicationMapper;
   private _vehicleService: IVehicleService;
   private _userService: IUserService;
+  private _auditLogService: IAuditLogService;
 
   public constructor(
     vehicleApplicationRepository: IVehicleApplicationRepository = new VehicleApplicationRepository(),
     vehicleApplicationMapper: IVehicleApplicationMapper = new VehicleApplicationMapper(),
     vehicleService: IVehicleService = new VehicleService(),
-    userService: IUserService = new UserService()
+    userService: IUserService = new UserService(),
+    auditLogService: IAuditLogService = new AuditLogService()
   ) {
     this._vehicleApplicationRepository = vehicleApplicationRepository;
     this._vehicleApplicationMapper = vehicleApplicationMapper;
     this._vehicleService = vehicleService;
     this._userService = userService;
+    this._auditLogService = auditLogService;
   }
 
-  public async execute({
-    vehicleApplicationId,
-    stickerNumber
-  }: UpdateVehicleApplicationStickerRequest) {
+  public async execute(
+    { vehicleApplicationId, stickerNumber }: UpdateVehicleApplicationStickerRequest,
+    actorId: string
+  ): Promise<IVehicleApplicationDTO> {
     const vehicleApplication = await this._getVehicleApplicationFromDatabase(vehicleApplicationId);
 
     await this._createNewVehicle(vehicleApplication, stickerNumber);
@@ -50,6 +58,11 @@ export class UpdateVehicleApplicationStickerUseCase {
     );
     const savedVehicleApplication =
       await this._saveVehicleApplicationToDatabase(updatedVehicleApplication);
+    await this._createAuditLog({
+      actorId,
+      objectId: vehicleApplication.id,
+      stickerNumber: stickerNumber
+    });
 
     return this._vehicleApplicationMapper.toDTO(savedVehicleApplication);
   }
@@ -136,5 +149,18 @@ export class UpdateVehicleApplicationStickerUseCase {
     }
 
     return savedVehicleApplication;
+  }
+
+  private async _createAuditLog({
+    actorId,
+    objectId,
+    stickerNumber
+  }: { actorId: string; objectId: string; stickerNumber: string }): Promise<void> {
+    await this._auditLogService.createAndSaveAuditLog({
+      actionType: "UPDATE",
+      actorId: actorId,
+      objectId: objectId,
+      details: `Approved the application and assigned vehicle sticker: ${stickerNumber}`
+    });
   }
 }
