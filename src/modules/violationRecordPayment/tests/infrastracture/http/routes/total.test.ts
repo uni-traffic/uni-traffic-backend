@@ -1,15 +1,16 @@
+import { faker } from "@faker-js/faker";
 import request from "supertest";
 import type TestAgent from "supertest/lib/agent";
 import app from "../../../../../../../api";
 import { db } from "../../../../../../shared/infrastructure/database/prisma";
-import { seedAuthenticatedUser } from "../../../../../user/tests/utils/user/seedAuthenticatedUser";
-import { faker } from "@faker-js/faker";
-import { seedViolationRecordPayment } from "../../../utils/violationRecordPayment/seedViolationRecordPayment";
 import { combineDate } from "../../../../../../shared/lib/utils";
+import { seedAuthenticatedUser } from "../../../../../user/tests/utils/user/seedAuthenticatedUser";
 import type {
   GetTotalFineCollectedPerDayByRangeUseCasePayload,
   GetViolationRecordPaymentAmountAndTimePaid
 } from "../../../../src/dtos/violationRecordPaymentDTO";
+import type { ViolationRecordPaymentGetByRangeRequest } from "../../../../src/dtos/violationRecordPaymentRequestSchema";
+import { seedViolationRecordPayment } from "../../../utils/violationRecordPayment/seedViolationRecordPayment";
 
 describe("GET /api/v1/payment/violation/total", () => {
   let requestAPI: TestAgent;
@@ -29,9 +30,9 @@ describe("GET /api/v1/payment/violation/total", () => {
       expiration: "1h"
     });
 
-    const payload: GetTotalFineCollectedPerDayByRangeUseCasePayload = {
-      startDate: new Date("2023-01-01"),
-      endDate: new Date("2023-01-30")
+    const payload: ViolationRecordPaymentGetByRangeRequest = {
+      startDate: "2023-01-01",
+      endDate: "2023-01-30"
     };
 
     const seededViolationRecordPayment = await Promise.all([

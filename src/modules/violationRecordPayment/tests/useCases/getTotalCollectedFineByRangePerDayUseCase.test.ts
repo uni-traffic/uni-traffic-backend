@@ -16,8 +16,8 @@ describe("GetTotalCollectedFineByRangePerDayUseCase", () => {
   });
 
   it("should return an array of total fine collected per day within the specified date range", async () => {
-    const startDate = new Date("2023-01-01");
-    const endDate = new Date("2023-01-31");
+    const startDate = "2023-01-01";
+    const endDate = "2023-01-31";
 
     const seededViolationRecordPayment = await Promise.all([
       seedViolationRecordPayment({
@@ -57,14 +57,14 @@ describe("GetTotalCollectedFineByRangePerDayUseCase", () => {
   });
 
   it("should return an empty array if no records are found within the specified date range", async () => {
-    const startDate = new Date("2023-01-01");
-    const endDate = new Date("2023-01-31");
+    const startDate = "2023-01-01";
+    const endDate = "2023-01-31";
 
     await expect(
       getTotalFineCollectedByRangePerDayUseCase.execute({
         startDate,
         endDate
       })
-    ).rejects.toThrow(new NotFoundError("Violation Record Payments not found"));
+    ).rejects.toThrow(new NotFoundError("No Violation Record Payments found"));
   });
 });

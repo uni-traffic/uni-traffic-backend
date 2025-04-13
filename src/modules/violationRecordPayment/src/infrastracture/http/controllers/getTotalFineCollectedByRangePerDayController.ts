@@ -3,8 +3,8 @@ import { ForbiddenError } from "../../../../../../shared/core/errors";
 import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
 import { type IJSONWebToken, JSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
 import { UserRoleService } from "../../../../../user/src/shared/service/userRoleService";
+import type { ViolationRecordPaymentGetByRangeRequest } from "../../../dtos/violationRecordPaymentRequestSchema";
 import { GetTotalFineCollectedPerDayByRangeUseCase } from "../../../useCases/getTotalFineCollectedByRangePerDayUseCase";
-import type { GetTotalFineCollectedPerDayByRangeUseCasePayload } from "../../../dtos/violationRecordPaymentDTO";
 
 export class GetTotalFineCollectedPerDayByRangeController extends BaseController {
   private _getTotalFineCollectedPerDayByRangeUseCase: GetTotalFineCollectedPerDayByRangeUseCase;
@@ -24,15 +24,10 @@ export class GetTotalFineCollectedPerDayByRangeController extends BaseController
 
   protected async executeImpl(req: Request, res: Response) {
     await this._verifyPermission(req);
-    const { startDate, endDate } = req.query as { startDate: string; endDate: string };
 
-    const requestBody: GetTotalFineCollectedPerDayByRangeUseCasePayload = {
-      startDate: new Date(startDate),
-      endDate: new Date(endDate)
-    };
-
+    const requestQuery = req.query as ViolationRecordPaymentGetByRangeRequest;
     const violationRecordPaymentDetailsDTO =
-      await this._getTotalFineCollectedPerDayByRangeUseCase.execute(requestBody);
+      await this._getTotalFineCollectedPerDayByRangeUseCase.execute(requestQuery);
 
     this.ok(res, violationRecordPaymentDetailsDTO);
   }
@@ -47,7 +42,6 @@ export class GetTotalFineCollectedPerDayByRangeController extends BaseController
       "ADMIN",
       "SECURITY"
     ]);
-
     if (!hasCashierRole) {
       throw new ForbiddenError("You do not have the required permissions to perform this action.");
     }
