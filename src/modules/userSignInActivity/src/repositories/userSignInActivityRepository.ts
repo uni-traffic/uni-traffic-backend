@@ -1,9 +1,11 @@
+import type { PrismaClient } from "@prisma/client";
 import { db } from "../../../../shared/infrastructure/database/prisma";
 import type {
   IUserSignInActivity,
   UserSignInActivity
 } from "../domain/models/userSignInActivity/classes/userSignInActivity";
 import { UserSignInActivityMapper } from "../domain/models/userSignInActivity/mapper";
+import type { GetUserSignInActivityByRange } from "../dtos/userSignInActivityDTO";
 
 interface HydrateOptions {
   user?: boolean;
@@ -17,12 +19,15 @@ export interface IUserSignInActivityRepository {
     limit: number,
     hydrate?: HydrateOptions
   ): Promise<IUserSignInActivity[]>;
+  countUserSignInActivityByRange(params: GetUserSignInActivityByRange): Promise<number>;
 }
 
 export class UserSignInActivityRepository implements IUserSignInActivityRepository {
   private _mapper: UserSignInActivityMapper;
+  private _database: PrismaClient;
 
-  constructor(mapper = new UserSignInActivityMapper()) {
+  constructor(database = db, mapper = new UserSignInActivityMapper()) {
+    this._database = database;
     this._mapper = mapper;
   }
 
@@ -64,5 +69,29 @@ export class UserSignInActivityRepository implements IUserSignInActivityReposito
       include: { user: hydrate?.user }
     });
     return activities.map((activity) => this._mapper.toDomain(activity));
+  }
+
+  public async countUserSignInActivityByRange(
+    params: GetUserSignInActivityByRange
+  ): Promise<number> {
+    try {
+      const uniqueUsers = await this._database.userSignInActivity.findMany({
+        where: {
+          time: {
+            gte: params.startDate,
+            lte: params.endDate
+          }
+        },
+        distinct: ["userId"],
+        select: {
+          userId: true,
+          time: true
+        }
+      });
+
+      return uniqueUsers.length;
+    } catch {
+      return 0;
+    }
   }
 }

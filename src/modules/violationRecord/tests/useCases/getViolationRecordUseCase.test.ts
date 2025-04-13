@@ -1,11 +1,11 @@
 import { faker } from "@faker-js/faker";
+import { NotFoundError } from "../../../../shared/core/errors";
 import { db } from "../../../../shared/infrastructure/database/prisma";
 import { seedUser } from "../../../user/tests/utils/user/seedUser";
 import { seedVehicle } from "../../../vehicle/tests/utils/vehicle/seedVehicle";
 import { seedViolation } from "../../../violation/tests/utils/violation/seedViolation";
 import { GetViolationRecordInformationUseCase } from "../../src/useCases/getViolationRecordUseCase";
 import { seedViolationRecord } from "../utils/violationRecord/seedViolationRecord";
-import { NotFoundError } from "../../../../shared/core/errors";
 
 describe("GetViolationRecordUseCase", () => {
   let getViolationRecordUseCase: GetViolationRecordInformationUseCase;
@@ -16,6 +16,10 @@ describe("GetViolationRecordUseCase", () => {
 
   beforeEach(async () => {
     await db.violationRecord.deleteMany();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should return record that match the given violation record id", async () => {

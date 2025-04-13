@@ -1,4 +1,5 @@
 import { seedViolations } from "../../../../../../scripts/seedViolation";
+import { db } from "../../../../../shared/infrastructure/database/prisma";
 import { seedUser } from "../../../../user/tests/utils/user/seedUser";
 import { seedVehicle } from "../../../../vehicle/tests/utils/vehicle/seedVehicle";
 import { seedViolation } from "../../../../violation/tests/utils/violation/seedViolation";
@@ -26,6 +27,10 @@ describe("ViolationRepository.createViolationRecord", () => {
   beforeAll(async () => {
     await seedViolations();
     violationRecordRepository = new ViolationRecordRepository();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should successfully create a violation record", async () => {
