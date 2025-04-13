@@ -22,6 +22,6 @@ export class VehicleApplicationService implements IVehicleApplicationService {
   public async updateStatus(
     params: IUpdateVehicleApplicationProps
   ): Promise<IVehicleApplicationDTO> {
-    return this._updateVehicleApplicationStatusUseCase.execute(params);
+    return this._updateVehicleApplicationStatusUseCase.execute(params, params.actorId);
   }
 }

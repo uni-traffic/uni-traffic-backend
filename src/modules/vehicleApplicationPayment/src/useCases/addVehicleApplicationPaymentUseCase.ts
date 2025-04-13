@@ -55,7 +55,7 @@ export class AddVehicleApplicationPaymentUseCase {
     const newPayment = this._createPayment(request, cashierId);
     const savedPayment = await this._savePayment(newPayment);
 
-    await this._updateVehicleApplicationStatus(vehicleApplication);
+    await this._updateVehicleApplicationStatus(vehicleApplication, cashierId);
 
     return this._vehicleApplicationPaymentMapper.toDTO(savedPayment);
   }
@@ -117,7 +117,8 @@ export class AddVehicleApplicationPaymentUseCase {
   }
 
   private async _updateVehicleApplicationStatus(
-    vehicleApplication: IVehicleApplication
+    vehicleApplication: IVehicleApplication,
+    actorId: string
   ): Promise<IVehicleApplicationDTO> {
     const newStatus = VehicleApplicationStatus.create("PENDING_FOR_STICKER");
     if (newStatus.isFailure) {
@@ -126,7 +127,8 @@ export class AddVehicleApplicationPaymentUseCase {
 
     const updatedVehicleApplication = await this._vehicleApplicationService.updateStatus({
       vehicleApplicationId: vehicleApplication.id,
-      status: newStatus.getValue().value
+      status: newStatus.getValue().value,
+      actorId
     });
     if (!updatedVehicleApplication) {
       throw new BadRequest("Failed to update vehicle application status.");

@@ -1,16 +1,16 @@
 import type { Request, Response } from "express";
-import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
-import { UpdateVehicleApplicationStickerUseCase } from "../../../useCases/updateVehicleApplicationStickerUseCase";
 import { ForbiddenError } from "../../../../../../shared/core/errors";
-import { JSONWebToken, type IJSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
+import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
+import { type IJSONWebToken, JSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
 import {
   type IUserRoleService,
   UserRoleService
 } from "../../../../../user/src/shared/service/userRoleService";
-import type { UpdateVehicleApplicationStickerRequest } from "../../../dtos/vehicleApplicationRequestSchema";
-import type { IVehicleApplicationDTO } from "../../../dtos/vehicleApplicationDTO";
-import { VehicleApplicationRepository } from "../../../repositories/vehicleApplicationRepository";
 import { VehicleApplicationMapper } from "../../../domain/models/vehicleApplication/mapper";
+import type { IVehicleApplicationDTO } from "../../../dtos/vehicleApplicationDTO";
+import type { UpdateVehicleApplicationStickerRequest } from "../../../dtos/vehicleApplicationRequestSchema";
+import { VehicleApplicationRepository } from "../../../repositories/vehicleApplicationRepository";
+import { UpdateVehicleApplicationStickerUseCase } from "../../../useCases/updateVehicleApplicationStickerUseCase";
 
 export class UpdateVehicleApplicationStickerController extends BaseController {
   private _jsonWebToken: IJSONWebToken;
@@ -33,11 +33,13 @@ export class UpdateVehicleApplicationStickerController extends BaseController {
   }
 
   protected async executeImpl(req: Request, res: Response): Promise<void> {
-    await this._verifyPermission(req);
+    const usedId = await this._verifyPermission(req);
 
     const requestBody = req.body as UpdateVehicleApplicationStickerRequest;
-    const updatedVehicleApplicationDTO =
-      await this._updateVehicleApplicationStickerUseCase.execute(requestBody);
+    const updatedVehicleApplicationDTO = await this._updateVehicleApplicationStickerUseCase.execute(
+      requestBody,
+      usedId
+    );
 
     this.ok<IVehicleApplicationDTO>(res, updatedVehicleApplicationDTO);
   }

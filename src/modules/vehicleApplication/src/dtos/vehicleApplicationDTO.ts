@@ -66,4 +66,5 @@ export interface IVehicleApplicationLinks {
 export interface IUpdateVehicleApplicationProps {
   vehicleApplicationId: string;
   status: string;
+  actorId: string;
 }
