@@ -40,6 +40,11 @@ describe("LoginUserUseCase", () => {
     expect(user).toBeDefined();
     expect(accessToken).toBeDefined();
     expect(appKey).toBeDefined();
+
+    const signInActivity = await db.userSignInActivity.findMany({ where: { userId: user.id } });
+
+    expect(signInActivity).toHaveLength(1);
+    expect(signInActivity[0]!.userId).toBe(user.id);
   });
 
   it("should throw UnauthorizedError when provided with wrong password", async () => {

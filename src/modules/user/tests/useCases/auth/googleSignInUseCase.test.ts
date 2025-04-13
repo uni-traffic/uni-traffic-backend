@@ -45,6 +45,13 @@ describe("GoogleSignInUseCase", () => {
     expect(result.user.email).toBe(seededUser.email);
     expect(result.accessToken).toBeDefined();
     expect(result.appKey).toBeDefined();
+
+    const signInActivity = await db.userSignInActivity.findMany({
+      where: { userId: result.user.id }
+    });
+
+    expect(signInActivity).toHaveLength(1);
+    expect(signInActivity[0]!.userId).toBe(result.user.id);
   });
 
   it("should return auth credentials and create a user if the user doesn't exist", async () => {
@@ -68,6 +75,13 @@ describe("GoogleSignInUseCase", () => {
     expect(result.user.lastName).toBe(newUser.family_name);
     expect(result.accessToken).toBeDefined();
     expect(result.appKey).toBeDefined();
+
+    const signInActivity = await db.userSignInActivity.findMany({
+      where: { userId: result.user.id }
+    });
+
+    expect(signInActivity).toHaveLength(1);
+    expect(signInActivity[0]!.userId).toBe(result.user.id);
   });
 
   it("should create a user when the user doesn't exist and Google TokenPayload lacks family_name", async () => {

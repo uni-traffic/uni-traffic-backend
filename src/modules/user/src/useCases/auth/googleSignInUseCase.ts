@@ -5,6 +5,10 @@ import { AppKeys, type IAppKeys } from "../../../../../shared/lib/appKey";
 import { BycryptPassword, type IHashAlgorithm } from "../../../../../shared/lib/bycrypt";
 import { GoogleOAuth } from "../../../../../shared/lib/googleOAuth";
 import { type IJSONWebToken, JSONWebToken } from "../../../../../shared/lib/jsonWebToken";
+import {
+  type IUserSignInActivityService,
+  UserSignInActivityService
+} from "../../../../userSignInActivity/src/service/userSignInActivityService";
 import type { IUser } from "../../domain/models/user/classes/user";
 import { UserFactory } from "../../domain/models/user/factory";
 import { type IUserMapper, UserMapper } from "../../domain/models/user/mapper";
@@ -19,6 +23,7 @@ export class GoogleSignInUseCase {
   private _userMapper: IUserMapper;
   private _appKeys: IAppKeys;
   private _googleAuthClient: GoogleOAuth;
+  private _userSignInService: IUserSignInActivityService;
 
   public constructor(
     userRepository: IUserRepository = new UserRepository(),
@@ -26,7 +31,8 @@ export class GoogleSignInUseCase {
     userMapper: IUserMapper = new UserMapper(),
     appKeys: IAppKeys = new AppKeys(),
     googleAuthClient: GoogleOAuth = new GoogleOAuth(),
-    hashAlgorithm: IHashAlgorithm = new BycryptPassword()
+    hashAlgorithm: IHashAlgorithm = new BycryptPassword(),
+    userSignInService: IUserSignInActivityService = new UserSignInActivityService()
   ) {
     this._userRepository = userRepository;
     this._jsonWebToken = jsonWebToken;
@@ -34,6 +40,7 @@ export class GoogleSignInUseCase {
     this._appKeys = appKeys;
     this._googleAuthClient = googleAuthClient;
     this._hashAlgorithm = hashAlgorithm;
+    this._userSignInService = userSignInService;
   }
 
   public async execute({ token, clientType }: GoogleSignInRequest): Promise<IUserLoginResponse> {
@@ -41,6 +48,8 @@ export class GoogleSignInUseCase {
     const user =
       (await this._findUserByEmail(payload.email)) ?? (await this._registerNewUser(payload));
     const accessToken = this._generateToken(user.id);
+
+    await this._logSignInActivity(user.id);
 
     return this._buildResponse(accessToken, user);
   }
@@ -80,6 +89,10 @@ export class GoogleSignInUseCase {
 
   private _generateToken(userId: string): string {
     return this._jsonWebToken.sign({ id: userId });
+  }
+
+  private async _logSignInActivity(userId: string): Promise<void> {
+    await this._userSignInService.createAndSaveUserSignInActivity(userId);
   }
 
   private _buildResponse(accessToken: string, user: IUser): IUserLoginResponse {
