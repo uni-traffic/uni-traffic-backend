@@ -1,3 +1,4 @@
+import type { UseCaseActorInfo } from "../../../../../shared/lib/types";
 import type {
   IUpdateVehicleApplicationProps,
   IVehicleApplicationDTO
@@ -20,8 +21,8 @@ export class VehicleApplicationService implements IVehicleApplicationService {
   }
 
   public async updateStatus(
-    params: IUpdateVehicleApplicationProps
+    params: IUpdateVehicleApplicationProps & UseCaseActorInfo
   ): Promise<IVehicleApplicationDTO> {
-    return this._updateVehicleApplicationStatusUseCase.execute(params, params.actorId);
+    return this._updateVehicleApplicationStatusUseCase.execute(params);
   }
 }

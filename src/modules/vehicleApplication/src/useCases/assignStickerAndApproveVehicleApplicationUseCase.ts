@@ -1,4 +1,6 @@
 import { BadRequest, NotFoundError, UnexpectedError } from "../../../../shared/core/errors";
+import { ProtectedUseCase } from "../../../../shared/domain/useCase";
+import type { UseCaseActorInfo } from "../../../../shared/lib/types";
 import {
   AuditLogService,
   type IAuditLogService
@@ -20,7 +22,11 @@ import {
   VehicleApplicationRepository
 } from "../repositories/vehicleApplicationRepository";
 
-export class UpdateVehicleApplicationStickerUseCase {
+export class AssignStickerAndApproveVehicleApplicationUseCase extends ProtectedUseCase<
+  UpdateVehicleApplicationStickerRequest,
+  IVehicleApplicationDTO
+> {
+  protected _ALLOWED_ACCESS_ROLES = ["SECURITY", "CASHIER", "ADMIN", "SUPERADMIN"];
   private _vehicleApplicationRepository: IVehicleApplicationRepository;
   private _vehicleApplicationMapper: IVehicleApplicationMapper;
   private _vehicleService: IVehicleService;
@@ -34,6 +40,7 @@ export class UpdateVehicleApplicationStickerUseCase {
     userService: IUserService = new UserService(),
     auditLogService: IAuditLogService = new AuditLogService()
   ) {
+    super();
     this._vehicleApplicationRepository = vehicleApplicationRepository;
     this._vehicleApplicationMapper = vehicleApplicationMapper;
     this._vehicleService = vehicleService;
@@ -41,10 +48,11 @@ export class UpdateVehicleApplicationStickerUseCase {
     this._auditLogService = auditLogService;
   }
 
-  public async execute(
-    { vehicleApplicationId, stickerNumber }: UpdateVehicleApplicationStickerRequest,
-    actorId: string
-  ): Promise<IVehicleApplicationDTO> {
+  public async executeImplementation({
+    vehicleApplicationId,
+    stickerNumber,
+    actorId
+  }: UpdateVehicleApplicationStickerRequest & UseCaseActorInfo): Promise<IVehicleApplicationDTO> {
     const vehicleApplication = await this._getVehicleApplicationFromDatabase(vehicleApplicationId);
 
     await this._createNewVehicle(vehicleApplication, stickerNumber);

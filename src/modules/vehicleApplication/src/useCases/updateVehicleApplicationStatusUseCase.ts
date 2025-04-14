@@ -1,4 +1,6 @@
 import { BadRequest, NotFoundError, UnexpectedError } from "../../../../shared/core/errors";
+import { ProtectedUseCase } from "../../../../shared/domain/useCase";
+import type { UseCaseActorInfo } from "../../../../shared/lib/types";
 import {
   AuditLogService,
   type IAuditLogService
@@ -16,7 +18,11 @@ import {
   VehicleApplicationRepository
 } from "../repositories/vehicleApplicationRepository";
 
-export class UpdateVehicleApplicationStatusUseCase {
+export class UpdateVehicleApplicationStatusUseCase extends ProtectedUseCase<
+  UpdateVehicleApplicationStatusRequest,
+  IVehicleApplicationDTO
+> {
+  protected _ALLOWED_ACCESS_ROLES = ["SECURITY", "CASHIER", "ADMIN", "SUPERADMIN"];
   private _vehicleApplicationRepository: IVehicleApplicationRepository;
   private _vehicleApplicationMapper: IVehicleApplicationMapper;
   private _auditLogService: IAuditLogService;
@@ -26,15 +32,18 @@ export class UpdateVehicleApplicationStatusUseCase {
     vehicleApplicationMapper: IVehicleApplicationMapper = new VehicleApplicationMapper(),
     auditLogService: IAuditLogService = new AuditLogService()
   ) {
+    super();
     this._vehicleApplicationRepository = vehicleApplicationRepository;
     this._vehicleApplicationMapper = vehicleApplicationMapper;
     this._auditLogService = auditLogService;
   }
 
-  public async execute(
-    { vehicleApplicationId, status, remarks }: UpdateVehicleApplicationStatusRequest,
-    actorId: string
-  ): Promise<IVehicleApplicationDTO> {
+  public async executeImplementation({
+    vehicleApplicationId,
+    status,
+    remarks,
+    actorId
+  }: UpdateVehicleApplicationStatusRequest & UseCaseActorInfo): Promise<IVehicleApplicationDTO> {
     const vehicleApplication = await this._getVehicleApplicationFromDatabase(vehicleApplicationId);
     const oldStatus = vehicleApplication.status.value;
     const newStatus = this.getVehicleApplicationNewStatus(status);
