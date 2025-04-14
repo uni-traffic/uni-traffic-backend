@@ -16,12 +16,12 @@ export class UpdateVehicleApplicationStatusController extends BaseController {
   private _updateVehicleApplicationStatusUseCase: UpdateVehicleApplicationStatusUseCase;
 
   public constructor(
-    jsonWebtoken = new JSONWebToken(),
+    jsonWebToken = new JSONWebToken(),
     userRoleService = new UserRoleService(),
     updateVehicleApplicationStatus = new UpdateVehicleApplicationStatusUseCase()
   ) {
     super();
-    this._jsonWebToken = jsonWebtoken;
+    this._jsonWebToken = jsonWebToken;
     this._userRoleService = userRoleService;
     this._updateVehicleApplicationStatusUseCase = updateVehicleApplicationStatus;
   }
@@ -30,10 +30,10 @@ export class UpdateVehicleApplicationStatusController extends BaseController {
     const userId = await this._verifyPermission(req);
 
     const requestBody = req.body as UpdateVehicleApplicationStatusRequest;
-    const updatedVehicleApplication = await this._updateVehicleApplicationStatusUseCase.execute(
-      requestBody,
-      userId
-    );
+    const updatedVehicleApplication = await this._updateVehicleApplicationStatusUseCase.execute({
+      ...requestBody,
+      actorId: userId
+    });
 
     this.ok<IVehicleApplicationDTO>(res, updatedVehicleApplication);
   }

@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { BadRequest, NotFoundError } from "../../../../shared/core/errors";
+import { BadRequest, ForbiddenError, NotFoundError } from "../../../../shared/core/errors";
 import { db } from "../../../../shared/infrastructure/database/prisma";
 import {
   type IUserRepository,
@@ -14,18 +14,18 @@ import {
   type IVehicleApplicationRepository,
   VehicleApplicationRepository
 } from "../../src/repositories/vehicleApplicationRepository";
-import { UpdateVehicleApplicationStickerUseCase } from "../../src/useCases/updateVehicleApplicationStickerUseCase";
+import { AssignStickerAndApproveVehicleApplicationUseCase } from "../../src/useCases/assignStickerAndApproveVehicleApplicationUseCase";
 import { seedVehicleApplication } from "../utils/seedVehicleApplication";
 
-describe("UpdateVehicleApplicationStickerUseCase", () => {
-  let updateVehicleApplicationStickerUseCase: UpdateVehicleApplicationStickerUseCase;
+describe("AssignStickerAndApproveVehicleApplicationUseCase", () => {
+  let updateVehicleApplicationStickerUseCase: AssignStickerAndApproveVehicleApplicationUseCase;
   let vehicleApplicationRepository: IVehicleApplicationRepository;
   let vehicleRepository: IVehicleRepository;
   let userRepository: IUserRepository;
 
   beforeAll(async () => {
     vehicleApplicationRepository = new VehicleApplicationRepository();
-    updateVehicleApplicationStickerUseCase = new UpdateVehicleApplicationStickerUseCase();
+    updateVehicleApplicationStickerUseCase = new AssignStickerAndApproveVehicleApplicationUseCase();
     vehicleRepository = new VehicleRepository();
     userRepository = new UserRepository();
   });
@@ -35,7 +35,7 @@ describe("UpdateVehicleApplicationStickerUseCase", () => {
   });
 
   it("should successfully update the sticker number and status to APPROVED", async () => {
-    const seededUser = await seedUser({
+    const seededAuthenticatedUser = await seedUser({
       role: faker.helpers.arrayElement(["ADMIN", "SUPERADMIN", "SECURITY", "CASHIER"])
     });
     const seededVehicleApplication = await seedVehicleApplication({
@@ -43,13 +43,11 @@ describe("UpdateVehicleApplicationStickerUseCase", () => {
     });
     const stickerNumber = `${new Date().getFullYear()}${faker.number.int({ min: 1000, max: 9999 })}`;
 
-    const updatedVehicleApplication = await updateVehicleApplicationStickerUseCase.execute(
-      {
-        vehicleApplicationId: seededVehicleApplication.id,
-        stickerNumber
-      },
-      seededUser.id
-    );
+    const updatedVehicleApplication = await updateVehicleApplicationStickerUseCase.execute({
+      vehicleApplicationId: seededVehicleApplication.id,
+      stickerNumber,
+      actorId: seededAuthenticatedUser.id
+    });
 
     const userFromDatabase = await userRepository.getUserById(seededVehicleApplication.applicantId);
 
@@ -81,7 +79,7 @@ describe("UpdateVehicleApplicationStickerUseCase", () => {
   });
 
   it("should throw BadRequest when sticker number is empty", async () => {
-    const seededUser = await seedUser({
+    const seededAuthenticatedUser = await seedUser({
       role: faker.helpers.arrayElement(["ADMIN", "SUPERADMIN", "SECURITY", "CASHIER"])
     });
     const seededVehicleApplication = await seedVehicleApplication({
@@ -89,18 +87,16 @@ describe("UpdateVehicleApplicationStickerUseCase", () => {
     });
 
     await expect(
-      updateVehicleApplicationStickerUseCase.execute(
-        {
-          vehicleApplicationId: seededVehicleApplication.id,
-          stickerNumber: ""
-        },
-        seededUser.id
-      )
+      updateVehicleApplicationStickerUseCase.execute({
+        vehicleApplicationId: seededVehicleApplication.id,
+        stickerNumber: "",
+        actorId: seededAuthenticatedUser.id
+      })
     ).rejects.toThrow(new BadRequest(" is not a valid sticker number"));
   });
 
   it("should require PENDING_FOR_STICKER status", async () => {
-    const seededUser = await seedUser({
+    const seededAuthenticatedUser = await seedUser({
       role: faker.helpers.arrayElement(["ADMIN", "SUPERADMIN", "SECURITY", "CASHIER"])
     });
     const seededVehicleApplication = await seedVehicleApplication({
@@ -108,43 +104,53 @@ describe("UpdateVehicleApplicationStickerUseCase", () => {
     });
 
     await expect(
-      updateVehicleApplicationStickerUseCase.execute(
-        {
-          vehicleApplicationId: seededVehicleApplication.id,
-          stickerNumber: `${new Date().getFullYear()}${faker.number.int({ min: 1000, max: 9999 })}`
-        },
-        seededUser.id
-      )
+      updateVehicleApplicationStickerUseCase.execute({
+        vehicleApplicationId: seededVehicleApplication.id,
+        stickerNumber: `${new Date().getFullYear()}${faker.number.int({ min: 1000, max: 9999 })}`,
+        actorId: seededAuthenticatedUser.id
+      })
     ).rejects.toThrow(BadRequest);
   });
 
   it("should throw NotFoundError when vehicle application id does not exist", async () => {
-    const seededUser = await seedUser({
+    const seededAuthenticatedUser = await seedUser({
       role: faker.helpers.arrayElement(["ADMIN", "SUPERADMIN", "SECURITY", "CASHIER"])
     });
+
     await expect(
-      updateVehicleApplicationStickerUseCase.execute(
-        {
-          vehicleApplicationId: faker.string.uuid(),
-          stickerNumber: `STICKER-${faker.string.alphanumeric(6)}`
-        },
-        seededUser.id
-      )
+      updateVehicleApplicationStickerUseCase.execute({
+        vehicleApplicationId: faker.string.uuid(),
+        stickerNumber: `STICKER-${faker.string.alphanumeric(6)}`,
+        actorId: seededAuthenticatedUser.id
+      })
     ).rejects.toThrow(new NotFoundError("Vehicle Application Not Found"));
   });
 
   it("should validate empty vehicle application id before lookup", async () => {
-    const seededUser = await seedUser({
+    const seededAuthenticatedUser = await seedUser({
       role: faker.helpers.arrayElement(["ADMIN", "SUPERADMIN", "SECURITY", "CASHIER"])
     });
+
     await expect(
-      updateVehicleApplicationStickerUseCase.execute(
-        {
-          vehicleApplicationId: "",
-          stickerNumber: `STICKER-${faker.string.alphanumeric(6)}`
-        },
-        seededUser.id
-      )
+      updateVehicleApplicationStickerUseCase.execute({
+        vehicleApplicationId: "",
+        stickerNumber: `STICKER-${faker.string.alphanumeric(6)}`,
+        actorId: seededAuthenticatedUser.id
+      })
     ).rejects.toThrow(new BadRequest("Vehicle Application Not Found"));
+  });
+
+  it("should throw ForbiddenError when actor lacks permission", async () => {
+    const seededAuthenticatedUser = await seedUser({
+      role: faker.helpers.arrayElement(["GUEST", "STUDENT", "STAFF"])
+    });
+
+    await expect(
+      updateVehicleApplicationStickerUseCase.execute({
+        vehicleApplicationId: "",
+        stickerNumber: `STICKER-${faker.string.alphanumeric(6)}`,
+        actorId: seededAuthenticatedUser.id
+      })
+    ).rejects.toThrow(new ForbiddenError("You do not have permission to perform this action."));
   });
 });

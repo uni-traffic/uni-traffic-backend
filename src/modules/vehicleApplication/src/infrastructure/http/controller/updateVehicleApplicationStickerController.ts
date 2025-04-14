@@ -10,12 +10,12 @@ import { VehicleApplicationMapper } from "../../../domain/models/vehicleApplicat
 import type { IVehicleApplicationDTO } from "../../../dtos/vehicleApplicationDTO";
 import type { UpdateVehicleApplicationStickerRequest } from "../../../dtos/vehicleApplicationRequestSchema";
 import { VehicleApplicationRepository } from "../../../repositories/vehicleApplicationRepository";
-import { UpdateVehicleApplicationStickerUseCase } from "../../../useCases/updateVehicleApplicationStickerUseCase";
+import { AssignStickerAndApproveVehicleApplicationUseCase } from "../../../useCases/assignStickerAndApproveVehicleApplicationUseCase";
 
 export class UpdateVehicleApplicationStickerController extends BaseController {
   private _jsonWebToken: IJSONWebToken;
   private _userRoleService: IUserRoleService;
-  private _updateVehicleApplicationStickerUseCase: UpdateVehicleApplicationStickerUseCase;
+  private _updateVehicleApplicationStickerUseCase: AssignStickerAndApproveVehicleApplicationUseCase;
 
   public constructor(
     jsonWebtoken = new JSONWebToken(),
@@ -26,19 +26,19 @@ export class UpdateVehicleApplicationStickerController extends BaseController {
     super();
     this._jsonWebToken = jsonWebtoken;
     this._userRoleService = userRoleService;
-    this._updateVehicleApplicationStickerUseCase = new UpdateVehicleApplicationStickerUseCase(
-      vehicleApplicationRepository,
-      vehicleApplicationMapper
-    );
+    this._updateVehicleApplicationStickerUseCase =
+      new AssignStickerAndApproveVehicleApplicationUseCase(
+        vehicleApplicationRepository,
+        vehicleApplicationMapper
+      );
   }
 
   protected async executeImpl(req: Request, res: Response): Promise<void> {
-    const usedId = await this._verifyPermission(req);
+    const userId = await this._verifyPermission(req);
 
     const requestBody = req.body as UpdateVehicleApplicationStickerRequest;
     const updatedVehicleApplicationDTO = await this._updateVehicleApplicationStickerUseCase.execute(
-      requestBody,
-      usedId
+      { ...requestBody, actorId: userId }
     );
 
     this.ok<IVehicleApplicationDTO>(res, updatedVehicleApplicationDTO);

@@ -65,4 +65,5 @@ export interface GetAuditLogResponse {
   auditLogs: IAuditLogDTO[];
   hasNextPage: boolean;
   hasPreviousPage: boolean;
+  totalPages: number;
 }

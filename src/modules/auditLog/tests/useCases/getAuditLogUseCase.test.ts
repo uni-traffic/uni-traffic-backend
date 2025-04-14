@@ -31,6 +31,7 @@ describe("GetAuditLogUseCase", () => {
 
     expect(result.auditLogs).toHaveLength(10);
     expect(result.hasNextPage).toBe(true);
+    expect(result.totalPages).toBe(2);
     expect(result.hasPreviousPage).toBe(false);
   });
 

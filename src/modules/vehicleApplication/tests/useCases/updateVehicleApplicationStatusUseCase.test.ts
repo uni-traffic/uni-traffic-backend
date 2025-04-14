@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { BadRequest, NotFoundError } from "../../../../shared/core/errors";
+import { BadRequest, ForbiddenError, NotFoundError } from "../../../../shared/core/errors";
 import { db } from "../../../../shared/infrastructure/database/prisma";
 import { seedUser } from "../../../user/tests/utils/user/seedUser";
 import { VehicleApplicationStatus } from "../../src/domain/models/vehicleApplication/classes/vehicleApplicationStatus";
@@ -20,6 +20,10 @@ describe("UpdateVehicleApplicationStatusUseCase", () => {
     await db.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should successfully update the vehicle application status(PENDING_FOR_SECURITY_APPROVAL)", async () => {
     const seededAuthorizedUser = await seedUser({
       role: faker.helpers.arrayElement(["ADMIN", "SUPERADMIN", "SECURITY", "CASHIER"])
@@ -28,13 +32,11 @@ describe("UpdateVehicleApplicationStatusUseCase", () => {
       status: "PENDING_FOR_SECURITY_APPROVAL"
     });
 
-    const updatedVehicleApplication = await updateVehicleApplicationStatusUseCase.execute(
-      {
-        vehicleApplicationId: seededVehicleApplication.id,
-        status: "PENDING_FOR_PAYMENT"
-      },
-      seededAuthorizedUser.id
-    );
+    const updatedVehicleApplication = await updateVehicleApplicationStatusUseCase.execute({
+      vehicleApplicationId: seededVehicleApplication.id,
+      status: "PENDING_FOR_PAYMENT",
+      actorId: seededAuthorizedUser.id
+    });
 
     expect(updatedVehicleApplication.status).toBe("PENDING_FOR_PAYMENT");
 
@@ -60,13 +62,11 @@ describe("UpdateVehicleApplicationStatusUseCase", () => {
       status: "PENDING_FOR_PAYMENT"
     });
 
-    const updatedVehicleApplication = await updateVehicleApplicationStatusUseCase.execute(
-      {
-        vehicleApplicationId: seededVehicleApplication.id,
-        status: "PENDING_FOR_STICKER"
-      },
-      seededAuthorizedUser.id
-    );
+    const updatedVehicleApplication = await updateVehicleApplicationStatusUseCase.execute({
+      vehicleApplicationId: seededVehicleApplication.id,
+      status: "PENDING_FOR_STICKER",
+      actorId: seededAuthorizedUser.id
+    });
 
     expect(updatedVehicleApplication.status).toBe("PENDING_FOR_STICKER");
 
@@ -85,13 +85,11 @@ describe("UpdateVehicleApplicationStatusUseCase", () => {
       status: "PENDING_FOR_STICKER"
     });
 
-    const updatedVehicleApplication = await updateVehicleApplicationStatusUseCase.execute(
-      {
-        vehicleApplicationId: seededVehicleApplication.id,
-        status: "APPROVED"
-      },
-      seededAuthorizedUser.id
-    );
+    const updatedVehicleApplication = await updateVehicleApplicationStatusUseCase.execute({
+      vehicleApplicationId: seededVehicleApplication.id,
+      status: "APPROVED",
+      actorId: seededAuthorizedUser.id
+    });
 
     expect(updatedVehicleApplication.status).toBe("APPROVED");
 
@@ -112,13 +110,11 @@ describe("UpdateVehicleApplicationStatusUseCase", () => {
     const newStatus = "PENDING_FOR_SECURITY_APPROVAL";
 
     await expect(
-      updateVehicleApplicationStatusUseCase.execute(
-        {
-          vehicleApplicationId: seededVehicleApplication.id,
-          status: newStatus
-        },
-        seededAuthorizedUser.id
-      )
+      updateVehicleApplicationStatusUseCase.execute({
+        vehicleApplicationId: seededVehicleApplication.id,
+        status: newStatus,
+        actorId: seededAuthorizedUser.id
+      })
     ).rejects.toThrow(
       new BadRequest(`Invalid transition from ${seededVehicleApplication.status} to ${newStatus}`)
     );
@@ -134,13 +130,11 @@ describe("UpdateVehicleApplicationStatusUseCase", () => {
     const newStatus = "PENDING_FOR_SECURITY_APPROVAL";
 
     await expect(
-      updateVehicleApplicationStatusUseCase.execute(
-        {
-          vehicleApplicationId: seededVehicleApplication.id,
-          status: newStatus
-        },
-        seededAuthorizedUser.id
-      )
+      updateVehicleApplicationStatusUseCase.execute({
+        vehicleApplicationId: seededVehicleApplication.id,
+        status: newStatus,
+        actorId: seededAuthorizedUser.id
+      })
     ).rejects.toThrow(
       new BadRequest(`Invalid transition from ${seededVehicleApplication.status} to ${newStatus}`)
     );
@@ -155,13 +149,11 @@ describe("UpdateVehicleApplicationStatusUseCase", () => {
     });
 
     await expect(
-      updateVehicleApplicationStatusUseCase.execute(
-        {
-          vehicleApplicationId: seededVehicleApplication.id,
-          status: "REJECTED"
-        },
-        seededAuthorizedUser.id
-      )
+      updateVehicleApplicationStatusUseCase.execute({
+        vehicleApplicationId: seededVehicleApplication.id,
+        status: "REJECTED",
+        actorId: seededAuthorizedUser.id
+      })
     ).rejects.toThrow(new BadRequest("Remarks are required when setting status to REJECTED."));
   });
 
@@ -175,13 +167,11 @@ describe("UpdateVehicleApplicationStatusUseCase", () => {
     const newStatus = "PENDING_FOR_SECURITY_APPROVAL";
 
     await expect(
-      updateVehicleApplicationStatusUseCase.execute(
-        {
-          vehicleApplicationId: seededVehicleApplication.id,
-          status: newStatus
-        },
-        seededAuthorizedUser.id
-      )
+      updateVehicleApplicationStatusUseCase.execute({
+        vehicleApplicationId: seededVehicleApplication.id,
+        status: newStatus,
+        actorId: seededAuthorizedUser.id
+      })
     ).rejects.toThrow(
       new BadRequest(`Invalid transition from ${seededVehicleApplication.status} to ${newStatus}`)
     );
@@ -194,13 +184,11 @@ describe("UpdateVehicleApplicationStatusUseCase", () => {
     const seededVehicleApplication = await seedVehicleApplication({});
 
     await expect(
-      updateVehicleApplicationStatusUseCase.execute(
-        {
-          vehicleApplicationId: seededVehicleApplication.id,
-          status: "Non-existing Status"
-        },
-        seededAuthorizedUser.id
-      )
+      updateVehicleApplicationStatusUseCase.execute({
+        vehicleApplicationId: seededVehicleApplication.id,
+        status: "Non-existing Status",
+        actorId: seededAuthorizedUser.id
+      })
     ).rejects.toThrow(
       new BadRequest(
         `Invalid VehicleApplication status. Valid types are ${VehicleApplicationStatus.validStatuses.join(", ")}`
@@ -213,13 +201,25 @@ describe("UpdateVehicleApplicationStatusUseCase", () => {
       role: faker.helpers.arrayElement(["ADMIN", "SUPERADMIN"])
     });
     await expect(
-      updateVehicleApplicationStatusUseCase.execute(
-        {
-          vehicleApplicationId: faker.string.uuid(),
-          status: "PENDING_FOR_PAYMENT"
-        },
-        seededAuthorizedUser.id
-      )
+      updateVehicleApplicationStatusUseCase.execute({
+        vehicleApplicationId: faker.string.uuid(),
+        status: "PENDING_FOR_PAYMENT",
+        actorId: seededAuthorizedUser.id
+      })
     ).rejects.toThrow(new NotFoundError("Vehicle Application Not Found"));
+  });
+
+  it("should throw ForbiddenError when actor lacks permission", async () => {
+    const seededAuthenticatedUser = await seedUser({
+      role: faker.helpers.arrayElement(["GUEST", "STUDENT", "STAFF"])
+    });
+
+    await expect(
+      updateVehicleApplicationStatusUseCase.execute({
+        vehicleApplicationId: faker.string.uuid(),
+        status: "PENDING_FOR_PAYMENT",
+        actorId: seededAuthenticatedUser.id
+      })
+    ).rejects.toThrow(new ForbiddenError("You do not have permission to perform this action."));
   });
 });

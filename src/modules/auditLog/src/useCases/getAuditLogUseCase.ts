@@ -21,12 +21,14 @@ export class GetAuditLogUseCase {
     const refinedParams = this._refineParams(params);
     const auditLogs = await this._getAuditLogs(refinedParams);
     const totalAuditLogs = await this._getTotalAuditLogs(refinedParams);
+    const totalPages = this._getTotalPages(refinedParams.count, totalAuditLogs);
     const hasNextPage = this._hasNextPage(refinedParams.count, refinedParams.page, totalAuditLogs);
 
     return {
       auditLogs: auditLogs.map((auditLog) => this._auditLogMapper.toDTO(auditLog)),
       hasNextPage: hasNextPage,
-      hasPreviousPage: refinedParams.page > 1
+      hasPreviousPage: refinedParams.page > 1,
+      totalPages: totalPages
     };
   }
 
@@ -54,5 +56,9 @@ export class GetAuditLogUseCase {
 
   private _hasNextPage(count: number, page: number, totalAuditLog: number): boolean {
     return count * page < totalAuditLog;
+  }
+
+  private _getTotalPages(countPerPage: number, totalAuditLogs: number): number {
+    return Math.ceil(totalAuditLogs / countPerPage);
   }
 }
