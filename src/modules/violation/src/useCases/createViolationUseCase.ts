@@ -3,6 +3,7 @@ import type { IViolation } from "../domain/models/violation/classes/violation";
 import { ViolationFactory } from "../domain/models/violation/factory";
 import { ViolationMapper } from "../domain/models/violation/mapper";
 import type { IViolationDTO } from "../dtos/violationDTO";
+import type { ViolationCreateRequest } from "../dtos/violationRequestSchema";
 import { ViolationRepository } from "../repositories/violationRepository";
 
 export class CreateViolationUseCase {
@@ -17,11 +18,7 @@ export class CreateViolationUseCase {
     this._violationMapper = violationMapper;
   }
 
-  public async execute(params: {
-    category: string;
-    violationName: string;
-    penalty: number;
-  }): Promise<IViolationDTO> {
+  public async execute(params: ViolationCreateRequest): Promise<IViolationDTO> {
     this._validateInput(params);
 
     const violation = this._createViolationDomainObject({
@@ -47,7 +44,7 @@ export class CreateViolationUseCase {
       throw new BadRequest("Category cannot be empty");
     }
 
-    if (typeof params.penalty !== "number" || Number.isNaN(params.penalty)) {
+    if (Number.isNaN(params.penalty)) {
       throw new BadRequest("Penalty must be a valid number");
     }
 
@@ -65,6 +62,7 @@ export class CreateViolationUseCase {
     if (violationOrError.isFailure) {
       throw new BadRequest(violationOrError.getErrorMessage()!);
     }
+
     return violationOrError.getValue();
   }
 
@@ -73,6 +71,7 @@ export class CreateViolationUseCase {
     if (!savedViolation) {
       throw new UnexpectedError("Failed to save violation");
     }
+
     return savedViolation;
   }
 }

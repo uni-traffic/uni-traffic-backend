@@ -5,7 +5,7 @@ import { ViolationMapper } from "../domain/models/violation/mapper";
 
 export interface IViolationRepository {
   getAllViolations(): Promise<IViolation[]>;
-  findViolationById(violationId: string): Promise<IViolation | null>;
+  getViolationById(violationId: string): Promise<IViolation | null>;
   createViolation(violation: IViolation): Promise<IViolation | null>;
 }
 
@@ -28,7 +28,7 @@ export class ViolationRepository implements IViolationRepository {
     return violationsRaw.map((violation) => this._violationMapper.toDomain(violation));
   }
 
-  public async findViolationById(violationId: string): Promise<IViolation | null> {
+  public async getViolationById(violationId: string): Promise<IViolation | null> {
     const violation = await this._database.violation.findUnique({
       where: { id: violationId }
     });

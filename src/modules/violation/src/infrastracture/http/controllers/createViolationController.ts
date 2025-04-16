@@ -3,9 +3,9 @@ import { ForbiddenError } from "../../../../../../shared/core/errors";
 import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
 import { JSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
 import { UserRoleService } from "../../../../../user/src/shared/service/userRoleService";
-import { CreateViolationUseCase } from "../../../useCases/createViolationUseCase";
-import type { ViolationCreateRequest } from "../../../dtos/violationRequestSchema";
 import type { IViolationDTO } from "../../../dtos/violationDTO";
+import type { ViolationCreateRequest } from "../../../dtos/violationRequestSchema";
+import { CreateViolationUseCase } from "../../../useCases/createViolationUseCase";
 
 export class CreateViolationController extends BaseController {
   private _createViolationUseCase: CreateViolationUseCase;
@@ -27,12 +27,7 @@ export class CreateViolationController extends BaseController {
     await this._verifyPermission(req);
 
     const requestBody = req.body as ViolationCreateRequest;
-
-    const violationDTO = await this._createViolationUseCase.execute({
-      category: requestBody.category,
-      violationName: requestBody.violationName,
-      penalty: requestBody.penalty
-    });
+    const violationDTO = await this._createViolationUseCase.execute(requestBody);
 
     this.created<IViolationDTO>(res, "Violation created successfully", violationDTO);
   }
