@@ -161,7 +161,7 @@ model VehicleScanLog {
 
 model Violation {
   id              String            @id @default(uuid())
-  category        String            @db.Char(1)
+  category        String            
   violationName   String
   penalty         Float
   violationRecord ViolationRecord[]
