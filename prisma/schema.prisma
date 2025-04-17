@@ -161,7 +161,7 @@ model VehicleScanLog {
 
 model Violation {
   id              String            @id @default(uuid())
-  category        String            
+  category        String
   violationName   String
   penalty         Float
   violationRecord ViolationRecord[]
@@ -182,6 +182,9 @@ model ViolationRecord {
   violation              Violation               @relation(fields: [violationId], references: [id], onDelete: Cascade)
   status                 ViolationRecordStatus   @default(UNPAID)
   violationRecordPayment ViolationRecordPayment?
+
+  @@index([status])
+  @@index([violationId])
 }
 
 model ViolationRecordPayment {
@@ -193,6 +196,8 @@ model ViolationRecordPayment {
   timePaid          DateTime        @default(now())
   violationRecord   ViolationRecord @relation(fields: [violationRecordId], references: [id], onDelete: Cascade)
   cashier           User            @relation(fields: [cashierId], references: [id], onDelete: Cascade)
+
+  @@index([violationRecordId])
 }
 
 enum ViolationRecordStatus {

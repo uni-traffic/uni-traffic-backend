@@ -25,22 +25,21 @@ export const seedViolationRecord = async ({
   reporter?: Partial<IUserRawObject>;
   violation?: Partial<IViolationRawObject>;
   vehicle?: Partial<IVehicleRawObject>;
-  createdAt?: Date; 
+  createdAt?: Date;
 }) => {
-  const seededVehicle = await seedVehicle({});
-  const seededViolation = await seedViolation({});
-  const seededReporter = await seedUser({ role: "SECURITY" });
-
   const result = await db.violationRecord.create({
     data: {
       id,
       remarks: faker.lorem.sentence({ min: 1, max: 15 }),
-      vehicleId: defaultTo(seededVehicle.id, vehicleId),
-      violationId: defaultTo(seededViolation.id, violationId),
-      userId: defaultTo(seededVehicle.ownerId, userId),
-      reportedById: defaultTo(seededReporter.id, reportedById),
+      vehicleId: defaultTo((await seedVehicle({})).id, vehicleId),
+      violationId: defaultTo((await seedViolation({})).id, violationId),
+      userId: defaultTo(
+        (await seedUser({ role: faker.helpers.arrayElement(["STUDENT", "STAFF"]) })).id,
+        userId
+      ),
+      reportedById: defaultTo((await seedUser({ role: "SECURITY" })).id, reportedById),
       status: status as ViolationRecordSchema,
-      createdAt: createdAt ?? new Date(), 
+      createdAt: createdAt ?? new Date()
     },
     include: {
       reporter: true,
@@ -49,10 +48,11 @@ export const seedViolationRecord = async ({
       violation: true
     }
   });
+
   if (status === "PAID") {
     await seedViolationRecordPayment({
       violationRecordId: id,
-      amountPaid: seededViolation.penalty,
+      amountPaid: result.violation.penalty,
       remarks: "none"
     });
   }

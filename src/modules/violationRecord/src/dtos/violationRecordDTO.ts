@@ -48,3 +48,8 @@ export interface ShortenViolationRecord {
   id: string;
   createdAt: Date;
 }
+
+export interface UnpaidAndPaidViolationTotal {
+  unpaidTotal: number;
+  paidTotal: number;
+}
