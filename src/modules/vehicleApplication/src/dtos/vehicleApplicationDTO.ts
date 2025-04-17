@@ -68,3 +68,5 @@ export interface IUpdateVehicleApplicationProps {
   status: string;
   actorId: string;
 }
+
+export type VehicleApplicationCountByStatus = { status: string; count: number }[];

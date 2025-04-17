@@ -26,31 +26,31 @@ describe("GET /api/v1/sign-in-activity/count", () => {
     await Promise.all([
       seedUserSignInActivity({
         time: faker.date.between({
-          from: "2025-04-01T00:00:00.000Z",
+          from: "2025-04-02T00:00:00.000Z",
           to: "2025-04-30T23:59:59.999Z"
         })
       }),
       seedUserSignInActivity({
         time: faker.date.between({
-          from: "2025-04-01T00:00:00.000Z",
+          from: "2025-04-02T00:00:00.000Z",
           to: "2025-04-30T23:59:59.999Z"
         })
       }),
       seedUserSignInActivity({
         time: faker.date.between({
-          from: "2025-04-01T00:00:00.000Z",
+          from: "2025-04-02T00:00:00.000Z",
           to: "2025-04-30T23:59:59.999Z"
         })
       }),
       seedUserSignInActivity({
         time: faker.date.between({
-          from: "2025-04-01T00:00:00.000Z",
+          from: "2025-04-02T00:00:00.000Z",
           to: "2025-04-30T23:59:59.999Z"
         })
       }),
       seedUserSignInActivity({
         time: faker.date.between({
-          from: "2025-04-01T00:00:00.000Z",
+          from: "2025-04-02T00:00:00.000Z",
           to: "2025-04-30T23:59:59.999Z"
         })
       })
@@ -79,40 +79,40 @@ describe("GET /api/v1/sign-in-activity/count", () => {
     await Promise.all([
       seedUserSignInActivity({
         time: faker.date.between({
-          from: "2025-03-01T00:00:00.000Z",
+          from: "2025-03-02T00:00:00.000Z",
           to: "2025-03-30T23:59:59.999Z"
         })
       }),
       seedUserSignInActivity({
         time: faker.date.between({
-          from: "2025-04-01T00:00:00.000Z",
+          from: "2025-04-02T00:00:00.000Z",
           to: "2025-04-30T23:59:59.999Z"
         })
       }),
       seedUserSignInActivity({
         userId: seededUser.id,
         time: faker.date.between({
-          from: "2025-04-01T00:00:00.000Z",
+          from: "2025-04-02T00:00:00.000Z",
           to: "2025-04-30T23:59:59.999Z"
         })
       }),
       seedUserSignInActivity({
         userId: seededUser.id,
         time: faker.date.between({
-          from: "2025-04-01T00:00:00.000Z",
+          from: "2025-04-02T00:00:00.000Z",
           to: "2025-04-30T23:59:59.999Z"
         })
       }),
       seedUserSignInActivity({
         userId: seededUser.id,
         time: faker.date.between({
-          from: "2025-04-01T00:00:00.000Z",
+          from: "2025-04-02T00:00:00.000Z",
           to: "2025-04-30T23:59:59.999Z"
         })
       }),
       seedUserSignInActivity({
         time: faker.date.between({
-          from: "2025-04-01T00:00:00.000Z",
+          from: "2025-04-02T00:00:00.000Z",
           to: "2025-04-30T23:59:59.999Z"
         })
       })

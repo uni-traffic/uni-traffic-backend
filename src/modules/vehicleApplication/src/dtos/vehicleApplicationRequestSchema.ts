@@ -93,7 +93,21 @@ export const UpdateVehicleApplicationStickerSchema = z.object({
       message: "Sticker number cannot be empty"
     })
 });
-
 export type UpdateVehicleApplicationStickerRequest = z.infer<
   typeof UpdateVehicleApplicationStickerSchema
+>;
+
+export const GetVehicleApplicationCountByStatusSchema = z.object({
+  status: z
+    .enum([
+      "APPROVED",
+      "PENDING_FOR_STICKER",
+      "PENDING_FOR_PAYMENT",
+      "PENDING_FOR_SECURITY_APPROVAL",
+      "REJECTED"
+    ])
+    .optional()
+});
+export type GetVehicleApplicationCountByStatusRequest = z.infer<
+  typeof GetVehicleApplicationCountByStatusSchema
 >;
