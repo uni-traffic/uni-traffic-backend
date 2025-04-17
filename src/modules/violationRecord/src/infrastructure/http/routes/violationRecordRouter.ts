@@ -7,6 +7,7 @@ import {
 } from "../../../dtos/violationRecordRequestSchema";
 import { CreateViolationRecordController } from "../controllers/createViolationRecordController";
 import { GetTotalViolationGivenController } from "../controllers/getTotalViolationGivenController";
+import { GetUnpaidAndPaidViolationTotalController } from "../controllers/getUnpaidAndPaidViolationTotalController";
 import { GetViolationRecordController } from "../controllers/getViolationRecordInformationController";
 
 const violationRecordRouter = Router();
@@ -34,5 +35,9 @@ violationRecordRouter.get(
     new GetTotalViolationGivenController().execute(req, res);
   }
 );
+
+violationRecordRouter.get("/totals", (req: Request, res: Response) => {
+  new GetUnpaidAndPaidViolationTotalController().execute(req, res);
+});
 
 export { violationRecordRouter };

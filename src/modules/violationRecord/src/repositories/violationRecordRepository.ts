@@ -1,4 +1,6 @@
 import type { ViolationRecordStatus as PrismaViolationRecordStatus } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { defaultTo } from "rambda";
 import { db } from "../../../../shared/infrastructure/database/prisma";
 import type { IViolationRecord } from "../domain/models/violationRecord/classes/violationRecord";
 import {
@@ -7,7 +9,8 @@ import {
 } from "../domain/models/violationRecord/mapper";
 import type {
   GetViolationRecordByProperty,
-  GetViolationsGivenPerDayByRangeParams
+  GetViolationsGivenPerDayByRangeParams,
+  UnpaidAndPaidViolationTotal
 } from "../dtos/violationRecordDTO";
 
 export interface IViolationRecordRepository {
@@ -17,6 +20,7 @@ export interface IViolationRecordRepository {
   getViolationRecordGivenByRange(
     params: GetViolationsGivenPerDayByRangeParams
   ): Promise<{ id: string; createdAt: Date }[]>;
+  getUnpaidAndPaidViolationTotal(): Promise<UnpaidAndPaidViolationTotal>;
 }
 
 export class ViolationRecordRepository implements IViolationRecordRepository {
@@ -138,6 +142,31 @@ export class ViolationRecordRepository implements IViolationRecordRepository {
       });
     } catch {
       return [];
+    }
+  }
+
+  public async getUnpaidAndPaidViolationTotal(): Promise<UnpaidAndPaidViolationTotal> {
+    try {
+      const result = await this._database.$queryRaw<
+        { unpaidTotal: number | null; paidTotal: number | null }[]
+      >(Prisma.sql`
+      SELECT 
+        SUM(CASE WHEN vr."status" = 'PAID' THEN vrp."amountPaid" ELSE 0 END) AS "paidTotal",
+        SUM(CASE WHEN vr."status" = 'UNPAID' THEN v."penalty" ELSE 0 END) AS "unpaidTotal"
+      FROM "ViolationRecord" vr
+      LEFT JOIN "Violation" v ON vr."violationId" = v.id
+      LEFT JOIN "ViolationRecordPayment" vrp ON vrp."violationRecordId" = vr.id;
+    `);
+
+      return {
+        unpaidTotal: defaultTo(0, result[0].unpaidTotal),
+        paidTotal: defaultTo(0, result[0].paidTotal)
+      };
+    } catch {
+      return {
+        unpaidTotal: 0,
+        paidTotal: 0
+      };
     }
   }
 }
