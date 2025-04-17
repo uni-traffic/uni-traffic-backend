@@ -1,6 +1,7 @@
 import { type Request, type Response, Router } from "express";
 import { validateRequest } from "zod-express-middleware";
 import {
+  GetVehicleApplicationCountByStatusSchema,
   UpdateVehicleApplicationStatusSchema,
   UpdateVehicleApplicationStickerSchema,
   VehicleApplicationCreateRequestSchema,
@@ -8,6 +9,7 @@ import {
 } from "../../../dtos/vehicleApplicationRequestSchema";
 import { CreateVehicleApplicationController } from "../controller/createVehicleApplicationController";
 import { GetVehicleApplicationController } from "../controller/getVehicleApplicationController";
+import { VehicleApplicationCountByStatusController } from "../controller/getVehicleApplicationCountByStatusController";
 import { UpdateVehicleApplicationStatusController } from "../controller/updateVehicleApplicationStatusController";
 import { UpdateVehicleApplicationStickerController } from "../controller/updateVehicleApplicationStickerController";
 
@@ -42,6 +44,16 @@ vehicleApplicationRouter.post(
   validateRequest({ body: UpdateVehicleApplicationStickerSchema }),
   (req: Request, res: Response) => {
     new UpdateVehicleApplicationStickerController().execute(req, res);
+  }
+);
+
+vehicleApplicationRouter.get(
+  "/stats/count-by-status",
+  validateRequest({
+    query: GetVehicleApplicationCountByStatusSchema
+  }),
+  (req: Request, res: Response) => {
+    new VehicleApplicationCountByStatusController().execute(req, res);
   }
 );
 

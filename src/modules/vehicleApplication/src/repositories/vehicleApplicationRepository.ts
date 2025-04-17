@@ -1,11 +1,14 @@
-import type { UserType, VehicleApplicationStatus } from "@prisma/client";
+import { Prisma, type UserType, type VehicleApplicationStatus } from "@prisma/client";
 import { db } from "../../../../shared/infrastructure/database/prisma";
 import type { IVehicleApplication } from "../domain/models/vehicleApplication/classes/vehicleApplication";
 import {
   type IVehicleApplicationMapper,
   VehicleApplicationMapper
 } from "../domain/models/vehicleApplication/mapper";
-import type { GetViolationVehicleByProperty } from "../dtos/vehicleApplicationDTO";
+import type {
+  GetViolationVehicleByProperty,
+  VehicleApplicationCountByStatus
+} from "../dtos/vehicleApplicationDTO";
 
 export interface IVehicleApplicationRepository {
   getVehicleApplicationByProperty(
@@ -19,6 +22,9 @@ export interface IVehicleApplicationRepository {
   ): Promise<IVehicleApplication | null>;
   getVehicleApplicationById(vehicleId: string): Promise<IVehicleApplication | null>;
   getVehicleApplicationByIds(vehicleIds: string[]): Promise<IVehicleApplication[]>;
+  getVehicleApplicationCountByStatus(
+    statusFilter?: string
+  ): Promise<VehicleApplicationCountByStatus>;
 }
 
 export class VehicleApplicationRepository implements IVehicleApplicationRepository {
@@ -138,8 +144,33 @@ export class VehicleApplicationRepository implements IVehicleApplicationReposito
       }
     });
 
-    return vehicleApplicationRaw.map((vehicleApplcation) =>
-      this._vehicleApplicationMapper.toDomain(vehicleApplcation)
+    return vehicleApplicationRaw.map((vehicleApplication) =>
+      this._vehicleApplicationMapper.toDomain(vehicleApplication)
     );
+  }
+
+  public async getVehicleApplicationCountByStatus(
+    statusFilter?: string
+  ): Promise<VehicleApplicationCountByStatus> {
+    try {
+      const result = await this._database.$queryRaw<VehicleApplicationCountByStatus>(
+        Prisma.sql`
+          SELECT va.status, COUNT(*) as count
+          FROM "VehicleApplication" va
+          ${
+            statusFilter !== undefined
+              ? Prisma.sql`WHERE va.status = ${statusFilter}::"VehicleApplicationStatus"`
+              : Prisma.sql``
+          }
+          GROUP BY va.status
+        `
+      );
+
+      return result.map((statusCount) => {
+        return { status: statusCount.status, count: Number(statusCount.count) };
+      });
+    } catch {
+      return [];
+    }
   }
 }
