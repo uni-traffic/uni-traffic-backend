@@ -56,7 +56,7 @@ export class ViolationRepository implements IViolationRepository {
 
   public async updateViolation(
     violation: UpdateViolationCreateRequest
-  ): Promise<IViolationDTO | null> {
+  ): Promise<IViolation | null> {
     try {
       const validatedViolation = UpdateViolationRequestSchema.parse(violation);
 

@@ -22,6 +22,8 @@ describe("ViolationRepository.updateViolation", () => {
 
     const updateViolation = await repository.updateViolation(request);
 
+    expect(updateViolation).not.toBeNull();
+
     const updatedRecord = await repository.getViolationById(seededViolation.id);
 
     expect(updatedRecord).not.toBeNull();

@@ -5,6 +5,7 @@ import { type IJSONWebToken, JSONWebToken } from "../../../../../../shared/lib/j
 import { UserRoleService } from "../../../../../user/src/shared/service/userRoleService";
 import type { IViolationDTO } from "../../../dtos/violationDTO";
 import { UpdateViolationUseCase } from "../../../useCases/updateViolationUseCase";
+import { UpdateViolationRequestSchema } from "../../../dtos/violationRequestSchema";
 
 export class UpdateViolationController extends BaseController {
   private _updateViolationUseCase: UpdateViolationUseCase;
@@ -25,7 +26,8 @@ export class UpdateViolationController extends BaseController {
   protected async executeImpl(req: Request, res: Response) {
     await this._verifyPermission(req);
 
-    const violationsDTO = await this._updateViolationUseCase.execute(req.body);
+    const requestBody = UpdateViolationRequestSchema.parse(req.body);
+    const violationsDTO = await this._updateViolationUseCase.execute(requestBody);
 
     this.ok<IViolationDTO>(res, violationsDTO);
   }

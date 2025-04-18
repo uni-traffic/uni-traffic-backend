@@ -76,31 +76,7 @@ describe("POST /api/v1/violation/update", () => {
     const responseBody = response.body;
 
     expect(response.status).toBe(400);
-    expect(responseBody.message).toBe("Category cannot be empty");
-  });
-
-  it("should return status 400 and fail to update the violation when payload category is empty string", async () => {
-    const seededAuthenticatedUser = await seedAuthenticatedUser({
-      role: faker.helpers.arrayElement(["ADMIN", "SUPERADMIN", "SECURITY"]),
-      expiration: "1h"
-    });
-    const seededViolation = await seedViolation({});
-
-    const payload = {
-      id: seededViolation.id,
-      category: "",
-      violationName: "Over-speeding",
-      penalty: faker.number.int({ max: 1000, min: 0 })
-    };
-
-    const response = await requestAPI
-      .post("/api/v1/violation/update")
-      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
-      .send(payload);
-    const responseBody = response.body;
-
-    expect(response.status).toBe(400);
-    expect(responseBody.message).toBe("Category cannot be empty");
+    expect(responseBody.message).toBe("Category cannot be an empty string.");
   });
 
   it("should return status 400 and fail to update the violation when payload violationNam is empty string", async () => {
@@ -124,7 +100,7 @@ describe("POST /api/v1/violation/update", () => {
     const responseBody = response.body;
 
     expect(response.status).toBe(400);
-    expect(responseBody.message).toBe("Violation name cannot be empty");
+    expect(responseBody.message).toBe("Violation name cannot be an empty string.");
   });
 
   it("should return status 400 and fail to update the violation when payload penalty is negative", async () => {
@@ -148,7 +124,7 @@ describe("POST /api/v1/violation/update", () => {
     const responseBody = response.body;
 
     expect(response.status).toBe(400);
-    expect(responseBody.message).toBe("Penalty cannot be negative");
+    expect(responseBody.message).toBe("Penalty cannot be negative.");
   });
 
   it("should return status 400 and fail to update the violation when payload penalty is not a whole number", async () => {
@@ -172,7 +148,7 @@ describe("POST /api/v1/violation/update", () => {
     const responseBody = response.body;
 
     expect(response.status).toBe(400);
-    expect(responseBody.message).toBe("Penalty must be an integer");
+    expect(responseBody.message).toBe("Penalty must be an whole number.");
   });
 
   it("should return status 400 and fail to update the violation when payload penalty is undefined", async () => {
@@ -196,7 +172,7 @@ describe("POST /api/v1/violation/update", () => {
     const responseBody = response.body;
 
     expect(response.status).toBe(400);
-    expect(responseBody.message).toBe("Penalty is required");
+    expect(responseBody.message).toBe("Penalty is required.");
   });
 
   it("should return status 400 and fail to update the violation when payload id does not exist in the system", async () => {
@@ -219,7 +195,7 @@ describe("POST /api/v1/violation/update", () => {
     const responseBody = response.body;
 
     expect(response.status).toBe(404);
-    expect(responseBody.message).toBe("Violation not found");
+    expect(responseBody.message).toBe("Violation not found!");
   });
 
   it("should return status 403 and message when Authorization provided lacks permission", async () => {
