@@ -8,9 +8,11 @@ import {
   ViolationRecordMapper
 } from "../domain/models/violationRecord/mapper";
 import type {
+  GetTotalViolationGivenByRangeParams,
   GetViolationRecordByProperty,
   GetViolationsGivenPerDayByRangeParams,
-  UnpaidAndPaidViolationTotal
+  UnpaidAndPaidViolationTotal,
+  ViolationGivenByRange
 } from "../dtos/violationRecordDTO";
 
 export interface IViolationRecordRepository {
@@ -21,6 +23,11 @@ export interface IViolationRecordRepository {
     params: GetViolationsGivenPerDayByRangeParams
   ): Promise<{ id: string; createdAt: Date }[]>;
   getUnpaidAndPaidViolationTotal(): Promise<UnpaidAndPaidViolationTotal>;
+  getTotalViolationGivenByRange({
+    startDate,
+    endDate,
+    type
+  }: GetTotalViolationGivenByRangeParams): Promise<ViolationGivenByRange>;
 }
 
 export class ViolationRecordRepository implements IViolationRecordRepository {
@@ -167,6 +174,47 @@ export class ViolationRecordRepository implements IViolationRecordRepository {
         unpaidTotal: 0,
         paidTotal: 0
       };
+    }
+  }
+
+  public async getTotalViolationGivenByRange({
+    startDate,
+    endDate,
+    type
+  }: GetTotalViolationGivenByRangeParams): Promise<ViolationGivenByRange> {
+    try {
+      const formattedDateSql = this._getFormattedDate(type);
+      const results = await this._database.$queryRaw<{ date: string; count: number }[]>(
+        Prisma.sql`
+          SELECT 
+            ${formattedDateSql} AS date,
+            COUNT(*) AS "count"
+          FROM "ViolationRecord"
+          WHERE "createdAt" BETWEEN ${startDate} AND ${endDate}
+          GROUP BY ${formattedDateSql}
+          ORDER BY date
+        `
+      );
+
+      return results.map((result) => {
+        return {
+          date: result.date,
+          count: Number(result.count)
+        };
+      });
+    } catch {
+      return [];
+    }
+  }
+
+  private _getFormattedDate(type: "YEAR" | "MONTH" | "DAY"): Prisma.Sql {
+    switch (type) {
+      case "DAY":
+        return Prisma.sql`TO_CHAR("createdAt", 'YYYY-MM-DD')`;
+      case "MONTH":
+        return Prisma.sql`TO_CHAR("createdAt", 'YYYY-MM')`;
+      case "YEAR":
+        return Prisma.sql`TO_CHAR("createdAt", 'YYYY')`;
     }
   }
 }

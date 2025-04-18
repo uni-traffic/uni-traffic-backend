@@ -1,13 +1,13 @@
 import { faker } from "@faker-js/faker";
 import request from "supertest";
 import type TestAgent from "supertest/lib/agent";
-import app from "../../../../../../../api";
-import { db } from "../../../../../../shared/infrastructure/database/prisma";
-import { seedAuthenticatedUser } from "../../../../../user/tests/utils/user/seedAuthenticatedUser";
-import { seedViolation } from "../../../../../violation/tests/utils/violation/seedViolation";
-import { seedViolationRecord } from "../../../utils/violationRecord/seedViolationRecord";
+import app from "../../../../../../../../api";
+import { db } from "../../../../../../../shared/infrastructure/database/prisma";
+import { seedAuthenticatedUser } from "../../../../../../user/tests/utils/user/seedAuthenticatedUser";
+import { seedViolation } from "../../../../../../violation/tests/utils/violation/seedViolation";
+import { seedViolationRecord } from "../../../../utils/violationRecord/seedViolationRecord";
 
-describe("GET /api/v1/violation-record/totals", () => {
+describe("GET /api/v1/violation-record/stats/totals", () => {
   let requestAPI: TestAgent;
 
   beforeAll(async () => {
@@ -45,7 +45,7 @@ describe("GET /api/v1/violation-record/totals", () => {
     ]);
 
     const response = await requestAPI
-      .get("/api/v1/violation-record/totals")
+      .get("/api/v1/violation-record/stats/totals")
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`);
     const responseBody = response.body;
 
@@ -60,7 +60,7 @@ describe("GET /api/v1/violation-record/totals", () => {
     });
 
     const response = await requestAPI
-      .get("/api/v1/violation-record/totals")
+      .get("/api/v1/violation-record/stats/totals")
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`);
     const responseBody = response.body;
 

@@ -1,11 +1,13 @@
 import { type Request, type Response, Router } from "express";
 import { validateRequest } from "zod-express-middleware";
 import {
+  GetTotalViolationGivenByGivenRangeRequest,
   GetViolationsGivenPerDayByRangeRequest,
   ViolationRecordCreateSchema,
   ViolationRecordRequestSchema
 } from "../../../dtos/violationRecordRequestSchema";
 import { CreateViolationRecordController } from "../controllers/createViolationRecordController";
+import { GetTotalViolationGivenByRangeController } from "../controllers/getTotalViolationGivenByRangeController";
 import { GetTotalViolationGivenController } from "../controllers/getTotalViolationGivenController";
 import { GetUnpaidAndPaidViolationTotalController } from "../controllers/getUnpaidAndPaidViolationTotalController";
 import { GetViolationRecordController } from "../controllers/getViolationRecordInformationController";
@@ -36,8 +38,16 @@ violationRecordRouter.get(
   }
 );
 
-violationRecordRouter.get("/totals", (req: Request, res: Response) => {
+violationRecordRouter.get("/stats/totals", (req: Request, res: Response) => {
   new GetUnpaidAndPaidViolationTotalController().execute(req, res);
 });
+
+violationRecordRouter.get(
+  "/stats/violations-given",
+  validateRequest({ query: GetTotalViolationGivenByGivenRangeRequest }),
+  (req: Request, res: Response) => {
+    new GetTotalViolationGivenByRangeController().execute(req, res);
+  }
+);
 
 export { violationRecordRouter };
