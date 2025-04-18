@@ -1,15 +1,18 @@
+import type { UpdateViolationCreateRequest } from "../../../../dtos/violationRequestSchema";
+
 export interface IViolation {
   id: string;
   category: string;
   violationName: string;
   penalty: number;
+  updateViolation(params: UpdateViolationCreateRequest): void;
 }
 
 export class Violation implements IViolation {
-  private readonly _id: string;
-  private readonly _category: string;
-  private readonly _violationName: string;
-  private readonly _penalty: number;
+  private _id: string;
+  private _category: string;
+  private _violationName: string;
+  private _penalty: number;
 
   private constructor({
     id,
@@ -44,7 +47,19 @@ export class Violation implements IViolation {
     return this._penalty;
   }
 
-  public static create(props: IViolation): IViolation {
+  public updateViolation(params: UpdateViolationCreateRequest): void {
+    this._id = params.id;
+    this._category = params.category!;
+    this._violationName = params.violationName!;
+    this._penalty = params.penalty!;
+  }
+
+  public static create(props: {
+    id: string;
+    category: string;
+    violationName: string;
+    penalty: number;
+  }): IViolation {
     return new Violation(props);
   }
 }
