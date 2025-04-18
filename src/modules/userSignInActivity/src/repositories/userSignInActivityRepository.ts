@@ -1,11 +1,15 @@
-import type { PrismaClient } from "@prisma/client";
+import { Prisma, type PrismaClient } from "@prisma/client";
 import { db } from "../../../../shared/infrastructure/database/prisma";
 import type {
   IUserSignInActivity,
   UserSignInActivity
 } from "../domain/models/userSignInActivity/classes/userSignInActivity";
 import { UserSignInActivityMapper } from "../domain/models/userSignInActivity/mapper";
-import type { GetUserSignInActivityByRange } from "../dtos/userSignInActivityDTO";
+import type {
+  GetTotalUniqueSignInByGivenRangeParams,
+  GetUserSignInActivityByRange,
+  TotalUniqueSignInByGivenRange
+} from "../dtos/userSignInActivityDTO";
 
 interface HydrateOptions {
   user?: boolean;
@@ -20,6 +24,9 @@ export interface IUserSignInActivityRepository {
     hydrate?: HydrateOptions
   ): Promise<IUserSignInActivity[]>;
   countUserSignInActivityByRange(params: GetUserSignInActivityByRange): Promise<number>;
+  getTotalUniqueSignInByGivenRange(
+    params: GetTotalUniqueSignInByGivenRangeParams
+  ): Promise<TotalUniqueSignInByGivenRange>;
 }
 
 export class UserSignInActivityRepository implements IUserSignInActivityRepository {
@@ -92,6 +99,61 @@ export class UserSignInActivityRepository implements IUserSignInActivityReposito
       return uniqueUsers.length;
     } catch {
       return 0;
+    }
+  }
+
+  public async getTotalUniqueSignInByGivenRange({
+    startDate,
+    endDate,
+    type
+  }: GetTotalUniqueSignInByGivenRangeParams): Promise<TotalUniqueSignInByGivenRange> {
+    try {
+      const format = type === "MONTH" ? "YYYY-MM" : "YYYY";
+      const query =
+        type === "DAY"
+          ? Prisma.sql`
+              SELECT 
+                TO_CHAR(DATE_TRUNC('day', "time"), 'YYYY-MM-DD') AS date,
+                COUNT(DISTINCT "userId") AS count
+              FROM 
+                "UserSignInActivity"
+              WHERE 
+                "time" BETWEEN ${startDate} AND ${endDate}
+              GROUP BY 
+                date
+              ORDER BY 
+                date;
+            `
+          : Prisma.sql`
+              SELECT 
+                TO_CHAR(day, ${Prisma.sql`${format}`}) AS date,
+                SUM(daily_count) AS count
+              FROM (
+                SELECT 
+                  DATE_TRUNC('day', "time") AS day,
+                  COUNT(DISTINCT "userId") AS daily_count
+                FROM 
+                  "UserSignInActivity"
+                WHERE 
+                  "time" BETWEEN ${startDate} AND ${endDate}
+                GROUP BY 
+                  day
+              ) AS daily_counts
+              GROUP BY 
+                date
+              ORDER BY 
+                date;
+            `;
+      const results = await this._database.$queryRaw<{ date: string; count: number }[]>(query);
+
+      return results.map((result) => {
+        return {
+          date: result.date,
+          count: Number(result.count)
+        };
+      });
+    } catch {
+      return [];
     }
   }
 }

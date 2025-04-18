@@ -11,3 +11,11 @@ export interface GetUserSignInActivityByRange {
   startDate: Date;
   endDate: Date;
 }
+
+export type TotalUniqueSignInByGivenRange = { date: string; count: number }[];
+
+export interface GetTotalUniqueSignInByGivenRangeParams {
+  startDate: Date;
+  endDate: Date;
+  type: "YEAR" | "MONTH" | "DAY";
+}
