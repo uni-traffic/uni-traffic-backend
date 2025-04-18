@@ -33,7 +33,6 @@ describe("UpdateViolationUseCase", () => {
 
     const updatedRecord = await repository.getViolationById(seededViolation.id);
 
-    expect(updatedRecord).not.toBeNull();
     expect(updatedRecord?.violationName).toBe("Over-speeding");
     expect(updatedRecord?.penalty).toBe(request.penalty);
     expect(updatedRecord?.category).toBe("Speeding");
@@ -50,7 +49,7 @@ describe("UpdateViolationUseCase", () => {
     };
 
     await expect(updateViolationUseCase.execute(request)).rejects.toThrow(
-      new BadRequest("Category cannot be empty")
+      new BadRequest("Category cannot be an empty string.")
     );
   });
 
@@ -65,7 +64,7 @@ describe("UpdateViolationUseCase", () => {
     };
 
     await expect(updateViolationUseCase.execute(request)).rejects.toThrow(
-      new BadRequest("Violation name cannot be empty")
+      new BadRequest("Violation name cannot be an empty string.")
     );
   });
 
@@ -80,7 +79,7 @@ describe("UpdateViolationUseCase", () => {
     };
 
     await expect(updateViolationUseCase.execute(request)).rejects.toThrow(
-      new BadRequest("Penalty cannot be negative")
+      new BadRequest("Penalty cannot be negative.")
     );
   });
 
@@ -95,7 +94,7 @@ describe("UpdateViolationUseCase", () => {
     };
 
     await expect(updateViolationUseCase.execute(request)).rejects.toThrow(
-      new BadRequest("Penalty must be an integer")
+      new BadRequest("Penalty must be an whole number.")
     );
   });
 
@@ -123,7 +122,7 @@ describe("UpdateViolationUseCase", () => {
     };
 
     await expect(updateViolationUseCase.execute(request)).rejects.toThrow(
-      new BadRequest("Violation not found")
+      new BadRequest("Violation not found!")
     );
   });
 });
