@@ -52,3 +52,12 @@ export const GetViolationsGivenPerDayByRangeRequest = z.object({
   endDate: z.string({ message: "End Date is required" })
 });
 export type ViolationsGivenPerDayByRange = z.infer<typeof GetViolationsGivenPerDayByRangeRequest>;
+
+export const GetTotalViolationGivenByGivenRangeRequest = z.object({
+  startDate: z.string({ message: "Start Date is required" }),
+  endDate: z.string({ message: "End Date is required" }),
+  type: z.enum(["YEAR", "MONTH", "DAY"])
+});
+export type GetTotalViolationGivenByGivenRange = z.infer<
+  typeof GetTotalViolationGivenByGivenRangeRequest
+>;

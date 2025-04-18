@@ -53,3 +53,11 @@ export interface UnpaidAndPaidViolationTotal {
   unpaidTotal: number;
   paidTotal: number;
 }
+
+export type ViolationGivenByRange = { date: string; count: number }[];
+
+export interface GetTotalViolationGivenByRangeParams {
+  startDate: Date;
+  endDate: Date;
+  type: "YEAR" | "MONTH" | "DAY";
+}
