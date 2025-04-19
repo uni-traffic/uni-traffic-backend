@@ -2,18 +2,18 @@ import type { Request, Response } from "express";
 import { ForbiddenError } from "../../../../../../../shared/core/errors";
 import { BaseController } from "../../../../../../../shared/infrastructure/http/core/baseController";
 import { JSONWebToken } from "../../../../../../../shared/lib/jsonWebToken";
-import type { IUserDTO } from "../../../../dtos/userDTO";
+import type { GetUserResponse } from "../../../../dtos/userDTO";
 import type { GetUserRequest } from "../../../../dtos/userRequestSchema";
 import { UserRoleService } from "../../../../shared/service/userRoleService";
-import { GetUserByPropertyUseCase } from "../../../../useCases/user/getUserByPropertyUseCase";
+import { GetUserUseCase } from "../../../../useCases/user/getUserUseCase";
 
 export class GetUserInformationController extends BaseController {
-  private _getUserByProperty: GetUserByPropertyUseCase;
+  private _getUserByProperty: GetUserUseCase;
   private _jsonWebToken: JSONWebToken;
   private _userRoleService: UserRoleService;
 
   public constructor(
-    getUserByProperty = new GetUserByPropertyUseCase(),
+    getUserByProperty = new GetUserUseCase(),
     jsonWebToken = new JSONWebToken(),
     userRoleService = new UserRoleService()
   ) {
@@ -28,7 +28,7 @@ export class GetUserInformationController extends BaseController {
 
     const userDetailsDTO = await this._getUserByProperty.execute(req.query as GetUserRequest);
 
-    this.ok<IUserDTO[]>(res, userDetailsDTO);
+    this.ok<GetUserResponse>(res, userDetailsDTO);
   }
 
   private async _verifyPermission(req: Request): Promise<string> {
