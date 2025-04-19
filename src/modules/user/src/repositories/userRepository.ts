@@ -1,21 +1,22 @@
-import type { Role } from "@prisma/client";
+import type { Prisma, Role } from "@prisma/client";
 import { db } from "../../../../shared/infrastructure/database/prisma";
 import type { IUser } from "../domain/models/user/classes/user";
 import { type IUserMapper, UserMapper } from "../domain/models/user/mapper";
-import type { GetUserByPropertyUseCasePayload } from "../dtos/userDTO";
+import type { GetUserUseCasePayload, UserWhereClauseParams } from "../dtos/userDTO";
 
 export interface IUserRepository {
   getUserByUsername(username: string): Promise<IUser | null>;
   getUserById(userId: string): Promise<IUser | null>;
   getUsersByIds(userIds: string[]): Promise<IUser[]>;
   getUserByEmail(email: string): Promise<IUser | null>;
-  getUserByProperty(params: GetUserByPropertyUseCasePayload): Promise<IUser[]>;
+  getUser(params: GetUserUseCasePayload): Promise<IUser[]>;
   isUsernameAlreadyTaken(username: string): Promise<boolean>;
   isEmailAlreadyTaken(email: string): Promise<boolean>;
   createUser(user: IUser): Promise<IUser | null>;
   createUsers(users: IUser[]): Promise<IUser[]>;
   updateUser(user: IUser): Promise<IUser | null>;
-  getTotalUserCount(roles?: Role[]): Promise<number>; 
+  getTotalUser(params: UserWhereClauseParams): Promise<number>;
+  getTotalUserCount(roles?: Role[]): Promise<number>;
 }
 
 export class UserRepository implements IUserRepository {
@@ -146,35 +147,55 @@ export class UserRepository implements IUserRepository {
    * - The given id, firstName, lastName, username, or email
    *   matches any record containing the provided value in the corresponding property.
    */
-  public async getUserByProperty(params: GetUserByPropertyUseCasePayload): Promise<IUser[]> {
-    const { id, firstName, lastName, username, email, role, count, page } = params;
-
-    try {
-      const userPropertyDetails = await this._database.user.findMany({
-        skip: count * (page - 1),
-        take: count * page,
-        where: {
-          ...{ id: id || undefined },
-          ...{ firstName: firstName || undefined },
-          ...{ lastName: lastName || undefined },
-          ...{ username: username || undefined },
-          ...{ email: email || undefined },
-          ...{ role: (role as Role) || undefined }
-        }
-      });
-      return userPropertyDetails.map((userDetails) => this._userMapper.toDomain(userDetails));
-    } catch {
-      return [];
-    }
-  }
 
   public async getTotalUserCount(roles?: Role[]): Promise<number> {
     const userCount = await this._database.user.count({
-        where: {
-            ...(roles ? { role: { in: roles } } : {}),
-            isDeleted: false 
-        }
+      where: {
+        ...(roles ? { role: { in: roles } } : {}),
+        isDeleted: false
+      }
     });
     return userCount;
+  }
+
+  public async getTotalUser(params: UserWhereClauseParams): Promise<number> {
+    return this._database.user.count({
+      where: this._generateWhereClause(params)
+    });
+  }
+
+  public async getUser(params: GetUserUseCasePayload): Promise<IUser[]> {
+    const userRaw = await this._database.user.findMany({
+      where: this._generateWhereClause(params),
+      orderBy: {
+        username: params.sort === 2 ? "desc" : "asc"
+      },
+      skip: params.count * (params.page - 1),
+      take: params.count
+    });
+
+    return userRaw.map((user) => this._userMapper.toDomain(user));
+  }
+
+  private _generateWhereClause(params: UserWhereClauseParams): Prisma.UserWhereInput {
+    return params.searchKey
+      ? {
+          OR: [
+            { id: { contains: params.searchKey, mode: "insensitive" } },
+            { firstName: { contains: params.searchKey, mode: "insensitive" } },
+            { lastName: { contains: params.searchKey, mode: "insensitive" } },
+            { username: { contains: params.searchKey, mode: "insensitive" } },
+            { email: { contains: params.searchKey, mode: "insensitive" } }
+          ],
+          role: params.role as Role
+        }
+      : {
+          id: params.id,
+          firstName: params.firstName,
+          lastName: params.lastName,
+          username: params.userName,
+          email: params.email,
+          role: params.role as Role
+        };
   }
 }
