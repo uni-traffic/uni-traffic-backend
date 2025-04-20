@@ -4,8 +4,8 @@ import { BaseController } from "../../../../../../shared/infrastructure/http/cor
 import { type IJSONWebToken, JSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
 import { UserRoleService } from "../../../../../user/src/shared/service/userRoleService";
 import type { IViolationDTO } from "../../../dtos/violationDTO";
-import { UpdateViolationUseCase } from "../../../useCases/updateViolationUseCase";
 import { UpdateViolationRequestSchema } from "../../../dtos/violationRequestSchema";
+import { UpdateViolationUseCase } from "../../../useCases/updateViolationUseCase";
 
 export class UpdateViolationController extends BaseController {
   private _updateViolationUseCase: UpdateViolationUseCase;
@@ -41,7 +41,6 @@ export class UpdateViolationController extends BaseController {
       "SECURITY",
       "SUPERADMIN"
     ]);
-
     if (!hasGivenRoles) {
       throw new ForbiddenError("You do not have the required permissions to perform this action.");
     }
