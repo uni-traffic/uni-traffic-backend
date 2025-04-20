@@ -1,7 +1,6 @@
-import { faker } from "@faker-js/faker";
 import { ViolationRepository } from "../../src/repositories/violationRepository";
 import { seedViolation } from "../utils/violation/seedViolation";
-import type { UpdateViolationCreateRequest } from "../../src/dtos/violationRequestSchema";
+import { createViolationDomainObject } from "../utils/violation/createViolationDomainObject";
 
 describe("ViolationRepository.updateViolation", () => {
   let repository: ViolationRepository;
@@ -10,88 +9,22 @@ describe("ViolationRepository.updateViolation", () => {
     repository = new ViolationRepository();
   });
 
-  it("it should update violation successfully with given parameters", async () => {
-    const seededViolation = await seedViolation({});
+  it("should update a violation in the database", async () => {
+    const violation = await seedViolation({});
+    const domainViolation = createViolationDomainObject({ id: violation.id });
+    const updatedViolation = await repository.updateViolation(domainViolation);
 
-    const request: UpdateViolationCreateRequest = {
-      id: seededViolation.id,
-      category: "Speeding",
-      violationName: "Over-speeding",
-      penalty: faker.number.int({ max: 1000, min: 0 })
-    };
-
-    const updateViolation = await repository.updateViolation(request);
-
-    expect(updateViolation).not.toBeNull();
-
-    const updatedRecord = await repository.getViolationById(seededViolation.id);
-
-    expect(updatedRecord).not.toBeNull();
-    expect(updatedRecord?.violationName).toBe("Over-speeding");
-    expect(updatedRecord?.penalty).toBe(request.penalty);
-    expect(updatedRecord?.category).toBe("Speeding");
+    expect(updatedViolation).not.toBeNull();
+    expect(updatedViolation?.id).toBe(domainViolation.id);
+    expect(updatedViolation?.category).toBe(domainViolation.category);
+    expect(updatedViolation?.violationName).toBe(domainViolation.violationName);
+    expect(updatedViolation?.penalty).toBe(domainViolation.penalty);
   });
 
-  it("should fail to update violation when category is empty string", async () => {
-    const seededViolation = await seedViolation({});
+  it("should return null if the violation does not exist", async () => {
+    const violation = createViolationDomainObject({ id: "non-existing-id" });
+    const updatedViolation = await repository.updateViolation(violation);
 
-    const request: UpdateViolationCreateRequest = {
-      id: seededViolation.id,
-      category: "",
-      violationName: "Over-speeding",
-      penalty: faker.number.int({ max: 1000, min: 0 })
-    };
-
-    const updateViolation = await repository.updateViolation(request);
-
-    expect(updateViolation).toBeNull();
-
-    const updatedRecord = await repository.getViolationById(seededViolation.id);
-
-    expect(updatedRecord?.penalty).toBe(seededViolation.penalty);
-    expect(updatedRecord?.violationName).toBe(seededViolation.violationName);
-    expect(updatedRecord?.category).toBe(seededViolation.category);
-  });
-
-  it("should fail to update violation when violationName is empty string", async () => {
-    const seededViolation = await seedViolation({});
-
-    const request: UpdateViolationCreateRequest = {
-      id: seededViolation.id,
-      category: "Speeding",
-      violationName: "",
-      penalty: faker.number.int({ max: 1000, min: 0 })
-    };
-
-    const updateViolation = await repository.updateViolation(request);
-
-    expect(updateViolation).toBeNull();
-
-    const updatedRecord = await repository.getViolationById(seededViolation.id);
-
-    expect(updatedRecord?.penalty).toBe(seededViolation.penalty);
-    expect(updatedRecord?.violationName).toBe(seededViolation.violationName);
-    expect(updatedRecord?.category).toBe(seededViolation.category);
-  });
-
-  it("should fail to update violation when penalty is negative", async () => {
-    const seededViolation = await seedViolation({});
-
-    const request: UpdateViolationCreateRequest = {
-      id: seededViolation.id,
-      category: "Speeding",
-      violationName: "Over-speeding",
-      penalty: faker.number.int({ max: 0, min: -1000 })
-    };
-
-    const updateViolation = await repository.updateViolation(request);
-
-    expect(updateViolation).toBeNull();
-
-    const updatedRecord = await repository.getViolationById(seededViolation.id);
-
-    expect(updatedRecord?.penalty).toBe(seededViolation.penalty);
-    expect(updatedRecord?.violationName).toBe(seededViolation.violationName);
-    expect(updatedRecord?.category).toBe(seededViolation.category);
+    expect(updatedViolation).toBeNull();
   });
 });

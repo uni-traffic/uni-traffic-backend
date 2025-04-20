@@ -3,16 +3,12 @@ import type { IViolation } from "../domain/models/violation/classes/violation";
 import type { IViolationMapper } from "../domain/models/violation/mapper";
 import { ViolationMapper } from "../domain/models/violation/mapper";
 import type { IViolationDTO } from "../dtos/violationDTO";
-import {
-  type UpdateViolationCreateRequest,
-  UpdateViolationRequestSchema
-} from "../dtos/violationRequestSchema";
 
 export interface IViolationRepository {
   getAllViolations(): Promise<IViolation[]>;
   getViolationById(violationId: string): Promise<IViolation | null>;
   createViolation(violation: IViolation): Promise<IViolation | null>;
-  updateViolation(violationId: UpdateViolationCreateRequest): Promise<IViolationDTO | null>;
+  updateViolation(violationId: IViolation): Promise<IViolationDTO | null>;
 }
 
 export class ViolationRepository implements IViolationRepository {
@@ -54,19 +50,13 @@ export class ViolationRepository implements IViolationRepository {
     }
   }
 
-  public async updateViolation(
-    violation: UpdateViolationCreateRequest
-  ): Promise<IViolation | null> {
+  public async updateViolation(violation: IViolation): Promise<IViolation | null> {
     try {
-      const validatedViolation = UpdateViolationRequestSchema.parse(violation);
+      const violationRaw = this._violationMapper.toPersistence(violation);
 
       const updatedViolation = await this._database.violation.update({
-        where: { id: validatedViolation.id },
-        data: {
-          category: validatedViolation.category,
-          violationName: validatedViolation.violationName,
-          penalty: validatedViolation.penalty
-        }
+        where: { id: violation.id },
+        data: violationRaw
       });
 
       return this._violationMapper.toDomain(updatedViolation);

@@ -55,6 +55,101 @@ describe("POST /api/v1/violation/update", () => {
     expect(updatedRecord?.category).toBe("Speeding");
   });
 
+  it("should return status 200 and update violation successfully with partial payload (category)", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: faker.helpers.arrayElement(["ADMIN", "SUPERADMIN", "SECURITY"]),
+      expiration: "1h"
+    });
+    const seededViolation = await seedViolation({});
+
+    const payload = {
+      id: seededViolation.id,
+      category: "Speeding"
+    };
+
+    const response = await requestAPI
+      .post("/api/v1/violation/update")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .send(payload);
+    const responseBody = response.body;
+
+    expect(response.status).toBe(200);
+    expect(responseBody).not.toBeNull();
+    expect(responseBody.violationName).toBe(seededViolation.violationName);
+    expect(responseBody.penalty).toBe(seededViolation.penalty);
+    expect(responseBody.category).toBe("Speeding");
+
+    const updatedRecord = await violationRepository.getViolationById(seededViolation.id);
+
+    expect(updatedRecord).not.toBeNull();
+    expect(updatedRecord?.violationName).toBe(seededViolation.violationName);
+    expect(updatedRecord?.penalty).toBe(seededViolation.penalty);
+    expect(updatedRecord?.category).toBe("Speeding");
+  });
+
+  it("should return status 200 and update violation successfully with partial payload (violationName)", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: faker.helpers.arrayElement(["ADMIN", "SUPERADMIN", "SECURITY"]),
+      expiration: "1h"
+    });
+    const seededViolation = await seedViolation({});
+
+    const payload = {
+      id: seededViolation.id,
+      violationName: "Over-speeding"
+    };
+
+    const response = await requestAPI
+      .post("/api/v1/violation/update")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .send(payload);
+    const responseBody = response.body;
+
+    expect(response.status).toBe(200);
+    expect(responseBody).not.toBeNull();
+    expect(responseBody.violationName).toBe("Over-speeding");
+    expect(responseBody.penalty).toBe(seededViolation.penalty);
+    expect(responseBody.category).toBe(seededViolation.category);
+
+    const updatedRecord = await violationRepository.getViolationById(seededViolation.id);
+
+    expect(updatedRecord).not.toBeNull();
+    expect(updatedRecord?.violationName).toBe("Over-speeding");
+    expect(updatedRecord?.penalty).toBe(seededViolation.penalty);
+    expect(updatedRecord?.category).toBe(seededViolation.category);
+  });
+
+  it("should return status 200 and update violation successfully with partial payload (penalty)", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: faker.helpers.arrayElement(["ADMIN", "SUPERADMIN", "SECURITY"]),
+      expiration: "1h"
+    });
+    const seededViolation = await seedViolation({});
+
+    const payload = {
+      id: seededViolation.id,
+      penalty: faker.number.int({ max: 1000, min: 0 })
+    };
+
+    const response = await requestAPI
+      .post("/api/v1/violation/update")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .send(payload);
+    const responseBody = response.body;
+
+    expect(response.status).toBe(200);
+    expect(responseBody).not.toBeNull();
+    expect(responseBody.violationName).toBe(seededViolation.violationName);
+    expect(responseBody.penalty).toBe(payload.penalty);
+    expect(responseBody.category).toBe(seededViolation.category);
+
+    const updatedRecord = await violationRepository.getViolationById(seededViolation.id);
+
+    expect(updatedRecord).not.toBeNull();
+    expect(updatedRecord?.violationName).toBe(seededViolation.violationName);
+    expect(updatedRecord?.penalty).toBe(payload.penalty);
+    expect(updatedRecord?.category).toBe(seededViolation.category);
+  });
   it("should return status 400 and fail to update the violation when payload category is empty string", async () => {
     const seededAuthenticatedUser = await seedAuthenticatedUser({
       role: faker.helpers.arrayElement(["ADMIN", "SUPERADMIN", "SECURITY"]),
@@ -79,7 +174,7 @@ describe("POST /api/v1/violation/update", () => {
     expect(responseBody.message).toBe("Category cannot be an empty string.");
   });
 
-  it("should return status 400 and fail to update the violation when payload violationNam is empty string", async () => {
+  it("should return status 400 and fail to update the violation when payload violationName is empty string", async () => {
     const seededAuthenticatedUser = await seedAuthenticatedUser({
       role: faker.helpers.arrayElement(["ADMIN", "SUPERADMIN", "SECURITY"]),
       expiration: "1h"
@@ -101,6 +196,28 @@ describe("POST /api/v1/violation/update", () => {
 
     expect(response.status).toBe(400);
     expect(responseBody.message).toBe("Violation name cannot be an empty string.");
+  });
+
+  it("should return status 404 and does not corrupt other data", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: faker.helpers.arrayElement(["ADMIN", "SUPERADMIN", "SECURITY"]),
+      expiration: "1h"
+    });
+    const seededViolation = await seedViolation({});
+
+    const payload = {
+      id: "non-existing-id",
+      category: "Speeding"
+    };
+
+    const response = await requestAPI
+      .post("/api/v1/violation/update")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .send(payload);
+    const responseBody = response.body;
+
+    expect(response.status).toBe(404);
+    expect(responseBody.message).toBe("Violation not found!");
   });
 
   it("should return status 400 and fail to update the violation when payload penalty is negative", async () => {
@@ -148,31 +265,7 @@ describe("POST /api/v1/violation/update", () => {
     const responseBody = response.body;
 
     expect(response.status).toBe(400);
-    expect(responseBody.message).toBe("Penalty must be an whole number.");
-  });
-
-  it("should return status 400 and fail to update the violation when payload penalty is undefined", async () => {
-    const seededAuthenticatedUser = await seedAuthenticatedUser({
-      role: faker.helpers.arrayElement(["ADMIN", "SUPERADMIN", "SECURITY"]),
-      expiration: "1h"
-    });
-    const seededViolation = await seedViolation({});
-
-    const payload = {
-      id: seededViolation.id,
-      category: "Speeding",
-      violationName: "Over-speeding",
-      penalty: undefined
-    };
-
-    const response = await requestAPI
-      .post("/api/v1/violation/update")
-      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
-      .send(payload);
-    const responseBody = response.body;
-
-    expect(response.status).toBe(400);
-    expect(responseBody.message).toBe("Penalty is required.");
+    expect(responseBody.message).toBe("Penalty must be a whole number.");
   });
 
   it("should return status 400 and fail to update the violation when payload id does not exist in the system", async () => {

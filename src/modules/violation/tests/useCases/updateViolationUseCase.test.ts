@@ -3,7 +3,7 @@ import type { UpdateViolationCreateRequest } from "../../src/dtos/violationReque
 import { ViolationRepository } from "../../src/repositories/violationRepository";
 import { UpdateViolationUseCase } from "../../src/useCases/updateViolationUseCase";
 import { seedViolation } from "../utils/violation/seedViolation";
-import { BadRequest } from "../../../../shared/core/errors";
+import { BadRequest, NotFoundError } from "../../../../shared/core/errors";
 
 describe("UpdateViolationUseCase", () => {
   let updateViolationUseCase: UpdateViolationUseCase;
@@ -36,6 +36,72 @@ describe("UpdateViolationUseCase", () => {
     expect(updatedRecord?.violationName).toBe("Over-speeding");
     expect(updatedRecord?.penalty).toBe(request.penalty);
     expect(updatedRecord?.category).toBe("Speeding");
+  });
+
+  it("should update violation successfully with partial request(category)", async () => {
+    const seededViolation = await seedViolation({});
+
+    const request: UpdateViolationCreateRequest = {
+      id: seededViolation.id,
+      category: "Speeding"
+    };
+
+    const updateViolation = await updateViolationUseCase.execute(request);
+
+    expect(updateViolation).not.toBeNull();
+    expect(updateViolation.violationName).toBe(seededViolation.violationName);
+    expect(updateViolation.penalty).toBe(seededViolation.penalty);
+    expect(updateViolation.category).toBe("Speeding");
+
+    const updatedRecord = await repository.getViolationById(seededViolation.id);
+
+    expect(updatedRecord?.violationName).toBe(seededViolation.violationName);
+    expect(updatedRecord?.penalty).toBe(seededViolation.penalty);
+    expect(updatedRecord?.category).toBe("Speeding");
+  });
+
+  it("should update violation successfully with partial request(violationName)", async () => {
+    const seededViolation = await seedViolation({});
+
+    const request: UpdateViolationCreateRequest = {
+      id: seededViolation.id,
+      violationName: "Over-speeding"
+    };
+
+    const updateViolation = await updateViolationUseCase.execute(request);
+
+    expect(updateViolation).not.toBeNull();
+    expect(updateViolation.violationName).toBe("Over-speeding");
+    expect(updateViolation.penalty).toBe(seededViolation.penalty);
+    expect(updateViolation.category).toBe(seededViolation.category);
+
+    const updatedRecord = await repository.getViolationById(seededViolation.id);
+
+    expect(updatedRecord?.violationName).toBe("Over-speeding");
+    expect(updatedRecord?.penalty).toBe(seededViolation.penalty);
+    expect(updatedRecord?.category).toBe(seededViolation.category);
+  });
+
+  it("should update violation successfully with partial request(penalty)", async () => {
+    const seededViolation = await seedViolation({});
+
+    const request: UpdateViolationCreateRequest = {
+      id: seededViolation.id,
+      penalty: faker.number.int({ max: 1000, min: 0 })
+    };
+
+    const updateViolation = await updateViolationUseCase.execute(request);
+
+    expect(updateViolation).not.toBeNull();
+    expect(updateViolation.violationName).toBe(seededViolation.violationName);
+    expect(updateViolation.penalty).toBe(request.penalty);
+    expect(updateViolation.category).toBe(seededViolation.category);
+
+    const updatedRecord = await repository.getViolationById(seededViolation.id);
+
+    expect(updatedRecord?.violationName).toBe(seededViolation.violationName);
+    expect(updatedRecord?.penalty).toBe(request.penalty);
+    expect(updatedRecord?.category).toBe(seededViolation.category);
   });
 
   it("should fail to update violation when category is empty string", async () => {
@@ -94,23 +160,27 @@ describe("UpdateViolationUseCase", () => {
     };
 
     await expect(updateViolationUseCase.execute(request)).rejects.toThrow(
-      new BadRequest("Penalty must be an whole number.")
+      new BadRequest("Penalty must be a whole number.")
     );
   });
 
-  it("should fail to update violation when penalty is undefined", async () => {
+  it("should not corrupt other data in violation object", async () => {
     const seededViolation = await seedViolation({});
 
-    const request: UpdateViolationCreateRequest = {
-      id: seededViolation.id,
-      category: "Speeding",
-      violationName: "Over-speeding",
-      penalty: undefined
+    const testPayload: UpdateViolationCreateRequest = {
+      id: "non-existing-id",
+      category: "D"
     };
 
-    await expect(updateViolationUseCase.execute(request)).rejects.toThrow(
-      new BadRequest("Penalty is required")
+    await expect(updateViolationUseCase.execute(testPayload)).rejects.toThrow(
+      new NotFoundError("Violation not found!")
     );
+
+    const updatedRecord = await repository.getViolationById(seededViolation.id);
+
+    expect(updatedRecord?.violationName).toBe(seededViolation.violationName);
+    expect(updatedRecord?.penalty).toBe(seededViolation.penalty);
+    expect(updatedRecord?.category).toBe(seededViolation.category);
   });
 
   it("should fail to update violation when violationId is not found", async () => {
