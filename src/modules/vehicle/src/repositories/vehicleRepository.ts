@@ -1,7 +1,9 @@
+import type { Prisma } from "@prisma/client";
 import { db } from "../../../../shared/infrastructure/database/prisma";
 import type { IVehicle } from "../domain/models/vehicle/classes/vehicle";
 import type { IVehicleMapper } from "../domain/models/vehicle/mapper";
 import { VehicleMapper } from "../domain/models/vehicle/mapper";
+import type { GetVehicleParams, VehicleWhereClauseParams } from "../dtos/vehicleDTO";
 import type { VehicleRequest } from "../dtos/vehicleRequestSchema";
 
 export interface IVehicleRepository {
@@ -10,6 +12,8 @@ export interface IVehicleRepository {
   getVehicleByProperty(params: VehicleRequest): Promise<IVehicle | null>;
   createVehicle(vehicle: IVehicle): Promise<IVehicle | null>;
   createVehicles(vehicles: IVehicle[]): Promise<IVehicle[]>;
+  getVehicles(params: GetVehicleParams): Promise<IVehicle[]>;
+  countTotalVehicles(params: GetVehicleParams): Promise<number>;
 }
 
 export class VehicleRepository implements IVehicleRepository {
@@ -94,5 +98,43 @@ export class VehicleRepository implements IVehicleRepository {
     } catch {
       return [];
     }
+  }
+
+  public async getVehicles(params: GetVehicleParams): Promise<IVehicle[]> {
+    const vehicleRaw = await this._database.vehicle.findMany({
+      where: this._generateWhereClause(params),
+      orderBy: { stickerNumber: params.sort === 2 ? "asc" : "desc" },
+      skip: params.count * (params.page - 1),
+      take: params.count,
+      include: {
+        owner: true
+      }
+    });
+
+    return vehicleRaw.map((vehicle) => this._vehicleMapper.toDomain(vehicle));
+  }
+
+  public async countTotalVehicles(params: VehicleWhereClauseParams): Promise<number> {
+    return this._database.vehicle.count({
+      where: this._generateWhereClause(params)
+    });
+  }
+
+  private _generateWhereClause(params: VehicleWhereClauseParams): Prisma.VehicleWhereInput {
+    return params.searchKey
+      ? {
+          OR: [
+            { id: { contains: params.searchKey, mode: "insensitive" } },
+            { ownerId: { contains: params.searchKey, mode: "insensitive" } },
+            { licensePlate: { contains: params.searchKey, mode: "insensitive" } },
+            { stickerNumber: { contains: params.searchKey, mode: "insensitive" } }
+          ]
+        }
+      : {
+          id: params.id,
+          ownerId: params.ownerId,
+          licensePlate: params.licensePlate,
+          stickerNumber: params.stickerNumber
+        };
   }
 }
