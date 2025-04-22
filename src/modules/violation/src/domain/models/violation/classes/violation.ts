@@ -3,13 +3,16 @@ export interface IViolation {
   category: string;
   violationName: string;
   penalty: number;
+  updateCategory(category: string): void;
+  updateViolationName(violationName: string): void;
+  updatePenalty(penalty: number): void;
 }
 
 export class Violation implements IViolation {
   private readonly _id: string;
-  private readonly _category: string;
-  private readonly _violationName: string;
-  private readonly _penalty: number;
+  private _category: string;
+  private _violationName: string;
+  private _penalty: number;
 
   private constructor({
     id,
@@ -44,7 +47,24 @@ export class Violation implements IViolation {
     return this._penalty;
   }
 
-  public static create(props: IViolation): IViolation {
+  public updateCategory(category: string): void {
+    this._category = category;
+  }
+
+  public updateViolationName(violationName: string): void {
+    this._violationName = violationName;
+  }
+
+  public updatePenalty(penalty: number): void {
+    this._penalty = penalty;
+  }
+
+  public static create(props: {
+    id: string;
+    category: string;
+    violationName: string;
+    penalty: number;
+  }): IViolation {
     return new Violation(props);
   }
 }

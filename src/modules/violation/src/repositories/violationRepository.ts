@@ -7,6 +7,7 @@ export interface IViolationRepository {
   getAllViolations(): Promise<IViolation[]>;
   getViolationById(violationId: string): Promise<IViolation | null>;
   createViolation(violation: IViolation): Promise<IViolation | null>;
+  updateViolation(violationId: IViolation): Promise<IViolation | null>;
 }
 
 export class ViolationRepository implements IViolationRepository {
@@ -43,6 +44,21 @@ export class ViolationRepository implements IViolationRepository {
         data: violationRaw
       });
       return this._violationMapper.toDomain(newViolation);
+    } catch {
+      return null;
+    }
+  }
+
+  public async updateViolation(violation: IViolation): Promise<IViolation | null> {
+    try {
+      const violationRaw = this._violationMapper.toPersistence(violation);
+
+      const updatedViolation = await this._database.violation.update({
+        where: { id: violation.id },
+        data: violationRaw
+      });
+
+      return this._violationMapper.toDomain(updatedViolation);
     } catch {
       return null;
     }
