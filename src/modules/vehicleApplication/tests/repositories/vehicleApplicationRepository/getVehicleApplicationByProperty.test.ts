@@ -18,6 +18,10 @@ describe("VehicleApplicationRepository.getVehicleApplicationByProperty", () => {
     await db.vehicleApplication.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return number of violation record audit log with count given", async () => {
     await seedVehicleApplication({});
     await seedVehicleApplication({});

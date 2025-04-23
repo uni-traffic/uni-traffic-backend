@@ -14,6 +14,10 @@ describe("UserRepository.isUsernameAlreadyTaken", () => {
     await db.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return true when username already registered in the system", async () => {
     const username = faker.word.verb({ length: 10 });
     const seededUser = await seedUser({ username });

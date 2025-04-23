@@ -1,6 +1,7 @@
-import { ViolationRecordPaymentRepository } from "../../../src/repositories/violationRecordPaymentRepository";
+import { db } from "../../../../../shared/infrastructure/database/prisma";
 import { seedUser } from "../../../../user/tests/utils/user/seedUser";
 import { seedViolationRecord } from "../../../../violationRecord/tests/utils/violationRecord/seedViolationRecord";
+import { ViolationRecordPaymentRepository } from "../../../src/repositories/violationRecordPaymentRepository";
 import { createViolationRecordPaymentDomainObject } from "../../utils/violationRecordPayment/createViolationRecordPaymentDomainObject";
 
 describe("ViolationRecordPaymentRepository.createPayment", () => {
@@ -8,6 +9,10 @@ describe("ViolationRecordPaymentRepository.createPayment", () => {
 
   beforeAll(() => {
     violationRecordPaymentRepository = new ViolationRecordPaymentRepository();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should successfully create a violation record payment", async () => {

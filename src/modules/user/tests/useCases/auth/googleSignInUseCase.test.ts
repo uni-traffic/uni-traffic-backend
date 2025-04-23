@@ -25,8 +25,9 @@ describe("GoogleSignInUseCase", () => {
     await db.user.deleteMany({});
   });
 
-  afterAll(() => {
+  afterAll(async () => {
     jest.restoreAllMocks();
+    await db.$disconnect();
   });
 
   it("should successfully return sign in credentials when user exist on the system", async () => {

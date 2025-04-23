@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker";
 import type { VehicleType } from "@prisma/client";
+import { db } from "../../../../shared/infrastructure/database/prisma";
 import { seedUser } from "../../../user/tests/utils/user/seedUser";
 import type { IVehicleApplicationProps } from "../../src/domain/models/vehicleApplication/factory";
 import { CreateVehicleApplicationUseCase } from "../../src/useCases/createVehicleApplicationUseCase";
@@ -9,6 +10,10 @@ describe("CreateVehicleApplicationUseCase", () => {
 
   beforeAll(() => {
     createVehicleApplicationUseCase = new CreateVehicleApplicationUseCase();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should successfully create vehicle application", async () => {

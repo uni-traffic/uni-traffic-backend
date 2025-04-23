@@ -23,6 +23,10 @@ describe("POST /api/v1/user/update/role", () => {
     await db.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should successfully update the user role", async () => {
     const seededAuthenticatedUser = await seedAuthenticatedUser({
       role: "ADMIN",

@@ -20,8 +20,11 @@ describe("GET /api/v1/payment/violation/total", () => {
   });
 
   beforeEach(async () => {
-    await db.violationRecordPayment.deleteMany();
     await db.user.deleteMany();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should return 200 and get total fine collected per day by range", async () => {

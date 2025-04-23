@@ -32,6 +32,10 @@ describe("POST /api/v1/auth/login", () => {
     };
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return a 201 status code and UserDTO", async () => {
     const authenticatedUser = await seedAuthenticatedUser({ role: "ADMIN" });
 

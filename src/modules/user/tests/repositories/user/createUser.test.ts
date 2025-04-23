@@ -27,6 +27,10 @@ describe("UserRepository.createUser", () => {
     await db.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should create user successfully", async () => {
     const userDomainObject = createUserDomainObject({});
 

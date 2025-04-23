@@ -28,6 +28,10 @@ describe("POST /api/v1/auth/login", () => {
     };
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return a 200 status code and access token when given valid credentials", async () => {
     await seedUser({
       username: requestCredential.username,

@@ -23,6 +23,10 @@ describe("POST /api/v1/violation/create", () => {
     };
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return a 201 status code and ViolationDTO", async () => {
     const authenticatedUser = await seedAuthenticatedUser({ role: "SECURITY" });
 

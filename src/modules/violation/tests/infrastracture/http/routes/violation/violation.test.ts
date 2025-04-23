@@ -18,6 +18,10 @@ describe("GET /api/v1/violation", () => {
     await db.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return status 200 with all violations", async () => {
     const seededAuthenticatedUser = await seedAuthenticatedUser({
       role: "SECURITY",

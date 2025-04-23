@@ -17,6 +17,10 @@ describe("AddViolationRecordPaymentUseCase", () => {
     await db.violationRecord.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should successfully add a violation record payment and update status", async () => {
     const seededCashier = await seedUser({ role: "CASHIER" });
     const seededViolationRecord = await seedViolationRecord({ status: "UNPAID" });

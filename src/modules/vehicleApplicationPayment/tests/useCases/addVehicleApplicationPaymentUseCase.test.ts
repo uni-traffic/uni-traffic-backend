@@ -27,6 +27,10 @@ describe("AddVehicleApplicationPaymentUseCase", () => {
     await db.vehicleApplicationPayment.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should successfully add a vehicle application payment and update status", async () => {
     const seededCashier = await seedUser({ role: "CASHIER" });
     const seededVehicleApplication = await seedVehicleApplication({

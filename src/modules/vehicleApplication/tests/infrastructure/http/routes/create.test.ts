@@ -18,6 +18,10 @@ describe("POST api/v1/vehicle-application/create", () => {
     requestAPI = request.agent(app);
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return status code 201 when successfully created a request", async () => {
     const seededAuthenticatedUser = await seedAuthenticatedUser({
       role: faker.helpers.arrayElement(["GUEST", "STUDENT", "STAFF"])

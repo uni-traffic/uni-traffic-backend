@@ -3,6 +3,7 @@ import path from "node:path";
 import request from "supertest";
 import type TestAgent from "supertest/lib/agent";
 import app from "../../../../../../../api";
+import { db } from "../../../../../../shared/infrastructure/database/prisma";
 import { seedAuthenticatedUser } from "../../../../../user/tests/utils/user/seedAuthenticatedUser";
 
 describe("POST api/v1/files/upload", () => {
@@ -10,6 +11,10 @@ describe("POST api/v1/files/upload", () => {
 
   beforeAll(() => {
     requestAPI = request(app);
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should return 200 status code when successfully upload the file", async () => {

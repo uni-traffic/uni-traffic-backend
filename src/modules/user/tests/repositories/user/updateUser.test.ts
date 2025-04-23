@@ -1,3 +1,4 @@
+import { db } from "../../../../../shared/infrastructure/database/prisma";
 import type { IUser } from "../../../src/domain/models/user/classes/user";
 import { type IUserRepository, UserRepository } from "../../../src/repositories/userRepository";
 import { createUserDomainObject } from "../../utils/user/createUserDomainObject";
@@ -21,6 +22,10 @@ describe("UserRepository.updateUser", () => {
 
   beforeAll(async () => {
     userRepository = new UserRepository();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should update user properties", async () => {

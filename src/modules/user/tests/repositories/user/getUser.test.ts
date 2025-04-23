@@ -13,6 +13,10 @@ describe("UserRepository.getUser", () => {
     await db.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return User when the parameter is id", async () => {
     const seededUser = await seedUser({});
     const seededUser1 = await seedUser({});

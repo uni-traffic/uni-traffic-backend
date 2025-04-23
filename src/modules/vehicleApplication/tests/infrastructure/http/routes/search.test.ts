@@ -30,8 +30,9 @@ describe("GET /api/v1/vehicle-application/search", () => {
     });
   });
 
-  afterAll(() => {
+  afterAll(async () => {
     jest.restoreAllMocks();
+    await db.$disconnect();
   });
 
   it("should return status 200 status code and vehicle application when valid id is provided", async () => {

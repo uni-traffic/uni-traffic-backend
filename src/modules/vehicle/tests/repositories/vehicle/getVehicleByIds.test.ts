@@ -14,6 +14,10 @@ describe("VehicleRepository.getVehiclesByIds", () => {
     await db.vehicle.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should retrieve multiple vehicles by IDs", async () => {
     const vehicleOne = await seedVehicle({});
     const vehicleTwo = await seedVehicle({});

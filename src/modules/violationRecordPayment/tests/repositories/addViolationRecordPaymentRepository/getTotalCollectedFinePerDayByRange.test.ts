@@ -1,7 +1,7 @@
 import { db } from "../../../../../shared/infrastructure/database/prisma";
 import {
-  ViolationRecordPaymentRepository,
-  type IViolationRecordPaymentRepository
+  type IViolationRecordPaymentRepository,
+  ViolationRecordPaymentRepository
 } from "../../../src/repositories/violationRecordPaymentRepository";
 import { seedViolationRecordPayment } from "../../utils/violationRecordPayment/seedViolationRecordPayment";
 
@@ -14,6 +14,10 @@ describe("ViolationRecordPaymentRepository.getTotalFineCollectedPerDayByRange", 
 
   beforeEach(async () => {
     await db.violationRecordPayment.deleteMany();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should return an array of violation record payments within the specified date range", async () => {

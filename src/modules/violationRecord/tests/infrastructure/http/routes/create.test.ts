@@ -23,6 +23,10 @@ describe("POST /api/v1/violation-record/create", () => {
     await seedViolation({ id: "1" });
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should create a violation record when only vehicleId is provided with valid requester role", async () => {
     const seededUser = await seedUser({ role: "STUDENT" });
     const seededVehicle = await seedVehicle({ ownerId: seededUser.id });

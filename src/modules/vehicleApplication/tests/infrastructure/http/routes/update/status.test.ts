@@ -21,6 +21,10 @@ describe("POST api/v1/vehicle-application/update/status", () => {
     await db.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return status 200 and successfully update the vehicle application status(PENDING_FOR_SECURITY_APPROVAL)", async () => {
     const seededAuthenticatedUser = await seedAuthenticatedUser({
       role: faker.helpers.arrayElement(["ADMIN", "SUPERADMIN", "CASHIER", "SECURITY"]),

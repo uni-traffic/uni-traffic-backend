@@ -33,6 +33,10 @@ describe("POST api/v1/vehicle-application/update/sticker", () => {
     await db.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return status 200 and successfully update the sticker number and status to APPROVED", async () => {
     const seededAuthenticatedUser = await seedAuthenticatedUser({
       role: faker.helpers.arrayElement(["ADMIN", "SUPERADMIN", "CASHIER"]),

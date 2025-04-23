@@ -19,6 +19,10 @@ describe("GET /api/v1/user/search", () => {
     await db.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return status 200 and User when provided with id", async () => {
     const seededUser = await seedUser({
       role: faker.helpers.arrayElement(["SECURITY", "STUDENT", "STAFF"])

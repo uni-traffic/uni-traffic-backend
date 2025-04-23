@@ -1,10 +1,10 @@
-import { ViolationRepository } from "../../../../../src/repositories/violationRepository";
 import { faker } from "@faker-js/faker";
 import request from "supertest";
 import type TestAgent from "supertest/lib/agent";
 import app from "../../../../../../../../api";
 import { db } from "../../../../../../../shared/infrastructure/database/prisma";
 import { seedAuthenticatedUser } from "../../../../../../user/tests/utils/user/seedAuthenticatedUser";
+import { ViolationRepository } from "../../../../../src/repositories/violationRepository";
 import { seedViolation } from "../../../../utils/violation/seedViolation";
 
 describe("POST /api/v1/violation/update", () => {
@@ -19,6 +19,10 @@ describe("POST /api/v1/violation/update", () => {
   beforeEach(async () => {
     await db.violation.deleteMany();
     await db.user.deleteMany();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should return status 200 and update violation successfully", async () => {
