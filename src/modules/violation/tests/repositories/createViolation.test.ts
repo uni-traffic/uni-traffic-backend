@@ -1,15 +1,20 @@
-import { seedViolation } from "../utils/violation/seedViolation";
-import { createViolationDomainObject } from "../utils/violation/createViolationDomainObject";
+import { db } from "../../../../shared/infrastructure/database/prisma";
 import {
   type IViolationRepository,
   ViolationRepository
 } from "../../src/repositories/violationRepository";
+import { createViolationDomainObject } from "../utils/violation/createViolationDomainObject";
+import { seedViolation } from "../utils/violation/seedViolation";
 
 describe("ViolationRepository.createViolation", () => {
   let violationRepository: IViolationRepository;
 
   beforeAll(() => {
     violationRepository = new ViolationRepository();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should successfully save the violation", async () => {

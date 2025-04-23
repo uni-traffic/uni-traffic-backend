@@ -1,3 +1,4 @@
+import { db } from "../../../../shared/infrastructure/database/prisma";
 import type { IViolationDTO } from "../../src/dtos/violationDTO";
 import { ViolationRepository } from "../../src/repositories/violationRepository";
 import { GetViolationsUseCase } from "../../src/useCases/getViolationUseCase";
@@ -16,6 +17,10 @@ describe("GetViolationsUseCase", () => {
   beforeAll(() => {
     violationRepository = new ViolationRepository();
     getViolationsUseCase = new GetViolationsUseCase();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should return a list of ViolationDTOs", async () => {

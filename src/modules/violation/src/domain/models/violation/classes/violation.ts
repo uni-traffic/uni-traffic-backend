@@ -3,9 +3,11 @@ export interface IViolation {
   category: string;
   violationName: string;
   penalty: number;
+  isDeleted: boolean;
   updateCategory(category: string): void;
   updateViolationName(violationName: string): void;
   updatePenalty(penalty: number): void;
+  softDelete(): void;
 }
 
 export class Violation implements IViolation {
@@ -13,22 +15,26 @@ export class Violation implements IViolation {
   private _category: string;
   private _violationName: string;
   private _penalty: number;
+  private _isDeleted: boolean;
 
   private constructor({
     id,
     category,
     violationName,
-    penalty
+    penalty,
+    isDeleted
   }: {
     id: string;
     category: string;
     violationName: string;
     penalty: number;
+    isDeleted: boolean;
   }) {
     this._id = id;
     this._category = category;
     this._violationName = violationName;
     this._penalty = penalty;
+    this._isDeleted = isDeleted;
   }
 
   get id(): string {
@@ -47,6 +53,10 @@ export class Violation implements IViolation {
     return this._penalty;
   }
 
+  get isDeleted(): boolean {
+    return this._isDeleted;
+  }
+
   public updateCategory(category: string): void {
     this._category = category;
   }
@@ -59,11 +69,16 @@ export class Violation implements IViolation {
     this._penalty = penalty;
   }
 
+  public softDelete(): void {
+    this._isDeleted = true;
+  }
+
   public static create(props: {
     id: string;
     category: string;
     violationName: string;
     penalty: number;
+    isDeleted: boolean;
   }): IViolation {
     return new Violation(props);
   }

@@ -41,7 +41,8 @@ describe("GET /api/v1/violation", () => {
         id: v.id,
         category: v.category,
         violationName: v.violationName,
-        penalty: v.penalty
+        penalty: v.penalty,
+        isDeleted: v.isDeleted
       }))
     );
   });

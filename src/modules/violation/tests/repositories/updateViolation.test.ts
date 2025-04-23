@@ -1,12 +1,17 @@
+import { db } from "../../../../shared/infrastructure/database/prisma";
 import { ViolationRepository } from "../../src/repositories/violationRepository";
-import { seedViolation } from "../utils/violation/seedViolation";
 import { createViolationDomainObject } from "../utils/violation/createViolationDomainObject";
+import { seedViolation } from "../utils/violation/seedViolation";
 
 describe("ViolationRepository.updateViolation", () => {
   let repository: ViolationRepository;
 
   beforeAll(() => {
     repository = new ViolationRepository();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should update a violation in the database", async () => {

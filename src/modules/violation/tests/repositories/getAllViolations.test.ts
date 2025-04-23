@@ -13,6 +13,10 @@ describe("ViolationRepository.getAllViolations", () => {
     await seedViolations();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return all violations from the database", async () => {
     const seededViolations = await db.violation.findMany();
 

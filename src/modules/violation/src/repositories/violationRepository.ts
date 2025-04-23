@@ -24,14 +24,20 @@ export class ViolationRepository implements IViolationRepository {
    */
 
   public async getAllViolations(): Promise<IViolation[]> {
-    const violationsRaw = await this._database.violation.findMany();
+    const violationsRaw = await this._database.violation.findMany({
+      where: {
+        isDeleted: false
+      }
+    });
 
     return violationsRaw.map((violation) => this._violationMapper.toDomain(violation));
   }
 
   public async getViolationById(violationId: string): Promise<IViolation | null> {
     const violation = await this._database.violation.findUnique({
-      where: { id: violationId }
+      where: {
+        id: violationId
+      }
     });
 
     return violation ? this._violationMapper.toDomain(violation) : null;

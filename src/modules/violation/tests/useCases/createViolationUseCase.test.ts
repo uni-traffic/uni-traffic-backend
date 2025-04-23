@@ -13,6 +13,10 @@ describe("CreateViolationUseCase", () => {
     await db.violation.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should successfully create a violation", async () => {
     const mockViolationData = {
       category: faker.helpers.arrayElement(["A", "B", "C"]),

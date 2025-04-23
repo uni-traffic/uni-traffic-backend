@@ -16,3 +16,8 @@ export const UpdateViolationRequestSchema = z.object({
 });
 
 export type UpdateViolationCreateRequest = z.infer<typeof UpdateViolationRequestSchema>;
+
+export const ViolationDeleteRequestSchema = z.object({
+  id: z.string().min(1, "Violation ID is required")
+});
+export type ViolationDeleteRequest = z.infer<typeof ViolationDeleteRequestSchema>;

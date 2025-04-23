@@ -18,7 +18,8 @@ describe("ViolationMapper", () => {
       id: faker.string.uuid(),
       category: faker.helpers.arrayElement(["A", "B", "C"]),
       violationName: faker.lorem.words(3),
-      penalty: faker.number.int({ min: 100, max: 1000 })
+      penalty: faker.number.int({ min: 100, max: 1000 }),
+      isDeleted: false
     };
 
     const violationDomainObject = violationMapper.toDomain(violationSchemaObject);

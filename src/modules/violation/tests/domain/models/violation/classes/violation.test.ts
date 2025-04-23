@@ -3,15 +3,11 @@ import { Violation } from "../../../../../src/domain/models/violation/classes/vi
 
 describe("Violation", () => {
   it("should create a Violation", () => {
-    const mockViolationData: {
-      id: string;
-      category: string;
-      violationName: string;
-      penalty: number;
-    } = {
+    const mockViolationData = {
       id: faker.string.uuid(),
       category: "A",
       violationName: "Illegal Parking",
+      isDeleted: false,
       penalty: 250
     };
 

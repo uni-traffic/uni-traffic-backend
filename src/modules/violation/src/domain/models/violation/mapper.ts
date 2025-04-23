@@ -1,3 +1,4 @@
+import { UnexpectedError } from "../../../../../../shared/core/errors";
 import type { IViolationDTO } from "../../../dtos/violationDTO";
 import type { IViolation } from "./classes/violation";
 import type { IViolationRawObject, IViolationSchema } from "./constant";
@@ -15,17 +16,18 @@ export class ViolationMapper implements IViolationMapper {
       id: violation.id,
       category: violation.category,
       violationName: violation.violationName,
-      penalty: violation.penalty
+      penalty: violation.penalty,
+      isDeleted: violation.isDeleted
     };
   }
 
   public toDomain(raw: IViolationRawObject): IViolation {
-    const violationOrError = ViolationFactory.create({
-      id: raw.id,
-      category: raw.category,
-      violationName: raw.violationName,
-      penalty: raw.penalty
-    });
+    const violationOrError = ViolationFactory.create(raw);
+    if (violationOrError.isFailure) {
+      throw new UnexpectedError(
+        `Error occurred mapping persistence data to domain ${violationOrError.getErrorMessage()}`
+      );
+    }
 
     return violationOrError.getValue();
   }
@@ -35,7 +37,8 @@ export class ViolationMapper implements IViolationMapper {
       id: violation.id,
       category: violation.category,
       violationName: violation.violationName,
-      penalty: violation.penalty
+      penalty: violation.penalty,
+      isDeleted: violation.isDeleted
     };
   }
 }
