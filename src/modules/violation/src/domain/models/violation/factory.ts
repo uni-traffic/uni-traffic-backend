@@ -8,6 +8,7 @@ export interface IViolationFactoryProps {
   category: string;
   violationName: string;
   penalty: number;
+  isDeleted?: boolean;
 }
 
 export class ViolationFactory {

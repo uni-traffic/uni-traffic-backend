@@ -165,6 +165,7 @@ model Violation {
   violationName   String
   penalty         Float
   violationRecord ViolationRecord[]
+  isDeleted       Boolean           @default(false)
 }
 
 model ViolationRecord {

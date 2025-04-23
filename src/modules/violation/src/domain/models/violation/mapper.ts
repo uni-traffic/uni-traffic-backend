@@ -15,7 +15,8 @@ export class ViolationMapper implements IViolationMapper {
       id: violation.id,
       category: violation.category,
       violationName: violation.violationName,
-      penalty: violation.penalty
+      penalty: violation.penalty,
+      isDeleted: violation.isDeleted
     };
   }
 
@@ -24,7 +25,8 @@ export class ViolationMapper implements IViolationMapper {
       id: raw.id,
       category: raw.category,
       violationName: raw.violationName,
-      penalty: raw.penalty
+      penalty: raw.penalty,
+      isDeleted: raw.isDeleted
     });
 
     return violationOrError.getValue();
@@ -35,7 +37,8 @@ export class ViolationMapper implements IViolationMapper {
       id: violation.id,
       category: violation.category,
       violationName: violation.violationName,
-      penalty: violation.penalty
+      penalty: violation.penalty,
+      isDeleted: violation.isDeleted
     };
   }
 }

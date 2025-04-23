@@ -8,6 +8,7 @@ export interface IViolationRepository {
   getViolationById(violationId: string): Promise<IViolation | null>;
   createViolation(violation: IViolation): Promise<IViolation | null>;
   updateViolation(violationId: IViolation): Promise<IViolation | null>;
+  deleteViolation(violationId: string): Promise<IViolation | null>;
 }
 
 export class ViolationRepository implements IViolationRepository {
@@ -31,7 +32,10 @@ export class ViolationRepository implements IViolationRepository {
 
   public async getViolationById(violationId: string): Promise<IViolation | null> {
     const violation = await this._database.violation.findUnique({
-      where: { id: violationId }
+      where: {
+        id: violationId,
+        isDeleted: false
+      }
     });
 
     return violation ? this._violationMapper.toDomain(violation) : null;
@@ -60,6 +64,31 @@ export class ViolationRepository implements IViolationRepository {
 
       return this._violationMapper.toDomain(updatedViolation);
     } catch {
+      return null;
+    }
+  }
+
+  public async deleteViolation(violationId: string): Promise<IViolation | null> {
+    try {
+      const existingViolation = await this._database.violation.findUnique({
+        where: {
+          id: violationId,
+          isDeleted: false
+        }
+      });
+
+      if (!existingViolation) {
+        return null;
+      }
+
+      const updatedViolation = await this._database.violation.update({
+        where: { id: violationId },
+        data: { isDeleted: true }
+      });
+
+      return this._violationMapper.toDomain(updatedViolation);
+    } catch (error) {
+      console.error("Error deleting violation:", error);
       return null;
     }
   }

@@ -3,4 +3,5 @@ export interface IViolationDTO {
   category: string;
   violationName: string;
   penalty: number;
+  isDeleted: boolean;
 }

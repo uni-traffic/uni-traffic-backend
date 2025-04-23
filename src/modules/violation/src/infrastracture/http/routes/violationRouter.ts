@@ -2,9 +2,11 @@ import { Router } from "express";
 import { validateRequest } from "zod-express-middleware";
 import {
   UpdateViolationRequestSchema,
-  ViolationCreateRequestSchema
+  ViolationCreateRequestSchema,
+  ViolationDeleteRequestSchema
 } from "../../../dtos/violationRequestSchema";
 import { CreateViolationController } from "../controllers/createViolationController";
+import { DeleteViolationController } from "../controllers/deleteViolationController";
 import { GetViolationsController } from "../controllers/getViolationController";
 import { UpdateViolationController } from "../controllers/updateViolationController";
 
@@ -27,6 +29,14 @@ violationRouter.post(
   validateRequest({ body: UpdateViolationRequestSchema }),
   (req, res) => {
     new UpdateViolationController().execute(req, res);
+  }
+);
+
+violationRouter.post(
+  "/delete",
+  validateRequest({ body: ViolationDeleteRequestSchema }),
+  (req, res) => {
+    new DeleteViolationController().execute(req, res);
   }
 );
 
