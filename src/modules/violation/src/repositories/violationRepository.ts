@@ -8,7 +8,6 @@ export interface IViolationRepository {
   getViolationById(violationId: string): Promise<IViolation | null>;
   createViolation(violation: IViolation): Promise<IViolation | null>;
   updateViolation(violationId: IViolation): Promise<IViolation | null>;
-  deleteViolation(violationId: string): Promise<IViolation | null>;
 }
 
 export class ViolationRepository implements IViolationRepository {
@@ -25,7 +24,11 @@ export class ViolationRepository implements IViolationRepository {
    */
 
   public async getAllViolations(): Promise<IViolation[]> {
-    const violationsRaw = await this._database.violation.findMany();
+    const violationsRaw = await this._database.violation.findMany({
+      where: {
+        isDeleted: false
+      }
+    });
 
     return violationsRaw.map((violation) => this._violationMapper.toDomain(violation));
   }
@@ -33,8 +36,7 @@ export class ViolationRepository implements IViolationRepository {
   public async getViolationById(violationId: string): Promise<IViolation | null> {
     const violation = await this._database.violation.findUnique({
       where: {
-        id: violationId,
-        isDeleted: false
+        id: violationId
       }
     });
 
@@ -64,31 +66,6 @@ export class ViolationRepository implements IViolationRepository {
 
       return this._violationMapper.toDomain(updatedViolation);
     } catch {
-      return null;
-    }
-  }
-
-  public async deleteViolation(violationId: string): Promise<IViolation | null> {
-    try {
-      const existingViolation = await this._database.violation.findUnique({
-        where: {
-          id: violationId,
-          isDeleted: false
-        }
-      });
-
-      if (!existingViolation) {
-        return null;
-      }
-
-      const updatedViolation = await this._database.violation.update({
-        where: { id: violationId },
-        data: { isDeleted: true }
-      });
-
-      return this._violationMapper.toDomain(updatedViolation);
-    } catch (error) {
-      console.error("Error deleting violation:", error);
       return null;
     }
   }

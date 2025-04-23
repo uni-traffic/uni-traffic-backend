@@ -1,9 +1,10 @@
 import { faker } from "@faker-js/faker";
+import { BadRequest, NotFoundError } from "../../../../shared/core/errors";
+import { db } from "../../../../shared/infrastructure/database/prisma";
 import type { UpdateViolationCreateRequest } from "../../src/dtos/violationRequestSchema";
 import { ViolationRepository } from "../../src/repositories/violationRepository";
 import { UpdateViolationUseCase } from "../../src/useCases/updateViolationUseCase";
 import { seedViolation } from "../utils/violation/seedViolation";
-import { BadRequest, NotFoundError } from "../../../../shared/core/errors";
 
 describe("UpdateViolationUseCase", () => {
   let updateViolationUseCase: UpdateViolationUseCase;
@@ -12,6 +13,10 @@ describe("UpdateViolationUseCase", () => {
   beforeAll(() => {
     updateViolationUseCase = new UpdateViolationUseCase();
     repository = new ViolationRepository();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should update violation successfully", async () => {

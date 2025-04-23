@@ -22,13 +22,13 @@ export class Violation implements IViolation {
     category,
     violationName,
     penalty,
-    isDeleted = false,
+    isDeleted
   }: {
     id: string;
     category: string;
     violationName: string;
     penalty: number;
-    isDeleted?: boolean;
+    isDeleted: boolean;
   }) {
     this._id = id;
     this._category = category;
@@ -78,7 +78,7 @@ export class Violation implements IViolation {
     category: string;
     violationName: string;
     penalty: number;
-    isDeleted?: boolean;
+    isDeleted: boolean;
   }): IViolation {
     return new Violation(props);
   }

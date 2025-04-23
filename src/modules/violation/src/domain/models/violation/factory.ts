@@ -1,7 +1,7 @@
-import { Violation, type IViolation } from "./classes/violation";
-import { Result } from "../../../../../../shared/core/result";
 import { defaultTo } from "rambda";
 import { v4 as uuid } from "uuid";
+import { Result } from "../../../../../../shared/core/result";
+import { type IViolation, Violation } from "./classes/violation";
 
 export interface IViolationFactoryProps {
   id?: string;
@@ -16,7 +16,8 @@ export class ViolationFactory {
     return Result.ok<IViolation>(
       Violation.create({
         ...violationFactoryProps,
-        id: defaultTo(uuid(), violationFactoryProps.id)
+        id: defaultTo(uuid(), violationFactoryProps.id),
+        isDeleted: defaultTo(false, violationFactoryProps.isDeleted)
       })
     );
   }

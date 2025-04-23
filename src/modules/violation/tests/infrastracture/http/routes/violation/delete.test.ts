@@ -4,8 +4,8 @@ import type TestAgent from "supertest/lib/agent";
 import app from "../../../../../../../../api";
 import { db } from "../../../../../../../shared/infrastructure/database/prisma";
 import { seedAuthenticatedUser } from "../../../../../../user/tests/utils/user/seedAuthenticatedUser";
-import { seedViolation } from "../../../../utils/violation/seedViolation";
 import { ViolationRepository } from "../../../../../src/repositories/violationRepository";
+import { seedViolation } from "../../../../utils/violation/seedViolation";
 
 describe("POST /api/v1/violation/delete", () => {
   let requestAPI: TestAgent;
@@ -19,6 +19,10 @@ describe("POST /api/v1/violation/delete", () => {
   beforeEach(async () => {
     await db.violation.deleteMany();
     await db.user.deleteMany();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should return 200 and successfully soft delete a violation", async () => {
@@ -38,12 +42,9 @@ describe("POST /api/v1/violation/delete", () => {
     expect(response.body.isDeleted).toBe(true);
 
     const deletedRecord = await repository.getViolationById(seededViolation.id);
-    expect(deletedRecord).toBeNull();
 
-    const rawRecord = await db.violation.findUnique({
-      where: { id: seededViolation.id }
-    });
-    expect(rawRecord?.isDeleted).toBe(true);
+    expect(deletedRecord).not.toBeNull();
+    expect(deletedRecord?.isDeleted).toBe(true);
   });
 
   it("should return 404 when violation does not exist", async () => {

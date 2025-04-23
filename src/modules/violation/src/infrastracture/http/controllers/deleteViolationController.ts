@@ -4,6 +4,7 @@ import { BaseController } from "../../../../../../shared/infrastructure/http/cor
 import { type IJSONWebToken, JSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
 import { UserRoleService } from "../../../../../user/src/shared/service/userRoleService";
 import type { IViolationDTO } from "../../../dtos/violationDTO";
+import type { ViolationDeleteRequest } from "../../../dtos/violationRequestSchema";
 import { DeleteViolationUseCase } from "../../../useCases/deleteViolationUseCase";
 
 export class DeleteViolationController extends BaseController {
@@ -23,10 +24,13 @@ export class DeleteViolationController extends BaseController {
   }
 
   protected async executeImpl(req: Request, res: Response): Promise<void> {
-    await this._verifyPermission(req);
+    const actorId = await this._verifyPermission(req);
 
-    const violationId = req.body.id;
-    const violationDTO = await this._deleteViolationUseCase.execute(violationId);
+    const requestBody = req.body as ViolationDeleteRequest;
+    const violationDTO = await this._deleteViolationUseCase.execute({
+      actorId: actorId,
+      violationId: requestBody.id
+    });
 
     this.ok<IViolationDTO>(res, violationDTO);
   }
