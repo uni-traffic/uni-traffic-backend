@@ -48,6 +48,8 @@ export const GetUserRequestSchema = z.object({
   lastName: z.string().optional(),
   username: z.string().optional(),
   email: z.string().optional(),
+  sort: z.enum(["1", "2"]).optional(),
+  searchKey: z.string().optional(),
   role: z
     .string()
     .refine((value) => UserRole.validRoles.includes(value), {

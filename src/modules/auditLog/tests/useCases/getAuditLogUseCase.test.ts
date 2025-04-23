@@ -17,6 +17,10 @@ describe("GetAuditLogUseCase", () => {
     await db.user.deleteMany({});
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return paginated audit logs with correct metadata on first page", async () => {
     const user = await seedUser({});
     await Promise.all(Array.from({ length: 15 }).map(() => seedAuditLog({ actorId: user.id })));

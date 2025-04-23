@@ -25,6 +25,10 @@ describe("GET /api/v1/violation-record/search", () => {
     await db.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return status 200 when provided with id", async () => {
     const seededViolationRecord = await seedViolationRecord({});
     const seededAuthenticatedUser = await seedAuthenticatedUser({

@@ -13,6 +13,10 @@ describe("UserRepository.getTotalUserCount", () => {
     await db.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return total user count for a specific role", async () => {
     await seedUser({ role: "ADMIN" });
     await seedUser({ role: "ADMIN" });

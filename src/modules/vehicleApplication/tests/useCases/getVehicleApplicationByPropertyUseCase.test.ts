@@ -21,8 +21,9 @@ describe("GetVehicleApplicationByPropertyUseCase", () => {
     getVehicleApplicationByPropertyUseCase = new GetVehicleApplicationByPropertyUseCase();
   });
 
-  afterAll(() => {
+  afterAll(async () => {
     jest.restoreAllMocks();
+    await db.$disconnect();
   });
 
   beforeEach(async () => {

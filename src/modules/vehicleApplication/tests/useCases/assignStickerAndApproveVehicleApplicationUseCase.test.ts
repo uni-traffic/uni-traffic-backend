@@ -34,6 +34,10 @@ describe("AssignStickerAndApproveVehicleApplicationUseCase", () => {
     await db.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should successfully update the sticker number and status to APPROVED", async () => {
     const seededAuthenticatedUser = await seedUser({
       role: faker.helpers.arrayElement(["ADMIN", "SUPERADMIN", "SECURITY", "CASHIER"])

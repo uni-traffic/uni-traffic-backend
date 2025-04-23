@@ -28,6 +28,10 @@ describe("UserRepository.getUserById", () => {
     await db.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should retrieve existing user found by Id", async () => {
     const seededUser = await seedUser({});
 

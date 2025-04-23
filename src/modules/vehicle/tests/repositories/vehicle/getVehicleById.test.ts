@@ -14,6 +14,10 @@ describe("VehicleRepository.getVehicleById", () => {
     await db.vehicle.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should retrieve an existing vehicle by ID", async () => {
     const seededVehicle = await seedVehicle({});
     const vehicle = await vehicleRepository.getVehicleById(seededVehicle.id);

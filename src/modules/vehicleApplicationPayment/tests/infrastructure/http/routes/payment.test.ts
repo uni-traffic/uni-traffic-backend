@@ -18,6 +18,10 @@ describe("POST /api/v1/payment/sticker", () => {
     await db.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return status 200 and create a vehicle application payment", async () => {
     const seededCashier = await seedAuthenticatedUser({ role: "CASHIER", expiration: "1h" });
     const seededVehicleApplication = await seedVehicleApplication({

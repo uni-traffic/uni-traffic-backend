@@ -13,9 +13,11 @@ describe("POST /api/v1/payment/violation", () => {
   });
 
   beforeEach(async () => {
-    await db.violationRecordPayment.deleteMany();
-    await db.violationRecord.deleteMany();
     await db.user.deleteMany();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should return 200 and create a violation record payment", async () => {

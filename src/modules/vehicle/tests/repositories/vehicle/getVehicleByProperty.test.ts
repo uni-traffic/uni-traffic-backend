@@ -1,3 +1,4 @@
+import { db } from "../../../../../shared/infrastructure/database/prisma";
 import { type IVehicle, Vehicle } from "../../../src/domain/models/vehicle/classes/vehicle";
 import type { IVehicleDTO } from "../../../src/dtos/vehicleDTO";
 import type { VehicleRequest } from "../../../src/dtos/vehicleRequestSchema";
@@ -27,6 +28,10 @@ describe("VehicleRepository.getVehicleByProperty", () => {
 
   beforeAll(() => {
     vehicleRepository = new VehicleRepository();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should return Vehicle when the parameter is id", async () => {

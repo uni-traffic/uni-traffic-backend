@@ -1,3 +1,4 @@
+import { db } from "../../../../../shared/infrastructure/database/prisma";
 import { seedUser } from "../../../../user/tests/utils/user/seedUser";
 import {
   type IVehicleApplicationRepository,
@@ -10,6 +11,10 @@ describe("VehicleApplicationRepository.createVehicleApplication", () => {
 
   beforeAll(() => {
     vehicleApplicationRepository = new VehicleApplicationRepository();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should successfully save the vehicle application", async () => {

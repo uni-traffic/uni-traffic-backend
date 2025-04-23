@@ -28,6 +28,10 @@ describe("UserRepository.getUsersByIds", () => {
     await db.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should retrieve a users by Id", async () => {
     const seededUserOne = await seedUser({});
     const seededUserTwo = await seedUser({});

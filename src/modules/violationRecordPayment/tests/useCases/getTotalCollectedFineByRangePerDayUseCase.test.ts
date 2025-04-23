@@ -15,6 +15,10 @@ describe("GetTotalCollectedFineByRangePerDayUseCase", () => {
     await db.violationRecordPayment.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return an array of total fine collected per day within the specified date range", async () => {
     const startDate = "2023-01-01";
     const endDate = "2023-01-31";

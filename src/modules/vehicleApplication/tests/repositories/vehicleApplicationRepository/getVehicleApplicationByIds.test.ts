@@ -32,6 +32,10 @@ describe("VehicleApplicationRepository.getUserByIds", () => {
     await db.vehicleApplication.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should retrieve vehicle application by id", async () => {
     const seededVehicleApplication1 = await seedVehicleApplication({});
     const seededVehicleApplication2 = await seedVehicleApplication({});

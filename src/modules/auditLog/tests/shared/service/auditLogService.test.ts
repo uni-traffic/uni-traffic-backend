@@ -1,4 +1,5 @@
 import { UnexpectedError } from "../../../../../shared/core/errors";
+import { db } from "../../../../../shared/infrastructure/database/prisma";
 import { seedUser } from "../../../../user/tests/utils/user/seedUser";
 import type { CreateAuditLogParams } from "../../../src/dtos/auditLogDTO";
 import { AuditLogService, type IAuditLogService } from "../../../src/service/auditLogService";
@@ -8,6 +9,10 @@ describe("AuditLogService", () => {
 
   beforeAll(() => {
     auditLogService = new AuditLogService();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should successfully create an audit log", async () => {

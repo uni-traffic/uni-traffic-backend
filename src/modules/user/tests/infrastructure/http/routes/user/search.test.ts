@@ -3,7 +3,7 @@ import request from "supertest";
 import type TestAgent from "supertest/lib/agent";
 import app from "../../../../../../../../api";
 import { db } from "../../../../../../../shared/infrastructure/database/prisma";
-import type { IUserDTO } from "../../../../../src/dtos/userDTO";
+import type { GetUserResponse } from "../../../../../src/dtos/userDTO";
 import type { GetUserRequest } from "../../../../../src/dtos/userRequestSchema";
 import { seedAuthenticatedUser } from "../../../../utils/user/seedAuthenticatedUser";
 import { seedUser } from "../../../../utils/user/seedUser";
@@ -17,6 +17,10 @@ describe("GET /api/v1/user/search", () => {
 
   beforeEach(async () => {
     await db.user.deleteMany();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should return status 200 and User when provided with id", async () => {
@@ -41,12 +45,12 @@ describe("GET /api/v1/user/search", () => {
     const responseBody = response.body;
 
     expect(response.status).toBe(200);
-    expect(responseBody[0].id).toBe(seededUser.id);
-    expect(responseBody[0].firstName).toBe(seededUser.firstName);
-    expect(responseBody[0].lastName).toBe(seededUser.lastName);
-    expect(responseBody[0].username).toBe(seededUser.username);
-    expect(responseBody[0].email).toBe(seededUser.email);
-    expect(responseBody[0].role).toBe(seededUser.role);
+    expect(responseBody.user[0].id).toBe(seededUser.id);
+    expect(responseBody.user[0].firstName).toBe(seededUser.firstName);
+    expect(responseBody.user[0].lastName).toBe(seededUser.lastName);
+    expect(responseBody.user[0].username).toBe(seededUser.username);
+    expect(responseBody.user[0].email).toBe(seededUser.email);
+    expect(responseBody.user[0].role).toBe(seededUser.role);
   });
 
   it("should return status 200 and User when provided with firstName", async () => {
@@ -69,11 +73,11 @@ describe("GET /api/v1/user/search", () => {
       .get("/api/v1/user/search")
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query(payload);
-    const responseBody = response.body as IUserDTO[];
-    const mappedUser = responseBody.map((users) => users.id);
+    const responseBody = response.body as GetUserResponse;
+    const mappedUser = responseBody.user.map((users) => users.id);
 
     expect(response.status).toBe(200);
-    expect(responseBody.length).toBe(2);
+    expect(responseBody.user.length).toBe(2);
     expect(mappedUser).toContain(seededUser.id);
     expect(mappedUser).toContain(seededUser1.id);
     expect(mappedUser).not.toContain(seededUser2.id);
@@ -101,11 +105,11 @@ describe("GET /api/v1/user/search", () => {
       .get("/api/v1/user/search")
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query(payload);
-    const responseBody = response.body as IUserDTO[];
-    const mappedUser = responseBody.map((users) => users.id);
+    const responseBody = response.body as GetUserResponse;
+    const mappedUser = responseBody.user.map((users) => users.id);
 
     expect(response.status).toBe(200);
-    expect(responseBody.length).toBe(2);
+    expect(responseBody.user.length).toBe(2);
     expect(mappedUser).toContain(seededUser.id);
     expect(mappedUser).toContain(seededUser1.id);
     expect(mappedUser).not.toContain(seededUser2.id);
@@ -132,12 +136,12 @@ describe("GET /api/v1/user/search", () => {
       .get("/api/v1/user/search")
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query(payload);
-    const responseBody = response.body as IUserDTO[];
+    const responseBody = response.body as GetUserResponse;
 
     expect(response.status).toBe(200);
-    expect(responseBody.length).toBe(1);
-    expect(responseBody[0].id).toBe(seededUser.id);
-    expect(responseBody[0].id).not.toBe(seededUser1.id);
+    expect(responseBody.user.length).toBe(1);
+    expect(responseBody.user[0].id).toBe(seededUser.id);
+    expect(responseBody.user[0].id).not.toBe(seededUser1.id);
   });
 
   it("should return status 200 and User when provided with role", async () => {
@@ -163,11 +167,11 @@ describe("GET /api/v1/user/search", () => {
       .get("/api/v1/user/search")
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query(payload);
-    const responseBody = response.body as IUserDTO[];
-    const mappedUser = responseBody.map((users) => users.id);
+    const responseBody = response.body as GetUserResponse;
+    const mappedUser = responseBody.user.map((users) => users.id);
 
     expect(response.status).toBe(200);
-    expect(responseBody.length).toBe(3);
+    expect(responseBody.user.length).toBe(3);
     expect(mappedUser).toContain(seededUser1.id);
     expect(mappedUser).toContain(seededUser2.id);
     expect(mappedUser).toContain(seededUser3.id);
@@ -197,11 +201,335 @@ describe("GET /api/v1/user/search", () => {
       .get("/api/v1/user/search")
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query(payload);
-    const responseBody = response.body;
+    const responseBody = response.body as GetUserResponse;
 
     expect(response.status).toBe(200);
-    expect(responseBody[0].id).toBe(seededUser1.id);
-    expect(responseBody[0].id).not.toBe(seededUser2.id);
+    expect(responseBody.user[0].id).toBe(seededUser1.id);
+    expect(responseBody.user[0].id).not.toBe(seededUser2.id);
+  });
+
+  it("should status 200 and paginated users with correct metadata on first page", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "ADMIN",
+      expiration: "1h"
+    });
+
+    const users = await Promise.all(Array.from({ length: 15 }).map(() => seedUser({})));
+
+    const payload: GetUserRequest = {
+      count: "10",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/user/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetUserResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.user.length).toBe(10);
+    expect(responseBody.hasNextPage).toBe(true);
+    expect(responseBody.hasPreviousPage).toBe(false);
+    expect(responseBody.totalPages).toBe(2);
+  });
+
+  it("should return status 200 and return second page with correct hasPreviousPage and hasNextPage flags", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "ADMIN",
+      expiration: "1h"
+    });
+
+    const users = await Promise.all(Array.from({ length: 15 }).map(() => seedUser({})));
+
+    const payload: GetUserRequest = {
+      count: "10",
+      page: "2"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/user/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetUserResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.user.length).toBe(6);
+    expect(responseBody.hasNextPage).toBe(false);
+    expect(responseBody.hasPreviousPage).toBe(true);
+    expect(responseBody.totalPages).toBe(2);
+  });
+
+  it("should return status 200 and return correct user when filtering by role and searchKey", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "ADMIN",
+      expiration: "1h"
+    });
+
+    const seededUser = await seedUser({ role: "ADMIN", username: "Angelo Robee Herrera" });
+
+    const payload: GetUserRequest = {
+      count: "1",
+      page: "1",
+      role: "ADMIN",
+      searchKey: "Angelo Robee"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/user/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetUserResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.user.length).toBeGreaterThan(0);
+    expect(responseBody.user[0].role).toBe("ADMIN");
+    expect(responseBody.user[0].username).toContain("Angelo Robee");
+  });
+
+  it("should return status 200 and properly refine string count and page to numbers", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "ADMIN",
+      expiration: "1h"
+    });
+
+    const seededUser = await seedUser({ role: "ADMIN", username: "Angelo Robee Herrera" });
+
+    const payload: GetUserRequest = {
+      id: seededUser.id,
+      count: "1",
+      page: "1",
+      sort: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/user/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetUserResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.user.length).toBe(1);
+    expect(responseBody.hasPreviousPage).toBe(false);
+    expect(responseBody.hasNextPage).toBe(false);
+  });
+
+  it("should return status 200 and default to sort order when sort is not provided", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "ADMIN",
+      expiration: "1h"
+    });
+
+    const user = Promise.all([
+      await seedUser({ username: "Robs" }),
+      await seedUser({ username: "Herrera" })
+    ]);
+
+    const payload: GetUserRequest = {
+      count: "3",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/user/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetUserResponse;
+
+    const mappedUser = responseBody.user.map((users) => users.username);
+
+    expect(response.status).toBe(200);
+    expect(responseBody.user.length).toBe(3);
+    expect(mappedUser).toContain("Herrera");
+    expect(mappedUser).toContain("Robs");
+  });
+
+  it("should return status 200 and sort descending when sort order is 2", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "ADMIN",
+      expiration: "1h"
+    });
+
+    const user = Promise.all([
+      await seedUser({ username: "Robs" }),
+      await seedUser({ username: "Herrera" })
+    ]);
+
+    const payload: GetUserRequest = {
+      count: "3",
+      page: "1",
+      sort: "2"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/user/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetUserResponse;
+
+    const mappedUser = responseBody.user.map((users) => users.username);
+
+    expect(response.status).toBe(200);
+    expect(responseBody.user.length).toBe(3);
+    expect(mappedUser).toContain("Robs");
+    expect(mappedUser).toContain("Herrera");
+  });
+
+  it("should return status 200 and filter user using partial user id match with searchKey", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "ADMIN",
+      expiration: "1h"
+    });
+
+    const user = await seedUser({});
+
+    const payload: GetUserRequest = {
+      searchKey: user.id.slice(0, 8),
+      count: "10",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/user/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetUserResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.user.length).toBeGreaterThan(0);
+    expect(responseBody.user[0].id).toContain(user.id.slice(0, 8));
+  });
+
+  it("should return status 200 and filter user using partial lastName match with searchKey", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "ADMIN",
+      expiration: "1h"
+    });
+
+    const user = await seedUser({});
+
+    const payload: GetUserRequest = {
+      searchKey: user.lastName.slice(0, 8),
+      count: "10",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/user/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetUserResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.user.length).toBeGreaterThan(0);
+    expect(responseBody.user[0].lastName).toContain(user.lastName.slice(0, 8));
+  });
+
+  it("should return status 200 and filter user using partial firstName match with searchKey", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "ADMIN",
+      expiration: "1h"
+    });
+
+    const user = await seedUser({});
+
+    const payload: GetUserRequest = {
+      searchKey: user.firstName.slice(0, 8),
+      count: "10",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/user/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetUserResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.user.length).toBeGreaterThan(0);
+    expect(responseBody.user[0].firstName).toContain(user.firstName.slice(0, 8));
+  });
+
+  it("should return status 200 and filter user using partial userName match with searchKey", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "ADMIN",
+      expiration: "1h"
+    });
+
+    const user = await seedUser({});
+
+    const payload: GetUserRequest = {
+      searchKey: user.username.slice(0, 8),
+      count: "10",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/user/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetUserResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.user.length).toBeGreaterThan(0);
+    expect(responseBody.user[0].username).toContain(user.username.slice(0, 8));
+  });
+
+  it("should return status 200 and filter user using partial email match with searchKey", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "ADMIN",
+      expiration: "1h"
+    });
+
+    const user = await seedUser({});
+
+    const payload: GetUserRequest = {
+      searchKey: user.email.slice(0, 8),
+      count: "10",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/user/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetUserResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.user.length).toBeGreaterThan(0);
+    expect(responseBody.user[0].email).toContain(user.email.slice(0, 8));
+  });
+
+  it("should return status 200 and filter user using strict matching for id, lastName, firstName, userName, email", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "ADMIN",
+      expiration: "1h"
+    });
+
+    const user = await seedUser({});
+
+    const payload: GetUserRequest = {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      username: user.username,
+      email: user.email,
+      count: "10",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/user/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetUserResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.user[0].id).toBe(user.id);
+    expect(responseBody.user[0].firstName).toBe(user.firstName);
+    expect(responseBody.user[0].lastName).toBe(user.lastName);
+    expect(responseBody.user[0].username).toBe(user.username);
+    expect(responseBody.user[0].email).toBe(user.email);
   });
 
   it("should return status 400 when no parameters passed", async () => {

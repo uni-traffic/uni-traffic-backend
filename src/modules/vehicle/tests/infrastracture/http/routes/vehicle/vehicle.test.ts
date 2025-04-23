@@ -35,6 +35,10 @@ describe("GET /api/v1/vehicle", () => {
     await db.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return status 200 when provided with id", async () => {
     const seededAuthenticatedUser = await seedAuthenticatedUser({
       role: "SECURITY",

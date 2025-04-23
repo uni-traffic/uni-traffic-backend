@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { db } from "../../../../shared/infrastructure/database/prisma";
 import { FileService, type IFileService } from "../../src/service/fileService";
 
 describe("FileService", () => {
@@ -7,6 +8,10 @@ describe("FileService", () => {
 
   beforeAll(() => {
     service = new FileService();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should successfully upload the file", async () => {

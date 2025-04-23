@@ -16,6 +16,10 @@ describe("GET /api/v1/user/me", () => {
     await db.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return a 200 status code and UserDTO", async () => {
     const authenticatedUser = await seedAuthenticatedUser({
       expiration: "1h",

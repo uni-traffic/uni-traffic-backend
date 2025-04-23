@@ -1,4 +1,5 @@
 import { faker } from "@faker-js/faker";
+import { db } from "../../../../shared/infrastructure/database/prisma";
 import { seedUser } from "../../../user/tests/utils/user/seedUser";
 import { seedVehicleApplication } from "../../../vehicleApplication/tests/utils/seedVehicleApplication";
 import { VehicleApplicationPaymentRepository } from "../../src/repositories/vehicleApplicationPaymentRepositories";
@@ -9,6 +10,10 @@ describe("VehicleApplicationPaymentRepository.createPayment", () => {
 
   beforeAll(() => {
     vehicleApplicationPaymentRepository = new VehicleApplicationPaymentRepository();
+  });
+
+  afterAll(async () => {
+    await db.$disconnect();
   });
 
   it("should successfully create a vehicle application payment", async () => {

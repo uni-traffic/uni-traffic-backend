@@ -14,6 +14,10 @@ describe("UserRepository.isEmailAlreadyTaken", () => {
     await db.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should return true when email already registered in the system", async () => {
     const email = faker.internet.email({ provider: "neu.edu.ph" });
     const seededUser = await seedUser({ email });

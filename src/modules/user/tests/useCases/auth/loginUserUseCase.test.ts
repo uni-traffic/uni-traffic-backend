@@ -26,6 +26,10 @@ describe("LoginUserUseCase", () => {
     };
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should login user successfully", async () => {
     await seedUser({
       username: credentials.username,

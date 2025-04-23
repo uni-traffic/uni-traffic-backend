@@ -30,6 +30,10 @@ describe("RegisterUserUseCase", () => {
     };
   });
 
+  afterAll(async () => {
+    await db.$disconnect();
+  });
+
   it("should register the user successfully", async () => {
     const registeredUser = await registerUserUseCase.execute(newUserData);
 
