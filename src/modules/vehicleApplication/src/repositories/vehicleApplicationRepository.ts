@@ -6,14 +6,13 @@ import {
   VehicleApplicationMapper
 } from "../domain/models/vehicleApplication/mapper";
 import type {
-  GetViolationVehicleByProperty,
-  VehicleApplicationCountByStatus
+  GetViolationVehicle,
+  VehicleApplicationCountByStatus,
+  VehicleApplicationWhereClauseParams
 } from "../dtos/vehicleApplicationDTO";
 
 export interface IVehicleApplicationRepository {
-  getVehicleApplicationByProperty(
-    params: GetViolationVehicleByProperty
-  ): Promise<IVehicleApplication[]>;
+  getVehicleApplication(params: GetViolationVehicle): Promise<IVehicleApplication[]>;
   createVehicleApplication(
     vehicleApplication: IVehicleApplication
   ): Promise<IVehicleApplication | null>;
@@ -25,6 +24,7 @@ export interface IVehicleApplicationRepository {
   getVehicleApplicationCountByStatus(
     statusFilter?: string
   ): Promise<VehicleApplicationCountByStatus>;
+  getTotalVehicleApplication(params: VehicleApplicationWhereClauseParams): Promise<number>;
 }
 
 export class VehicleApplicationRepository implements IVehicleApplicationRepository {
@@ -42,33 +42,22 @@ export class VehicleApplicationRepository implements IVehicleApplicationReposito
    *   - If the given id is '123', return all records where the id contains '123' (e.g., '123ABC', 'XYZ123').
    */
 
-  public async getVehicleApplicationByProperty(
-    params: GetViolationVehicleByProperty
-  ): Promise<IVehicleApplication[]> {
-    const {
-      id,
-      schoolId,
-      userType,
-      driverLicenseId,
-      licensePlate,
-      status,
-      applicantId,
-      count,
-      page
-    } = params;
+  public async getTotalVehicleApplication(
+    params: VehicleApplicationWhereClauseParams
+  ): Promise<number> {
+    return this._database.vehicleApplication.count({
+      where: this._generateWhereClause(params)
+    });
+  }
 
+  public async getVehicleApplication(params: GetViolationVehicle): Promise<IVehicleApplication[]> {
     try {
       const vehicleApplications = await this._database.vehicleApplication.findMany({
-        take: count * page,
-        skip: count * (page - 1),
-        where: {
-          ...{ id: id || undefined },
-          ...{ schoolId: schoolId || undefined },
-          ...{ userType: (userType as UserType) || undefined },
-          ...{ driverLicenseId: driverLicenseId || undefined },
-          ...{ licensePlate: licensePlate || undefined },
-          ...{ status: (status as VehicleApplicationStatus) || undefined },
-          ...{ applicantId: applicantId || undefined }
+        skip: params.count * (params.page - 1),
+        take: params.count,
+        where: this._generateWhereClause(params),
+        orderBy: {
+          createdAt: params.sort === 1 ? "asc" : "desc"
         },
         include: {
           applicant: true,
@@ -86,6 +75,36 @@ export class VehicleApplicationRepository implements IVehicleApplicationReposito
     } catch {
       return [];
     }
+  }
+
+  private _generateWhereClause(
+    params: VehicleApplicationWhereClauseParams
+  ): Prisma.VehicleApplicationWhereInput {
+    return params.searchKey
+      ? {
+          OR: [
+            { id: { contains: params.searchKey, mode: "insensitive" } },
+            { applicantId: { contains: params.searchKey, mode: "insensitive" } },
+            { driverLastName: { contains: params.searchKey, mode: "insensitive" } },
+            { driverFirstName: { contains: params.searchKey, mode: "insensitive" } },
+            { firstName: { contains: params.searchKey, mode: "insensitive" } },
+            { lastName: { contains: params.searchKey, mode: "insensitive" } },
+            { schoolId: { contains: params.searchKey, mode: "insensitive" } }
+          ],
+          userType: params.userType as UserType,
+          status: params.status as VehicleApplicationStatus
+        }
+      : {
+          id: params.id,
+          applicantId: params.applicantId,
+          driverLastName: params.driverLastName,
+          driverFirstName: params.driverFirstName,
+          firstName: params.firstName,
+          lastName: params.lastName,
+          schoolId: params.schoolId,
+          userType: params.userType as UserType,
+          status: params.status as VehicleApplicationStatus
+        };
   }
 
   public async createVehicleApplication(

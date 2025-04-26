@@ -3,9 +3,9 @@ import { ForbiddenError } from "../../../../../../shared/core/errors";
 import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
 import { JSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
 import { UserRoleService } from "../../../../../user/src/shared/service/userRoleService";
-import type { IVehicleApplicationDTO } from "../../../dtos/vehicleApplicationDTO";
+import type { GetVehicleApplicationResponse } from "../../../dtos/vehicleApplicationDTO";
 import type { VehicleApplicationGetRequest } from "../../../dtos/vehicleApplicationRequestSchema";
-import { GetVehicleApplicationByPropertyUseCase } from "../../../useCases/getVehicleApplicationByPropertyUseCase";
+import { GetVehicleApplicationByPropertyUseCase } from "../../../useCases/getVehicleApplication";
 
 export class GetVehicleApplicationController extends BaseController {
   private _getVehicleApplicationByPropertyUseCase: GetVehicleApplicationByPropertyUseCase;
@@ -30,7 +30,7 @@ export class GetVehicleApplicationController extends BaseController {
       req.query as VehicleApplicationGetRequest
     );
 
-    this.ok<IVehicleApplicationDTO[]>(res, vehicleApplicationDetailsDTO);
+    this.ok<GetVehicleApplicationResponse>(res, vehicleApplicationDetailsDTO);
   }
 
   private async _verifyPermission(req: Request): Promise<string> {

@@ -5,10 +5,16 @@ export const VehicleApplicationRequestSchema = z.object({
   id: z.string().optional(),
   schoolId: z.string().optional(),
   driverLicenseId: z.string().optional(),
+  driverLastName: z.string().optional(),
+  driverFirstName: z.string().optional(),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
   licensePlate: z.string().optional(),
   status: z.string().optional(),
   applicantId: z.string().optional(),
   userType: z.string().optional(),
+  sort: z.enum(["1", "2"]).optional(),
+  searchKey: z.string().optional(),
   count: z.string().refine(
     (value) => {
       const num = Number(value);

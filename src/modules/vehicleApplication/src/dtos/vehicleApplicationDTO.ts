@@ -41,17 +41,23 @@ export interface IVehicleApplicationDTO {
    */
 }
 
-export interface GetViolationVehicleByProperty {
+export type GetViolationVehicle = {
   id?: string;
   schoolId?: string;
   userType?: string;
   driverLicenseId?: string;
+  driverLastName?: string;
+  driverFirstName?: string;
+  firstName?: string;
+  lastName?: string;
   licensePlate?: string;
   status?: string;
   applicantId?: string;
   count: number;
   page: number;
-}
+  sort?: 1 | 2;
+  searchKey?: string;
+};
 
 export interface IVehicleApplicationLinks {
   schoolCredential: string;
@@ -67,6 +73,26 @@ export interface IUpdateVehicleApplicationProps {
   vehicleApplicationId: string;
   status: string;
   actorId: string;
+}
+
+export interface VehicleApplicationWhereClauseParams {
+  id?: string;
+  applicantId?: string;
+  driverLastName?: string;
+  driverFirstName?: string;
+  firstName?: string;
+  lastName?: string;
+  schoolId?: string;
+  userType?: string;
+  status?: string;
+  searchKey?: string;
+}
+
+export interface GetVehicleApplicationResponse {
+  vehicleApplication: IVehicleApplicationDTO[];
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  totalPages: number;
 }
 
 export type VehicleApplicationCountByStatus = { status: string; count: number }[];

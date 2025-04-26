@@ -6,7 +6,7 @@ import { db } from "../../../../../../shared/infrastructure/database/prisma";
 import { FileService } from "../../../../../file/src/service/fileService";
 import { seedAuthenticatedUser } from "../../../../../user/tests/utils/user/seedAuthenticatedUser";
 import { seedUser } from "../../../../../user/tests/utils/user/seedUser";
-import type { IVehicleApplicationDTO } from "../../../../src/dtos/vehicleApplicationDTO";
+import type { GetVehicleApplicationResponse } from "../../../../src/dtos/vehicleApplicationDTO";
 import type { VehicleApplicationGetRequest } from "../../../../src/dtos/vehicleApplicationRequestSchema";
 import { seedVehicleApplication } from "../../../utils/seedVehicleApplication";
 
@@ -51,17 +51,27 @@ describe("GET /api/v1/vehicle-application/search", () => {
       .get("/api/v1/vehicle-application/search")
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query(payload);
-    const responseBody = response.body;
+    const responseBody = response.body as GetVehicleApplicationResponse;
 
     expect(response.status).toBe(200);
-    expect(responseBody.length).toBe(1);
-    expect(responseBody[0].id).toBe(seededVehicleApplication.id);
-    expect(responseBody[0].schoolMember.schoolId).toBe(seededVehicleApplication.schoolId);
-    expect(responseBody[0].schoolMember.type).toBe(seededVehicleApplication.userType);
-    expect(responseBody[0].driver.licenseId).toBe(seededVehicleApplication.driverLicenseId);
-    expect(responseBody[0].vehicle.licensePlate).toBe(seededVehicleApplication.licensePlate);
-    expect(responseBody[0].status).toBe(seededVehicleApplication.status);
-    expect(responseBody[0].applicantId).toBe(seededVehicleApplication.applicantId);
+    expect(responseBody.vehicleApplication.length).toBe(1);
+    expect(responseBody.vehicleApplication[0].id).toBe(seededVehicleApplication.id);
+    expect(responseBody.vehicleApplication[0].schoolMember.schoolId).toBe(
+      seededVehicleApplication.schoolId
+    );
+    expect(responseBody.vehicleApplication[0].schoolMember.type).toBe(
+      seededVehicleApplication.userType
+    );
+    expect(responseBody.vehicleApplication[0].driver.licenseId).toBe(
+      seededVehicleApplication.driverLicenseId
+    );
+    expect(responseBody.vehicleApplication[0].vehicle.licensePlate).toBe(
+      seededVehicleApplication.licensePlate
+    );
+    expect(responseBody.vehicleApplication[0].status).toBe(seededVehicleApplication.status);
+    expect(responseBody.vehicleApplication[0].applicantId).toBe(
+      seededVehicleApplication.applicantId
+    );
   });
 
   it("should return status 200 and number of vehicle application with count given", async () => {
@@ -86,8 +96,8 @@ describe("GET /api/v1/vehicle-application/search", () => {
     const responseBody = response.body;
 
     expect(response.status).toBe(200);
-    expect(responseBody.length).toBe(4);
-    expect(responseBody).not.toBe([]);
+    expect(responseBody.vehicleApplication.length).toBe(4);
+    expect(responseBody.vehicleApplication).not.toBe([]);
   });
 
   it("should return status 200 and record that matches the given id", async () => {
@@ -109,8 +119,8 @@ describe("GET /api/v1/vehicle-application/search", () => {
 
     const responseBody = response.body;
 
-    expect(responseBody.length).toBe(1);
-    expect(responseBody[0].id).toBe(seededVehicleApplication.id);
+    expect(responseBody.vehicleApplication.length).toBe(1);
+    expect(responseBody.vehicleApplication[0].id).toBe(seededVehicleApplication.id);
   });
 
   it("should return status 200 and record that matches the applicant id", async () => {
@@ -141,12 +151,12 @@ describe("GET /api/v1/vehicle-application/search", () => {
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query(payload);
 
-    const responseBody = response.body as IVehicleApplicationDTO[];
-    const mappedVehicleApplication = responseBody.map(
+    const responseBody = response.body as GetVehicleApplicationResponse;
+    const mappedVehicleApplication = responseBody.vehicleApplication.map(
       (vehicleApplication) => vehicleApplication.id
     );
 
-    expect(responseBody.length).toBe(3);
+    expect(responseBody.vehicleApplication.length).toBe(3);
     expect(mappedVehicleApplication).toContain(seededVehicleApplication1.id);
     expect(mappedVehicleApplication).toContain(seededVehicleApplication2.id);
     expect(mappedVehicleApplication).toContain(seededVehicleApplication3.id);
@@ -176,13 +186,13 @@ describe("GET /api/v1/vehicle-application/search", () => {
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query(payload);
 
-    const responseBody = response.body as IVehicleApplicationDTO[];
+    const responseBody = response.body as GetVehicleApplicationResponse;
 
-    const mappedVehicleApplication = responseBody.map(
+    const mappedVehicleApplication = responseBody.vehicleApplication.map(
       (vehicleApplication) => vehicleApplication.id
     );
 
-    expect(responseBody.length).toBe(2);
+    expect(responseBody.vehicleApplication.length).toBe(2);
     expect(mappedVehicleApplication).toContain(seededVehicleApplication1.id);
     expect(mappedVehicleApplication).toContain(seededVehicleApplication2.id);
   });
@@ -215,12 +225,12 @@ describe("GET /api/v1/vehicle-application/search", () => {
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query(payload);
 
-    const responseBody = response.body as IVehicleApplicationDTO[];
-    const mappedVehicleApplication = responseBody.map(
+    const responseBody = response.body as GetVehicleApplicationResponse;
+    const mappedVehicleApplication = responseBody.vehicleApplication.map(
       (vehicleApplication) => vehicleApplication.id
     );
 
-    expect(responseBody.length).toBe(3);
+    expect(responseBody.vehicleApplication.length).toBe(3);
     expect(mappedVehicleApplication).toContain(seededVehicleApplication1.id);
     expect(mappedVehicleApplication).toContain(seededVehicleApplication2.id);
     expect(mappedVehicleApplication).toContain(seededVehicleApplication3.id);
@@ -252,12 +262,12 @@ describe("GET /api/v1/vehicle-application/search", () => {
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query(payload);
 
-    const responseBody = response.body as IVehicleApplicationDTO[];
-    const mappedVehicleApplication = responseBody.map(
+    const responseBody = response.body as GetVehicleApplicationResponse;
+    const mappedVehicleApplication = responseBody.vehicleApplication.map(
       (vehicleApplication) => vehicleApplication.id
     );
 
-    expect(responseBody.length).toBe(2);
+    expect(responseBody.vehicleApplication.length).toBe(2);
     expect(mappedVehicleApplication).toContain(seededVehicleApplication1.id);
     expect(mappedVehicleApplication).toContain(seededVehicleApplication2.id);
   });
@@ -287,12 +297,12 @@ describe("GET /api/v1/vehicle-application/search", () => {
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query(payload);
 
-    const responseBody = response.body as IVehicleApplicationDTO[];
-    const mappedVehicleApplication = responseBody.map(
+    const responseBody = response.body as GetVehicleApplicationResponse;
+    const mappedVehicleApplication = responseBody.vehicleApplication.map(
       (vehicleApplication) => vehicleApplication.id
     );
 
-    expect(responseBody.length).toBe(2);
+    expect(responseBody.vehicleApplication.length).toBe(2);
     expect(mappedVehicleApplication).toContain(seededVehicleApplication1.id);
     expect(mappedVehicleApplication).toContain(seededVehicleApplication2.id);
   });
@@ -338,12 +348,12 @@ describe("GET /api/v1/vehicle-application/search", () => {
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query(payload);
 
-    const responseBody = response.body as IVehicleApplicationDTO[];
-    const mappedVehicleApplication = responseBody.map(
+    const responseBody = response.body as GetVehicleApplicationResponse;
+    const mappedVehicleApplication = responseBody.vehicleApplication.map(
       (vehicleApplication) => vehicleApplication.id
     );
 
-    expect(responseBody.length).toBe(4);
+    expect(responseBody.vehicleApplication.length).toBe(4);
     expect(mappedVehicleApplication).toContain(seededVehicleApplication1.id);
     expect(mappedVehicleApplication).toContain(seededVehicleApplication2.id);
     expect(mappedVehicleApplication).toContain(seededVehicleApplication3.id);
@@ -352,6 +362,338 @@ describe("GET /api/v1/vehicle-application/search", () => {
     expect(mappedVehicleApplication).not.toContain(seededVehicleApplication6.id);
     expect(mappedVehicleApplication).not.toContain(seededVehicleApplication7.id);
     expect(mappedVehicleApplication).not.toContain(seededVehicleApplication8.id);
+  });
+
+  it("should return status 200 and paginated users with correct metadata on first page", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "SECURITY",
+      expiration: "1h"
+    });
+
+    const user = await seedUser({});
+    await Promise.all(
+      Array.from({ length: 15 }).map(() => seedVehicleApplication({ applicantId: user.id }))
+    );
+
+    const payload: VehicleApplicationGetRequest = {
+      count: "10",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/vehicle-application/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetVehicleApplicationResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.vehicleApplication.length).toBe(10);
+    expect(responseBody.hasNextPage).toBe(true);
+    expect(responseBody.hasPreviousPage).toBe(false);
+    expect(responseBody.totalPages).toBe(2);
+  });
+
+  it("should return status 200 and paginated users with correct metadata on second page", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "SECURITY",
+      expiration: "1h"
+    });
+
+    const user = await seedUser({});
+    await Promise.all(
+      Array.from({ length: 15 }).map(() => seedVehicleApplication({ applicantId: user.id }))
+    );
+
+    const payload: VehicleApplicationGetRequest = {
+      count: "10",
+      page: "2"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/vehicle-application/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetVehicleApplicationResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.vehicleApplication.length).toBe(5);
+    expect(responseBody.hasNextPage).toBe(false);
+    expect(responseBody.hasPreviousPage).toBe(true);
+    expect(responseBody.totalPages).toBe(2);
+  });
+
+  it("should return status 200 and vehicleApplication sorted in ascending order when sort = 1", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "SECURITY",
+      expiration: "1h"
+    });
+    const user = await seedUser({});
+    await Promise.all([
+      seedVehicleApplication({ applicantId: user.id, createdAt: new Date("2024-01-01") }),
+      seedVehicleApplication({ applicantId: user.id, createdAt: new Date("2023-01-01") })
+    ]);
+
+    const payload: VehicleApplicationGetRequest = {
+      applicantId: user.id,
+      count: "10",
+      page: "1",
+      sort: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/vehicle-application/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetVehicleApplicationResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.vehicleApplication).toHaveLength(2);
+    expect(new Date(responseBody.vehicleApplication[1].createdAt).getTime()).toBeGreaterThan(
+      new Date(responseBody.vehicleApplication[0].createdAt).getTime()
+    );
+  });
+
+  it("should return status 200 and vehicleApplication sorted in descending order when sort = 2", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "SECURITY",
+      expiration: "1h"
+    });
+    const user = await seedUser({});
+    await Promise.all([
+      seedVehicleApplication({ applicantId: user.id, createdAt: new Date("2024-01-01") }),
+      seedVehicleApplication({ applicantId: user.id, createdAt: new Date("2023-01-01") })
+    ]);
+
+    const payload: VehicleApplicationGetRequest = {
+      applicantId: user.id,
+      count: "10",
+      page: "1",
+      sort: "2"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/vehicle-application/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetVehicleApplicationResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.vehicleApplication).toHaveLength(2);
+    expect(new Date(responseBody.vehicleApplication[0].createdAt).getTime()).toBeGreaterThan(
+      new Date(responseBody.vehicleApplication[1].createdAt).getTime()
+    );
+  });
+
+  it("should return status 200 and default sort to descending when sort does not exist", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "SECURITY",
+      expiration: "1h"
+    });
+    const user = await seedUser({});
+    await Promise.all([
+      seedVehicleApplication({ applicantId: user.id, createdAt: new Date("2024-01-01") }),
+      seedVehicleApplication({ applicantId: user.id, createdAt: new Date("2023-01-01") })
+    ]);
+
+    const payload: VehicleApplicationGetRequest = {
+      applicantId: user.id,
+      count: "10",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/vehicle-application/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetVehicleApplicationResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.vehicleApplication).toHaveLength(2);
+    expect(new Date(responseBody.vehicleApplication[0].createdAt).getTime()).toBeGreaterThan(
+      new Date(responseBody.vehicleApplication[1].createdAt).getTime()
+    );
+  });
+
+  it("should return status 200 and return vehicleApplication when filtering with searchKey(applicantId)", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "SECURITY",
+      expiration: "1h"
+    });
+
+    const user = await seedUser({});
+    const seededVehicleApplication = await seedVehicleApplication({ applicantId: user.id });
+
+    const payload: VehicleApplicationGetRequest = {
+      searchKey: seededVehicleApplication.applicantId.slice(0, 5),
+      count: "1",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/vehicle-application/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetVehicleApplicationResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.vehicleApplication.length).toBe(1);
+    expect(responseBody.vehicleApplication[0].applicantId).toContain(user.id.slice(0, 5));
+  });
+
+  it("should return status 200 and return vehicleApplication when filtering with searchKey(id)", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "SECURITY",
+      expiration: "1h"
+    });
+
+    const seededVehicleApplication = await seedVehicleApplication({});
+
+    const payload: VehicleApplicationGetRequest = {
+      searchKey: seededVehicleApplication.id.slice(0, 5),
+      count: "1",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/vehicle-application/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetVehicleApplicationResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.vehicleApplication.length).toBe(1);
+    expect(responseBody.vehicleApplication[0].id).toContain(
+      seededVehicleApplication.id.slice(0, 5)
+    );
+  });
+
+  it("should return status 200 and return vehicleApplication when filtering with searchKey(schoolId)", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "SECURITY",
+      expiration: "1h"
+    });
+
+    const seededVehicleApplication = await seedVehicleApplication({});
+
+    const payload: VehicleApplicationGetRequest = {
+      searchKey: seededVehicleApplication.schoolId.slice(0, 5),
+      count: "1",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/vehicle-application/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetVehicleApplicationResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.vehicleApplication.length).toBe(1);
+    expect(responseBody.vehicleApplication[0].schoolMember.schoolId).toContain(
+      seededVehicleApplication.schoolId.slice(0, 5)
+    );
+  });
+
+  it("should return status 200 and return vehicleApplication when filtering with searchKey(driverLastName)", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "SECURITY",
+      expiration: "1h"
+    });
+
+    const seededVehicleApplication = await seedVehicleApplication({ driverLastName: "Herrera" });
+
+    const payload: VehicleApplicationGetRequest = {
+      searchKey: "Herr",
+      count: "1",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/vehicle-application/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetVehicleApplicationResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.vehicleApplication.length).toBe(1);
+    expect(responseBody.vehicleApplication[0].driver.lastName).toContain("Herr");
+  });
+
+  it("should return status 200 and return vehicleApplication when filtering with searchKey(driverFirstName)", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "SECURITY",
+      expiration: "1h"
+    });
+
+    const seededVehicleApplication = await seedVehicleApplication({
+      driverFirstName: "French William"
+    });
+
+    const payload: VehicleApplicationGetRequest = {
+      searchKey: "French",
+      count: "1",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/vehicle-application/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetVehicleApplicationResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.vehicleApplication.length).toBe(1);
+    expect(responseBody.vehicleApplication[0].driver.firstName).toContain("French");
+  });
+
+  it("should return status 200 and return vehicleApplication when filtering with searchKey(firstName)", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "SECURITY",
+      expiration: "1h"
+    });
+
+    const seededVehicleApplication = await seedVehicleApplication({ firstName: "French William" });
+
+    const payload: VehicleApplicationGetRequest = {
+      searchKey: "French",
+      count: "1",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/vehicle-application/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetVehicleApplicationResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.vehicleApplication.length).toBe(1);
+    expect(responseBody.vehicleApplication[0].schoolMember.firstName).toContain("French");
+  });
+
+  it("should return status 200 and return vehicleApplication when filtering with searchKey(lastName)", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "SECURITY",
+      expiration: "1h"
+    });
+
+    const seededVehicleApplication = await seedVehicleApplication({ lastName: "Herrera" });
+
+    const payload: VehicleApplicationGetRequest = {
+      searchKey: "Herr",
+      count: "1",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/vehicle-application/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetVehicleApplicationResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.vehicleApplication.length).toBe(1);
+    expect(responseBody.vehicleApplication[0].schoolMember.lastName).toContain("Herr");
   });
 
   it("should return status 400 when no parameters passed", async () => {
