@@ -1,4 +1,5 @@
 import z from "zod";
+import { ViolationRecordStatus } from "../domain/models/violationRecord/classes/violationRecordStatus";
 
 export const ViolationRecordCreateSchema = z
   .object({
@@ -19,7 +20,14 @@ export const ViolationRecordRequestSchema = z.object({
   userId: z.string().optional(),
   violationId: z.string().optional(),
   reportedById: z.string().optional(),
-  status: z.enum(["UNPAID", "PAID"]).optional(),
+  sort: z.enum(["1", "2"]).optional(),
+  searchKey: z.string().optional(),
+  status: z
+    .string()
+    .refine((value) => ViolationRecordStatus.validVehicleTypes.includes(value), {
+      message: `"status" must be one of: ${ViolationRecordStatus.validVehicleTypes.join(", ")}`
+    })
+    .optional(),
   count: z
     .string()
     .refine(

@@ -28,16 +28,34 @@ export interface ICreateViolationRecordInputUseCase {
   remarks: string;
 }
 
-export type GetViolationRecordByProperty = {
+export type GetViolationRecord = {
   id?: string;
   vehicleId?: string;
   userId?: string;
   violationId?: string;
   reportedById?: string;
   status?: string;
-  count?: number;
-  page?: number;
+  count: number;
+  page: number;
+  sort?: 1 | 2;
+  searchKey?: string;
 };
+
+export interface ViolationRecordWhereClauseParams {
+  id?: string;
+  userId?: string;
+  vehicleId?: string;
+  reportedById?: string;
+  searchKey?: string;
+  status?: string;
+}
+
+export interface GetViolationRecordResponse {
+  violation: IViolationRecordDTO[];
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  totalPages: number;
+}
 
 export interface GetViolationsGivenPerDayByRangeParams {
   startDate: Date;

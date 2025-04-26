@@ -4,7 +4,7 @@ import {
   type IViolationRecordMapper,
   ViolationRecordMapper
 } from "../domain/models/violationRecord/mapper";
-import type { GetViolationRecordByProperty, IViolationRecordDTO } from "../dtos/violationRecordDTO";
+import type { GetViolationRecord, GetViolationRecordResponse } from "../dtos/violationRecordDTO";
 import type { ViolationRecordGetRequest } from "../dtos/violationRecordRequestSchema";
 import {
   type IViolationRecordRepository,
@@ -23,18 +23,25 @@ export class GetViolationRecordInformationUseCase {
     this._violationRecordMapper = violationRecordMapper;
   }
 
-  public async execute(payload: ViolationRecordGetRequest): Promise<IViolationRecordDTO[]> {
-    const violationRecord = await this._getViolationRecordDetails(payload);
+  public async execute(payload: ViolationRecordGetRequest): Promise<GetViolationRecordResponse> {
+    const refinedParams = this._refinePayload(payload);
+    const violation = await this._getViolationRecordDetails(refinedParams);
+    const totalUserCount = await this._getTotalCount(refinedParams);
+    const totalPages = this._getTotalPages(refinedParams.count, totalUserCount);
+    const hasNextPage = this._hasNextPage(refinedParams.count, refinedParams.page, totalUserCount);
 
-    return violationRecord.map((record) => this._violationRecordMapper.toDTO(record));
+    return {
+      violation: violation.map((record) => this._violationRecordMapper.toDTO(record)),
+      hasNextPage,
+      hasPreviousPage: refinedParams.page > 1,
+      totalPages
+    };
   }
 
   private async _getViolationRecordDetails(
-    payload: ViolationRecordGetRequest
+    payload: GetViolationRecord
   ): Promise<IViolationRecord[]> {
-    const violationRecords = await this._violationRecordRepository.getViolationRecordByProperty(
-      this._refinePayload(payload)
-    );
+    const violationRecords = await this._violationRecordRepository.getViolationRecord(payload);
     if (!violationRecords || violationRecords.length === 0) {
       throw new NotFoundError("Violation Records not found");
     }
@@ -42,11 +49,24 @@ export class GetViolationRecordInformationUseCase {
     return violationRecords;
   }
 
-  private _refinePayload(payload: ViolationRecordGetRequest): GetViolationRecordByProperty {
+  private _refinePayload(payload: ViolationRecordGetRequest): GetViolationRecord {
     return {
       ...payload,
-      count: payload.count ? Number(payload.count) : undefined,
-      page: payload.page ? Number(payload.page) : undefined
+      sort: payload.sort ? (payload.sort === "1" ? 1 : 2) : payload.sort,
+      count: Number(payload.count),
+      page: Number(payload.page)
     };
+  }
+
+  private _getTotalCount(params: GetViolationRecord): Promise<number> {
+    return this._violationRecordRepository.getTotalViolation(params);
+  }
+
+  private _hasNextPage(count: number, page: number, totalUserCount: number): boolean {
+    return page * count < totalUserCount;
+  }
+
+  private _getTotalPages(countPerPage: number, totalUser: number): number {
+    return Math.ceil(totalUser / countPerPage);
   }
 }

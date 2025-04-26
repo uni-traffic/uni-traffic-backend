@@ -3,7 +3,7 @@ import { ForbiddenError } from "../../../../../../shared/core/errors";
 import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
 import { type IJSONWebToken, JSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
 import { UserRoleService } from "../../../../../user/src/shared/service/userRoleService";
-import type { IViolationRecordDTO } from "../../../dtos/violationRecordDTO";
+import type { GetViolationRecordResponse } from "../../../dtos/violationRecordDTO";
 import type { ViolationRecordGetRequest } from "../../../dtos/violationRecordRequestSchema";
 import { GetViolationRecordInformationUseCase } from "../../../useCases/getViolationRecordUseCase";
 
@@ -30,7 +30,7 @@ export class GetViolationRecordController extends BaseController {
       req.query as ViolationRecordGetRequest
     );
 
-    this.ok<IViolationRecordDTO[]>(res, violationRecordDTO);
+    this.ok<GetViolationRecordResponse>(res, violationRecordDTO);
   }
 
   private async _verifyPermission(req: Request): Promise<string> {

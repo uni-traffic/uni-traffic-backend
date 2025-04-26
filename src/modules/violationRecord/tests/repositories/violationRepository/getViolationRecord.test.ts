@@ -27,8 +27,10 @@ describe("ViolationRecordRepository.getViolationRecordByProperty", () => {
   it("should return record that match the given violation record id", async () => {
     const seededViolationRecord = await seedViolationRecord({});
 
-    const result = await violationRecordRepository.getViolationRecordByProperty({
-      id: seededViolationRecord.id
+    const result = await violationRecordRepository.getViolationRecord({
+      id: seededViolationRecord.id,
+      count: 1,
+      page: 1
     });
 
     expect(result.length).toBe(1);
@@ -41,9 +43,12 @@ describe("ViolationRecordRepository.getViolationRecordByProperty", () => {
     const seededViolationRecord2 = await seedViolationRecord({ vehicleId: seededVehicle.id });
     const seededViolationRecord3 = await seedViolationRecord({ vehicleId: seededVehicle.id });
 
-    const result = await violationRecordRepository.getViolationRecordByProperty({
-      vehicleId: seededVehicle.id
+    const result = await violationRecordRepository.getViolationRecord({
+      vehicleId: seededVehicle.id,
+      count: 3,
+      page: 1
     });
+
     const mappedViolationRecordIds = result.map((violationRecord) => violationRecord.id);
 
     expect(result.length).toBe(3);
@@ -58,8 +63,10 @@ describe("ViolationRecordRepository.getViolationRecordByProperty", () => {
     const seededViolationRecord2 = await seedViolationRecord({ userId: seededUser.id });
     const seededViolationRecord3 = await seedViolationRecord({ userId: seededUser.id });
 
-    const result = await violationRecordRepository.getViolationRecordByProperty({
-      userId: seededUser.id
+    const result = await violationRecordRepository.getViolationRecord({
+      userId: seededUser.id,
+      count: 3,
+      page: 1
     });
     const mappedViolationRecordIds = result.map((violationRecord) => violationRecord.id);
 
@@ -75,8 +82,10 @@ describe("ViolationRecordRepository.getViolationRecordByProperty", () => {
     const seededViolationRecord2 = await seedViolationRecord({ violationId: seededViolation.id });
     const seededViolationRecord3 = await seedViolationRecord({ violationId: seededViolation.id });
 
-    const result = await violationRecordRepository.getViolationRecordByProperty({
-      violationId: seededViolation.id
+    const result = await violationRecordRepository.getViolationRecord({
+      violationId: seededViolation.id,
+      count: 3,
+      page: 1
     });
     const mappedViolationRecordIds = result.map((violationRecord) => violationRecord.id);
 
@@ -92,8 +101,10 @@ describe("ViolationRecordRepository.getViolationRecordByProperty", () => {
     const seededViolationRecord3 = await seedViolationRecord({ status: "PAID" });
     const seededViolationRecord4 = await seedViolationRecord({ status: "UNPAID" });
 
-    const result = await violationRecordRepository.getViolationRecordByProperty({
-      status: "PAID"
+    const result = await violationRecordRepository.getViolationRecord({
+      status: "PAID",
+      count: 3,
+      page: 1
     });
     const mappedViolationRecordIds = result.map((violationRecord) => violationRecord.id);
 
@@ -128,10 +139,12 @@ describe("ViolationRecordRepository.getViolationRecordByProperty", () => {
       violationId: seededViolation.id
     });
 
-    const result = await violationRecordRepository.getViolationRecordByProperty({
+    const result = await violationRecordRepository.getViolationRecord({
       userId: seededUser.id,
       violationId: seededViolation.id,
-      status: "UNPAID"
+      status: "UNPAID",
+      count: 3,
+      page: 1
     });
     const mappedViolationRecordIds = result.map((violationRecord) => violationRecord.id);
 
@@ -166,10 +179,12 @@ describe("ViolationRecordRepository.getViolationRecordByProperty", () => {
       violationId: seededViolation.id
     });
 
-    const result = await violationRecordRepository.getViolationRecordByProperty({
+    const result = await violationRecordRepository.getViolationRecord({
       vehicleId: seededVehicle.id,
       violationId: seededViolation.id,
-      status: "UNPAID"
+      status: "UNPAID",
+      count: 3,
+      page: 1
     });
     const mappedViolationRecordIds = result.map((violationRecord) => violationRecord.id);
 
@@ -180,13 +195,172 @@ describe("ViolationRecordRepository.getViolationRecordByProperty", () => {
     expect(mappedViolationRecordIds).not.toContain(seededViolationRecord4.id);
   });
 
-  it("should return an emptry array if the id given does not exist in the database", async () => {
+  it("should return an empty array if the id given does not exist in the database", async () => {
     await seedViolationRecord({});
 
-    const result = await violationRecordRepository.getViolationRecordByProperty({
-      id: faker.string.uuid()
+    const result = await violationRecordRepository.getViolationRecord({
+      id: faker.string.uuid(),
+      count: 3,
+      page: 1
     });
 
     expect(result.length).toBe(0);
+  });
+
+  it("should return violationRecord sorted in ascending order when sort = 1", async () => {
+    const user = await seedUser({});
+    await Promise.all([
+      seedViolationRecord({ userId: user.id, createdAt: new Date("2024-01-01") }),
+      seedViolationRecord({ userId: user.id, createdAt: new Date("2023-01-01") })
+    ]);
+
+    const logs = await violationRecordRepository.getViolationRecord({
+      userId: user.id,
+      count: 10,
+      page: 1,
+      sort: 1
+    });
+
+    expect(logs).toHaveLength(2);
+    expect(new Date(logs[1].createdAt).getTime()).toBeGreaterThan(
+      new Date(logs[0].createdAt).getTime()
+    );
+  });
+
+  it("should return violationRecord sorted in descending order when sort = 2", async () => {
+    const user = await seedUser({});
+    await Promise.all([
+      seedViolationRecord({ userId: user.id, createdAt: new Date("2024-01-01") }),
+      seedViolationRecord({ userId: user.id, createdAt: new Date("2023-01-01") })
+    ]);
+
+    const logs = await violationRecordRepository.getViolationRecord({
+      userId: user.id,
+      count: 10,
+      page: 1,
+      sort: 2
+    });
+
+    expect(logs).toHaveLength(2);
+    expect(new Date(logs[0].createdAt).getTime()).toBeGreaterThan(
+      new Date(logs[1].createdAt).getTime()
+    );
+  });
+
+  it("should return violationRecord default sort to descending(2) when sort is does not exist", async () => {
+    const user = await seedUser({});
+    await Promise.all([
+      seedViolationRecord({ userId: user.id, createdAt: new Date("2024-01-01") }),
+      seedViolationRecord({ userId: user.id, createdAt: new Date("2023-01-01") })
+    ]);
+
+    const logs = await violationRecordRepository.getViolationRecord({
+      userId: user.id,
+      count: 10,
+      page: 1
+    });
+
+    expect(logs).toHaveLength(2);
+    expect(new Date(logs[0].createdAt).getTime()).toBeGreaterThan(
+      new Date(logs[1].createdAt).getTime()
+    );
+  });
+
+  it("should correctly apply pagination", async () => {
+    const user = await seedUser({});
+    await Promise.all(
+      Array.from({ length: 15 }).map(() => seedViolationRecord({ userId: user.id }))
+    );
+
+    const page1 = await violationRecordRepository.getViolationRecord({
+      userId: user.id,
+      count: 10,
+      page: 1
+    });
+    const page2 = await violationRecordRepository.getViolationRecord({
+      userId: user.id,
+      count: 10,
+      page: 2
+    });
+
+    expect(page1).toHaveLength(10);
+    expect(page2).toHaveLength(5);
+  });
+
+  it("should filter violation using partial userId match with searchKey", async () => {
+    const user = await seedUser({});
+    const userId = user.id;
+    await seedViolationRecord({ userId: userId });
+
+    const violation = await violationRecordRepository.getViolationRecord({
+      searchKey: userId.slice(0, 8),
+      count: 10,
+      page: 1
+    });
+
+    expect(violation.length).toBeGreaterThan(0);
+    expect(violation[0].userId).toContain(userId.slice(0, 8));
+  });
+
+  it("should filter violation using partial id match with searchKey", async () => {
+    const seededViolationRecord = await seedViolationRecord({});
+
+    const violation = await violationRecordRepository.getViolationRecord({
+      searchKey: seededViolationRecord.id.slice(0, 8),
+      count: 10,
+      page: 1
+    });
+
+    expect(violation.length).toBeGreaterThan(0);
+    expect(violation[0].id).toContain(seededViolationRecord.id.slice(0, 8));
+  });
+
+  it("should filter violation using partial vehicleId match with searchKey", async () => {
+    const seededViolationRecord = await seedViolationRecord({});
+
+    const violation = await violationRecordRepository.getViolationRecord({
+      searchKey: seededViolationRecord.vehicleId.slice(0, 8),
+      count: 10,
+      page: 1
+    });
+
+    expect(violation.length).toBeGreaterThan(0);
+    expect(violation[0].vehicleId).toContain(seededViolationRecord.vehicleId.slice(0, 8));
+  });
+
+  it("should filter violation using partial reportedById match with searchKey", async () => {
+    const seededViolationRecord = await seedViolationRecord({});
+
+    const violation = await violationRecordRepository.getViolationRecord({
+      searchKey: seededViolationRecord.reportedById.slice(0, 8),
+      count: 10,
+      page: 1
+    });
+
+    expect(violation.length).toBeGreaterThan(0);
+    expect(violation[0].reportedById).toContain(seededViolationRecord.reportedById.slice(0, 8));
+  });
+
+  it("should filter violation using strict matching for status, userId, vehicleId, and reportedById", async () => {
+    const seededUser = await seedUser({});
+    const seededViolationRecord = await seedViolationRecord({
+      userId: seededUser.id,
+      status: "PAID"
+    });
+
+    const violation = await violationRecordRepository.getViolationRecord({
+      userId: seededUser.id,
+      vehicleId: seededViolationRecord.vehicleId,
+      reportedById: seededViolationRecord.reportedById,
+      status: "PAID",
+      count: 10,
+      page: 1
+    });
+
+    expect(violation.length).toBe(1);
+    expect(violation[0].id).toBe(seededViolationRecord.id);
+    expect(violation[0].vehicleId).toBe(seededViolationRecord.vehicleId);
+    expect(violation[0].reportedById).toBe(seededViolationRecord.reportedById);
+    expect(violation[0].status.value).toBe(seededViolationRecord.status);
   });
 });
