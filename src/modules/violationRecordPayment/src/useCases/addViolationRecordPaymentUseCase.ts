@@ -51,15 +51,14 @@ export class AddViolationRecordPaymentUseCase {
   }
 
   private async getViolationRecordOrThrow(violationRecordId: string): Promise<IViolationRecord> {
-    const violationRecords = await this._violationRecordRepository.getViolationRecordByProperty({
-      id: violationRecordId
-    });
+    const violationRecords =
+      await this._violationRecordRepository.getViolationRecordById(violationRecordId);
 
-    if (!violationRecords.length) {
+    if (!violationRecords) {
       throw new NotFoundError("Violation record not found.");
     }
 
-    return violationRecords[0];
+    return violationRecords;
   }
 
   private checkViolationRecordIsPaid(violationRecord: IViolationRecord): void {

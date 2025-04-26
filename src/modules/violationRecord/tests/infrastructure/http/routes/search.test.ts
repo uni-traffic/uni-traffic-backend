@@ -7,7 +7,7 @@ import { seedAuthenticatedUser } from "../../../../../user/tests/utils/user/seed
 import { seedUser } from "../../../../../user/tests/utils/user/seedUser";
 import { seedVehicle } from "../../../../../vehicle/tests/utils/vehicle/seedVehicle";
 import { seedViolation } from "../../../../../violation/tests/utils/violation/seedViolation";
-import type { IViolationRecordDTO } from "../../../../src/dtos/violationRecordDTO";
+import type { GetViolationRecordResponse } from "../../../../src/dtos/violationRecordDTO";
 import type { ViolationRecordGetRequest } from "../../../../src/dtos/violationRecordRequestSchema";
 import { seedViolationRecord } from "../../../utils/violationRecord/seedViolationRecord";
 
@@ -37,24 +37,26 @@ describe("GET /api/v1/violation-record/search", () => {
     });
 
     const payload: ViolationRecordGetRequest = {
-      id: seededViolationRecord.id
+      id: seededViolationRecord.id,
+      count: "10",
+      page: "1"
     };
 
     const response = await requestAPI
       .get("/api/v1/violation-record/search")
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query(payload);
-    const responseBody = response.body;
+    const responseBody = response.body as GetViolationRecordResponse;
 
     expect(response.status).toBe(200);
-    expect(responseBody[0].id).toBe(seededViolationRecord.id);
-    expect(responseBody[0].reportedById).toBe(seededViolationRecord.reportedById);
-    expect(responseBody[0].date).toBeDefined();
-    expect(responseBody[0].remarks).toBeDefined();
-    expect(responseBody[0].status).toBe(seededViolationRecord.status);
-    expect(responseBody[0].userId).toBe(seededViolationRecord.userId);
-    expect(responseBody[0].vehicleId).toBe(seededViolationRecord.vehicleId);
-    expect(responseBody[0].violationId).toBe(seededViolationRecord.violationId);
+    expect(responseBody.violation[0].id).toBe(seededViolationRecord.id);
+    expect(responseBody.violation[0].reportedById).toBe(seededViolationRecord.reportedById);
+    expect(responseBody.violation[0].date).toBeDefined();
+    expect(responseBody.violation[0].remarks).toBeDefined();
+    expect(responseBody.violation[0].status).toBe(seededViolationRecord.status);
+    expect(responseBody.violation[0].userId).toBe(seededViolationRecord.userId);
+    expect(responseBody.violation[0].vehicleId).toBe(seededViolationRecord.vehicleId);
+    expect(responseBody.violation[0].violationId).toBe(seededViolationRecord.violationId);
   });
 
   it("should return status 200 and violation records when provided with vehicle id", async () => {
@@ -68,7 +70,9 @@ describe("GET /api/v1/violation-record/search", () => {
     });
 
     const payload: ViolationRecordGetRequest = {
-      vehicleId: seededVehicle.id
+      vehicleId: seededVehicle.id,
+      count: "10",
+      page: "1"
     };
 
     const response = await requestAPI
@@ -76,11 +80,11 @@ describe("GET /api/v1/violation-record/search", () => {
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query(payload);
 
-    const responseBody = response.body as IViolationRecordDTO[];
-    const mappedResult = responseBody.map((violationRecord) => violationRecord.id);
+    const responseBody = response.body as GetViolationRecordResponse;
+    const mappedResult = responseBody.violation.map((violationRecord) => violationRecord.id);
 
     expect(response.status).toBe(200);
-    expect(responseBody.length).toBe(3);
+    expect(responseBody.violation.length).toBe(3);
     expect(mappedResult).toContain(seededViolationRecord1.id);
     expect(mappedResult).toContain(seededViolationRecord2.id);
     expect(mappedResult).toContain(seededViolationRecord3.id);
@@ -97,7 +101,9 @@ describe("GET /api/v1/violation-record/search", () => {
     });
 
     const payload: ViolationRecordGetRequest = {
-      userId: seededUser.id
+      userId: seededUser.id,
+      count: "10",
+      page: "1"
     };
 
     const response = await requestAPI
@@ -105,11 +111,11 @@ describe("GET /api/v1/violation-record/search", () => {
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query(payload);
 
-    const responseBody = response.body as IViolationRecordDTO[];
-    const mappedResult = responseBody.map((violationRecord) => violationRecord.id);
+    const responseBody = response.body as GetViolationRecordResponse;
+    const mappedResult = responseBody.violation.map((violationRecord) => violationRecord.id);
 
     expect(response.status).toBe(200);
-    expect(responseBody.length).toBe(3);
+    expect(responseBody.violation.length).toBe(3);
     expect(mappedResult).toContain(seededViolationRecord1.id);
     expect(mappedResult).toContain(seededViolationRecord2.id);
     expect(mappedResult).toContain(seededViolationRecord3.id);
@@ -126,7 +132,9 @@ describe("GET /api/v1/violation-record/search", () => {
     });
 
     const payload: ViolationRecordGetRequest = {
-      violationId: seededViolation.id
+      violationId: seededViolation.id,
+      count: "10",
+      page: "1"
     };
 
     const response = await requestAPI
@@ -134,11 +142,11 @@ describe("GET /api/v1/violation-record/search", () => {
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query(payload);
 
-    const responseBody = response.body as IViolationRecordDTO[];
-    const mappedResult = responseBody.map((violationRecord) => violationRecord.id);
+    const responseBody = response.body as GetViolationRecordResponse;
+    const mappedResult = responseBody.violation.map((violationRecord) => violationRecord.id);
 
     expect(response.status).toBe(200);
-    expect(responseBody.length).toBe(3);
+    expect(responseBody.violation.length).toBe(3);
     expect(mappedResult).toContain(seededViolationRecord1.id);
     expect(mappedResult).toContain(seededViolationRecord2.id);
     expect(mappedResult).toContain(seededViolationRecord3.id);
@@ -155,7 +163,9 @@ describe("GET /api/v1/violation-record/search", () => {
     });
 
     const payload: ViolationRecordGetRequest = {
-      status: "PAID"
+      status: "PAID",
+      count: "10",
+      page: "1"
     };
 
     const response = await requestAPI
@@ -163,11 +173,11 @@ describe("GET /api/v1/violation-record/search", () => {
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query(payload);
 
-    const responseBody = response.body as IViolationRecordDTO[];
-    const mappedResult = responseBody.map((violationRecord) => violationRecord.id);
+    const responseBody = response.body as GetViolationRecordResponse;
+    const mappedResult = responseBody.violation.map((violationRecord) => violationRecord.id);
 
     expect(response.status).toBe(200);
-    expect(responseBody.length).toBe(3);
+    expect(responseBody.violation.length).toBe(3);
     expect(mappedResult).toContain(seededViolationRecord1.id);
     expect(mappedResult).toContain(seededViolationRecord2.id);
     expect(mappedResult).toContain(seededViolationRecord3.id);
@@ -205,7 +215,9 @@ describe("GET /api/v1/violation-record/search", () => {
     const payload: ViolationRecordGetRequest = {
       status: "UNPAID",
       userId: seededUser.id,
-      violationId: seededViolation.id
+      violationId: seededViolation.id,
+      count: "10",
+      page: "1"
     };
 
     const response = await requestAPI
@@ -213,11 +225,11 @@ describe("GET /api/v1/violation-record/search", () => {
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query(payload);
 
-    const responseBody = response.body as IViolationRecordDTO[];
-    const mappedResult = responseBody.map((violationRecord) => violationRecord.id);
+    const responseBody = response.body as GetViolationRecordResponse;
+    const mappedResult = responseBody.violation.map((violationRecord) => violationRecord.id);
 
     expect(response.status).toBe(200);
-    expect(responseBody.length).toBe(3);
+    expect(responseBody.violation.length).toBe(3);
     expect(mappedResult).toContain(seededViolationRecord1.id);
     expect(mappedResult).toContain(seededViolationRecord2.id);
     expect(mappedResult).toContain(seededViolationRecord3.id);
@@ -255,7 +267,9 @@ describe("GET /api/v1/violation-record/search", () => {
     const payload: ViolationRecordGetRequest = {
       status: "UNPAID",
       vehicleId: seededVehicle.id,
-      violationId: seededViolation.id
+      violationId: seededViolation.id,
+      count: "10",
+      page: "1"
     };
 
     const response = await requestAPI
@@ -263,11 +277,11 @@ describe("GET /api/v1/violation-record/search", () => {
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query(payload);
 
-    const responseBody = response.body as IViolationRecordDTO[];
-    const mappedResult = responseBody.map((violationRecord) => violationRecord.id);
+    const responseBody = response.body as GetViolationRecordResponse;
+    const mappedResult = responseBody.violation.map((violationRecord) => violationRecord.id);
 
     expect(response.status).toBe(200);
-    expect(responseBody.length).toBe(3);
+    expect(responseBody.violation.length).toBe(3);
     expect(mappedResult).toContain(seededViolationRecord1.id);
     expect(mappedResult).toContain(seededViolationRecord2.id);
     expect(mappedResult).toContain(seededViolationRecord3.id);
@@ -289,15 +303,245 @@ describe("GET /api/v1/violation-record/search", () => {
       .get("/api/v1/violation-record/search")
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
       .query({
-        userId: seededAuthenticatedUser.id
+        userId: seededAuthenticatedUser.id,
+        count: "10",
+        page: "1"
       });
-    const responseBody = response.body as IViolationRecordDTO[];
-    const mappedResult = responseBody.map((violationRecord) => violationRecord.id);
+    const responseBody = response.body as GetViolationRecordResponse;
+    const mappedResult = responseBody.violation.map((violationRecord) => violationRecord.id);
 
     expect(response.status).toBe(200);
-    expect(responseBody.length).toBe(2);
+    expect(responseBody.violation.length).toBe(2);
     expect(mappedResult).toContain(seededViolationRecord1.id);
     expect(mappedResult).toContain(seededViolationRecord2.id);
+  });
+
+  it("should return status 200 and paginated users with correct metadata on first page", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "SECURITY",
+      expiration: "1h"
+    });
+
+    const user = await seedUser({});
+    await Promise.all(
+      Array.from({ length: 15 }).map(() => seedViolationRecord({ userId: user.id }))
+    );
+
+    const payload: ViolationRecordGetRequest = {
+      count: "10",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/violation-record/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetViolationRecordResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.violation.length).toBe(10);
+    expect(responseBody.hasNextPage).toBe(true);
+    expect(responseBody.hasPreviousPage).toBe(false);
+    expect(responseBody.totalPages).toBe(2);
+  });
+
+  it("should return status 200 and paginated users with correct metadata on first page", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "SECURITY",
+      expiration: "1h"
+    });
+
+    const user = await seedUser({});
+    await Promise.all(
+      Array.from({ length: 15 }).map(() => seedViolationRecord({ userId: user.id }))
+    );
+
+    const payload: ViolationRecordGetRequest = {
+      count: "10",
+      page: "2"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/violation-record/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetViolationRecordResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.violation.length).toBe(5);
+    expect(responseBody.hasNextPage).toBe(false);
+    expect(responseBody.hasPreviousPage).toBe(true);
+    expect(responseBody.totalPages).toBe(2);
+  });
+
+  it("should return status 200 and return violationRecord when filtering with searchKey(userId)", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "SECURITY",
+      expiration: "1h"
+    });
+
+    const user = await seedUser({});
+    const seededViolationRecord = await seedViolationRecord({ userId: user.id });
+
+    const payload: ViolationRecordGetRequest = {
+      searchKey: seededViolationRecord.userId.slice(0, 5),
+      count: "1",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/violation-record/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetViolationRecordResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.violation.length).toBe(1);
+    expect(responseBody.violation[0].userId).toContain(user.id.slice(0, 5));
+  });
+
+  it("should return status 200 and return violationRecord when filtering with searchKey(vehicleId)", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "SECURITY",
+      expiration: "1h"
+    });
+
+    const seededVehicle = await seedVehicle({});
+    const seededViolationRecord = await seedViolationRecord({ vehicleId: seededVehicle.id });
+
+    const payload: ViolationRecordGetRequest = {
+      searchKey: seededViolationRecord.vehicleId.slice(0, 5),
+      count: "1",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/violation-record/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetViolationRecordResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.violation.length).toBe(1);
+    expect(responseBody.violation[0].vehicleId).toContain(seededVehicle.id.slice(0, 5));
+  });
+
+  it("should return status 200 and return violationRecord when filtering with searchKey(reportedById)", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "SECURITY",
+      expiration: "1h"
+    });
+
+    const seededReporter = await seedUser({});
+    const seededViolationRecord = await seedViolationRecord({ reportedById: seededReporter.id });
+
+    const payload: ViolationRecordGetRequest = {
+      searchKey: seededReporter.id.slice(0, 5),
+      count: "1",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/violation-record/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetViolationRecordResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.violation.length).toBe(1);
+    expect(responseBody.violation[0].reportedById).toContain(seededReporter.id.slice(0, 5));
+  });
+
+  it("should return status 200 and violationRecord sorted in ascending order when sort = 1", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "SECURITY",
+      expiration: "1h"
+    });
+    const user = await seedUser({});
+    await Promise.all([
+      seedViolationRecord({ userId: user.id, createdAt: new Date("2024-01-01") }),
+      seedViolationRecord({ userId: user.id, createdAt: new Date("2023-01-01") })
+    ]);
+
+    const payload: ViolationRecordGetRequest = {
+      userId: user.id,
+      count: "10",
+      page: "1",
+      sort: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/violation-record/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetViolationRecordResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.violation).toHaveLength(2);
+    expect(new Date(responseBody.violation[1].date).getTime()).toBeGreaterThan(
+      new Date(responseBody.violation[0].date).getTime()
+    );
+  });
+
+  it("should return status 200 and violationRecord sorted in descending order when sort = 2", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "SECURITY",
+      expiration: "1h"
+    });
+    const user = await seedUser({});
+    await Promise.all([
+      seedViolationRecord({ userId: user.id, createdAt: new Date("2024-01-01") }),
+      seedViolationRecord({ userId: user.id, createdAt: new Date("2023-01-01") })
+    ]);
+
+    const payload: ViolationRecordGetRequest = {
+      userId: user.id,
+      count: "10",
+      page: "1",
+      sort: "2"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/violation-record/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetViolationRecordResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.violation).toHaveLength(2);
+    expect(new Date(responseBody.violation[0].date).getTime()).toBeGreaterThan(
+      new Date(responseBody.violation[1].date).getTime()
+    );
+  });
+
+  it("should return status 200 and default sort to descending when sort does not exist", async () => {
+    const seededAuthenticatedUser = await seedAuthenticatedUser({
+      role: "SECURITY",
+      expiration: "1h"
+    });
+    const user = await seedUser({});
+    await Promise.all([
+      seedViolationRecord({ userId: user.id, createdAt: new Date("2024-01-01") }),
+      seedViolationRecord({ userId: user.id, createdAt: new Date("2023-01-01") })
+    ]);
+
+    const payload: ViolationRecordGetRequest = {
+      userId: user.id,
+      count: "10",
+      page: "1"
+    };
+
+    const response = await requestAPI
+      .get("/api/v1/violation-record/search")
+      .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
+      .query(payload);
+    const responseBody = response.body as GetViolationRecordResponse;
+
+    expect(response.status).toBe(200);
+    expect(responseBody.violation).toHaveLength(2);
+    expect(new Date(responseBody.violation[0].date).getTime()).toBeGreaterThan(
+      new Date(responseBody.violation[1].date).getTime()
+    );
   });
 
   it("should return status 403 status code and message when Authorization provided lacks permission", async () => {

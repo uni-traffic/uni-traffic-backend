@@ -9,15 +9,16 @@ import {
 } from "../domain/models/violationRecord/mapper";
 import type {
   GetTotalViolationGivenByRangeParams,
-  GetViolationRecordByProperty,
+  GetViolationRecord,
   GetViolationsGivenPerDayByRangeParams,
   UnpaidAndPaidViolationTotal,
-  ViolationGivenByRange
+  ViolationGivenByRange,
+  ViolationRecordWhereClauseParams
 } from "../dtos/violationRecordDTO";
 
 export interface IViolationRecordRepository {
   createViolationRecord(violationRecord: IViolationRecord): Promise<IViolationRecord | null>;
-  getViolationRecordByProperty(params: GetViolationRecordByProperty): Promise<IViolationRecord[]>;
+  getViolationRecord(params: GetViolationRecord): Promise<IViolationRecord[]>;
   updateViolationRecord(violationRecord: IViolationRecord): Promise<IViolationRecord | null>;
   getViolationRecordGivenByRange(
     params: GetViolationsGivenPerDayByRangeParams
@@ -28,6 +29,9 @@ export interface IViolationRecordRepository {
     endDate,
     type
   }: GetTotalViolationGivenByRangeParams): Promise<ViolationGivenByRange>;
+  getTotalViolation(params: ViolationRecordWhereClauseParams): Promise<number>;
+  getViolationRecordById(violationRecordId: string): Promise<IViolationRecord | null>;
+  getViolationRecordByIds(violationRecordId: string[]): Promise<IViolationRecord[]>;
 }
 
 export class ViolationRecordRepository implements IViolationRecordRepository {
@@ -58,32 +62,45 @@ export class ViolationRecordRepository implements IViolationRecordRepository {
     }
   }
 
+  public async getViolationRecordById(violationRecordId: string): Promise<IViolationRecord | null> {
+    const violation = await this.getViolationRecordByIds([violationRecordId]);
+
+    if (violation.length === 0) {
+      return null;
+    }
+
+    return violation[0];
+  }
+
+  public async getViolationRecordByIds(violationRecordId: string[]): Promise<IViolationRecord[]> {
+    const violationRaw = await this._database.violationRecord.findMany({
+      where: {
+        id: {
+          in: violationRecordId
+        }
+      },
+      include: {
+        violation: true
+      }
+    });
+
+    return violationRaw.map((violationRecord) =>
+      this._violationRecordMapper.toDomain(violationRecord)
+    );
+  }
+
   /** TODO:
    * Implement a search that matches records where:
    * - The given id matches any record containing the provided value in the corresponding property.
    */
-  public async getViolationRecordByProperty(
-    params: GetViolationRecordByProperty
-  ): Promise<IViolationRecord[]> {
-    const { id, userId, violationId, reportedById, vehicleId, status, page, count } = params;
-    let take: number | undefined = undefined;
-    let skip: number | undefined = undefined;
-    if (page && count) {
-      take = count * page;
-      skip = take * (page - 1);
-    }
-
+  public async getViolationRecord(params: GetViolationRecord): Promise<IViolationRecord[]> {
     try {
       const violationRecordRaw = await this._database.violationRecord.findMany({
-        take: take,
-        skip: skip,
-        where: {
-          ...{ id: id || undefined },
-          ...{ userId: userId || undefined },
-          ...{ violationId: violationId || undefined },
-          ...{ reportedById: reportedById || undefined },
-          ...{ vehicleId: vehicleId || undefined },
-          ...{ status: (status as PrismaViolationRecordStatus) || undefined }
+        skip: params.count * (params.page - 1),
+        take: params.count,
+        where: this._generateWhereClause(params),
+        orderBy: {
+          createdAt: params.sort === 1 ? "asc" : "desc"
         },
         include: {
           reporter: true,
@@ -104,6 +121,34 @@ export class ViolationRecordRepository implements IViolationRecordRepository {
     } catch {
       return [];
     }
+  }
+
+  public async getTotalViolation(params: ViolationRecordWhereClauseParams): Promise<number> {
+    return this._database.violationRecord.count({
+      where: this._generateWhereClause(params)
+    });
+  }
+
+  private _generateWhereClause(
+    params: ViolationRecordWhereClauseParams
+  ): Prisma.ViolationRecordWhereInput {
+    return params.searchKey
+      ? {
+          OR: [
+            { id: { contains: params.searchKey, mode: "insensitive" } },
+            { userId: { contains: params.searchKey, mode: "insensitive" } },
+            { vehicleId: { contains: params.searchKey, mode: "insensitive" } },
+            { reportedById: { contains: params.searchKey, mode: "insensitive" } }
+          ],
+          status: params.status as PrismaViolationRecordStatus
+        }
+      : {
+          id: params.id,
+          userId: params.userId,
+          vehicleId: params.vehicleId,
+          reportedById: params.reportedById,
+          status: params.status as PrismaViolationRecordStatus
+        };
   }
 
   public async updateViolationRecord(
