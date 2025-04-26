@@ -5,15 +5,15 @@ import { type IJSONWebToken, JSONWebToken } from "../../../../../../shared/lib/j
 import { UserRoleService } from "../../../../../user/src/shared/service/userRoleService";
 import type { GetViolationRecordResponse } from "../../../dtos/violationRecordDTO";
 import type { ViolationRecordGetRequest } from "../../../dtos/violationRecordRequestSchema";
-import { GetViolationRecordInformationUseCase } from "../../../useCases/getViolationRecordUseCase";
+import { GetViolationRecordUseCase } from "../../../useCases/getViolationRecordUseCase";
 
 export class GetViolationRecordController extends BaseController {
-  private _getViolationRecordInformationUseCase: GetViolationRecordInformationUseCase;
+  private _getViolationRecordInformationUseCase: GetViolationRecordUseCase;
   private _jsonWebToken: IJSONWebToken;
   private _userRoleService: UserRoleService;
 
   public constructor(
-    getViolationRecordUseCase = new GetViolationRecordInformationUseCase(),
+    getViolationRecordUseCase = new GetViolationRecordUseCase(),
     jsonWebToken = new JSONWebToken(),
     userRoleService = new UserRoleService()
   ) {

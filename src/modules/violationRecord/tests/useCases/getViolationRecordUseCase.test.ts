@@ -4,14 +4,14 @@ import { db } from "../../../../shared/infrastructure/database/prisma";
 import { seedUser } from "../../../user/tests/utils/user/seedUser";
 import { seedVehicle } from "../../../vehicle/tests/utils/vehicle/seedVehicle";
 import { seedViolation } from "../../../violation/tests/utils/violation/seedViolation";
-import { GetViolationRecordInformationUseCase } from "../../src/useCases/getViolationRecordUseCase";
+import { GetViolationRecordUseCase } from "../../src/useCases/getViolationRecordUseCase";
 import { seedViolationRecord } from "../utils/violationRecord/seedViolationRecord";
 
 describe("GetViolationRecordUseCase", () => {
-  let getViolationRecordUseCase: GetViolationRecordInformationUseCase;
+  let getViolationRecordUseCase: GetViolationRecordUseCase;
 
   beforeAll(async () => {
-    getViolationRecordUseCase = new GetViolationRecordInformationUseCase();
+    getViolationRecordUseCase = new GetViolationRecordUseCase();
   });
 
   beforeEach(async () => {

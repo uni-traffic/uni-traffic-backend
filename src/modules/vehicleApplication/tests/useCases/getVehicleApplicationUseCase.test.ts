@@ -3,11 +3,11 @@ import { NotFoundError } from "../../../../shared/core/errors";
 import { db } from "../../../../shared/infrastructure/database/prisma";
 import { FileService } from "../../../file/src/service/fileService";
 import { seedUser } from "../../../user/tests/utils/user/seedUser";
-import { GetVehicleApplicationByPropertyUseCase } from "../../src/useCases/getVehicleApplication";
+import { GetVehicleApplication } from "../../src/useCases/getVehicleApplication";
 import { seedVehicleApplication } from "../utils/seedVehicleApplication";
 
 describe("GetVehicleApplicationByPropertyUseCase", () => {
-  let getVehicleApplicationUseCase: GetVehicleApplicationByPropertyUseCase;
+  let getVehicleApplicationUseCase: GetVehicleApplication;
 
   beforeAll(() => {
     jest.spyOn(FileService.prototype, "getSignedUrl").mockResolvedValue({
@@ -18,7 +18,7 @@ describe("GetVehicleApplicationByPropertyUseCase", () => {
       path: "/mocked/path/file.jpg"
     });
 
-    getVehicleApplicationUseCase = new GetVehicleApplicationByPropertyUseCase();
+    getVehicleApplicationUseCase = new GetVehicleApplication();
   });
 
   afterAll(async () => {

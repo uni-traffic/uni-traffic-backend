@@ -24,7 +24,7 @@ import {
  * 4. Add a hasNext property on returned object for pagination purposes.
  */
 
-export class GetVehicleApplicationByPropertyUseCase {
+export class GetVehicleApplication {
   private _vehicleApplicationRepository: IVehicleApplicationRepository;
   private _vehicleApplicationMapper: IVehicleApplicationMapper;
   private _fileService: IFileService;
