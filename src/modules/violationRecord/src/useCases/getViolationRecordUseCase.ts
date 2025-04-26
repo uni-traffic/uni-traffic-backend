@@ -11,7 +11,7 @@ import {
   ViolationRecordRepository
 } from "../repositories/violationRecordRepository";
 
-export class GetViolationRecordInformationUseCase {
+export class GetViolationRecordUseCase {
   private _violationRecordRepository: IViolationRecordRepository;
   private _violationRecordMapper: IViolationRecordMapper;
 
