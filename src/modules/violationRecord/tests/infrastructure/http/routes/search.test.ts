@@ -61,9 +61,13 @@ describe("GET /api/v1/violation-record/search", () => {
 
   it("should return status 200 and violation records when provided with vehicle id", async () => {
     const seededVehicle = await seedVehicle({});
-    const seededViolationRecord1 = await seedViolationRecord({ vehicleId: seededVehicle.id });
-    const seededViolationRecord2 = await seedViolationRecord({ vehicleId: seededVehicle.id });
-    const seededViolationRecord3 = await seedViolationRecord({ vehicleId: seededVehicle.id });
+    const [seededViolationRecord1, seededViolationRecord2, seededViolationRecord3] =
+      await Promise.all([
+        seedViolationRecord({ vehicleId: seededVehicle.id }),
+        seedViolationRecord({ vehicleId: seededVehicle.id }),
+        seedViolationRecord({ vehicleId: seededVehicle.id })
+      ]);
+
     const seededAuthenticatedUser = await seedAuthenticatedUser({
       role: "SECURITY",
       expiration: "1h"
@@ -92,9 +96,13 @@ describe("GET /api/v1/violation-record/search", () => {
 
   it("should return status 200 and violation records when provided with user id", async () => {
     const seededUser = await seedUser({});
-    const seededViolationRecord1 = await seedViolationRecord({ userId: seededUser.id });
-    const seededViolationRecord2 = await seedViolationRecord({ userId: seededUser.id });
-    const seededViolationRecord3 = await seedViolationRecord({ userId: seededUser.id });
+    const [seededViolationRecord1, seededViolationRecord2, seededViolationRecord3] =
+      await Promise.all([
+        seedViolationRecord({ userId: seededUser.id }),
+        seedViolationRecord({ userId: seededUser.id }),
+        seedViolationRecord({ userId: seededUser.id })
+      ]);
+
     const seededAuthenticatedUser = await seedAuthenticatedUser({
       role: "SECURITY",
       expiration: "1h"
@@ -123,9 +131,13 @@ describe("GET /api/v1/violation-record/search", () => {
 
   it("should return status 200 and violation records when provided with violation id", async () => {
     const seededViolation = await seedViolation({});
-    const seededViolationRecord1 = await seedViolationRecord({ violationId: seededViolation.id });
-    const seededViolationRecord2 = await seedViolationRecord({ violationId: seededViolation.id });
-    const seededViolationRecord3 = await seedViolationRecord({ violationId: seededViolation.id });
+    const [seededViolationRecord1, seededViolationRecord2, seededViolationRecord3] =
+      await Promise.all([
+        seedViolationRecord({ violationId: seededViolation.id }),
+        seedViolationRecord({ violationId: seededViolation.id }),
+        seedViolationRecord({ violationId: seededViolation.id })
+      ]);
+
     const seededAuthenticatedUser = await seedAuthenticatedUser({
       role: "SECURITY",
       expiration: "1h"
@@ -153,10 +165,18 @@ describe("GET /api/v1/violation-record/search", () => {
   });
 
   it("should return status 200 and retrieve record by the given status", async () => {
-    const seededViolationRecord1 = await seedViolationRecord({ status: "PAID" });
-    const seededViolationRecord2 = await seedViolationRecord({ status: "PAID" });
-    const seededViolationRecord3 = await seedViolationRecord({ status: "PAID" });
-    const seededViolationRecord4 = await seedViolationRecord({ status: "UNPAID" });
+    const [
+      seededViolationRecord1,
+      seededViolationRecord2,
+      seededViolationRecord3,
+      seededViolationRecord4
+    ] = await Promise.all([
+      seedViolationRecord({ status: "PAID" }),
+      seedViolationRecord({ status: "PAID" }),
+      seedViolationRecord({ status: "PAID" }),
+      seedViolationRecord({ status: "UNPAID" })
+    ]);
+
     const seededAuthenticatedUser = await seedAuthenticatedUser({
       role: "SECURITY",
       expiration: "1h"
@@ -187,30 +207,38 @@ describe("GET /api/v1/violation-record/search", () => {
   it("should return status 200 and violation records by the given parameters", async () => {
     const seededUser = await seedUser({});
     const seededViolation = await seedViolation({});
-    const seededViolationRecord1 = await seedViolationRecord({
-      status: "UNPAID",
-      userId: seededUser.id,
-      violationId: seededViolation.id
-    });
-    const seededViolationRecord2 = await seedViolationRecord({
-      status: "UNPAID",
-      userId: seededUser.id,
-      violationId: seededViolation.id
-    });
-    const seededViolationRecord3 = await seedViolationRecord({
-      status: "UNPAID",
-      userId: seededUser.id,
-      violationId: seededViolation.id
-    });
-    const seededViolationRecord4 = await seedViolationRecord({
-      status: "PAID",
-      userId: seededUser.id,
-      violationId: seededViolation.id
-    });
-    const seededAuthenticatedUser = await seedAuthenticatedUser({
-      role: "SECURITY",
-      expiration: "1h"
-    });
+    const [
+      seededViolationRecord1,
+      seededViolationRecord2,
+      seededViolationRecord3,
+      seededViolationRecord4,
+      seededAuthenticatedUser
+    ] = await Promise.all([
+      seedViolationRecord({
+        status: "UNPAID",
+        userId: seededUser.id,
+        violationId: seededViolation.id
+      }),
+      seedViolationRecord({
+        status: "UNPAID",
+        userId: seededUser.id,
+        violationId: seededViolation.id
+      }),
+      seedViolationRecord({
+        status: "UNPAID",
+        userId: seededUser.id,
+        violationId: seededViolation.id
+      }),
+      seedViolationRecord({
+        status: "PAID",
+        userId: seededUser.id,
+        violationId: seededViolation.id
+      }),
+      seedAuthenticatedUser({
+        role: "SECURITY",
+        expiration: "1h"
+      })
+    ]);
 
     const payload: ViolationRecordGetRequest = {
       status: "UNPAID",
@@ -239,30 +267,38 @@ describe("GET /api/v1/violation-record/search", () => {
   it("should return status 200 and violation records by the given parameters", async () => {
     const seededVehicle = await seedVehicle({});
     const seededViolation = await seedViolation({});
-    const seededViolationRecord1 = await seedViolationRecord({
-      status: "UNPAID",
-      vehicleId: seededVehicle.id,
-      violationId: seededViolation.id
-    });
-    const seededViolationRecord2 = await seedViolationRecord({
-      status: "UNPAID",
-      vehicleId: seededVehicle.id,
-      violationId: seededViolation.id
-    });
-    const seededViolationRecord3 = await seedViolationRecord({
-      status: "UNPAID",
-      vehicleId: seededVehicle.id,
-      violationId: seededViolation.id
-    });
-    const seededViolationRecord4 = await seedViolationRecord({
-      status: "PAID",
-      vehicleId: seededVehicle.id,
-      violationId: seededViolation.id
-    });
-    const seededAuthenticatedUser = await seedAuthenticatedUser({
-      role: "SECURITY",
-      expiration: "1h"
-    });
+    const [
+      seededViolationRecord1,
+      seededViolationRecord2,
+      seededViolationRecord3,
+      seededViolationRecord4,
+      seededAuthenticatedUser
+    ] = await Promise.all([
+      seedViolationRecord({
+        status: "UNPAID",
+        vehicleId: seededVehicle.id,
+        violationId: seededViolation.id
+      }),
+      seedViolationRecord({
+        status: "UNPAID",
+        vehicleId: seededVehicle.id,
+        violationId: seededViolation.id
+      }),
+      seedViolationRecord({
+        status: "UNPAID",
+        vehicleId: seededVehicle.id,
+        violationId: seededViolation.id
+      }),
+      seedViolationRecord({
+        status: "PAID",
+        vehicleId: seededVehicle.id,
+        violationId: seededViolation.id
+      }),
+      seedAuthenticatedUser({
+        role: "SECURITY",
+        expiration: "1h"
+      })
+    ]);
 
     const payload: ViolationRecordGetRequest = {
       status: "UNPAID",
@@ -292,12 +328,10 @@ describe("GET /api/v1/violation-record/search", () => {
     const seededAuthenticatedUser = await seedAuthenticatedUser({
       role: faker.helpers.arrayElement(["STUDENT", "STAFF"])
     });
-    const seededViolationRecord1 = await seedViolationRecord({
-      userId: seededAuthenticatedUser.id
-    });
-    const seededViolationRecord2 = await seedViolationRecord({
-      userId: seededAuthenticatedUser.id
-    });
+    const [seededViolationRecord1, seededViolationRecord2] = await Promise.all([
+      seedViolationRecord({ userId: seededAuthenticatedUser.id }),
+      seedViolationRecord({ userId: seededAuthenticatedUser.id })
+    ]);
 
     const response = await requestAPI
       .get("/api/v1/violation-record/search")
@@ -324,54 +358,38 @@ describe("GET /api/v1/violation-record/search", () => {
 
     const user = await seedUser({});
     await Promise.all(
-      Array.from({ length: 15 }).map(() => seedViolationRecord({ userId: user.id }))
+      Array.from({ length: 6 }).map(() => seedViolationRecord({ userId: user.id }))
     );
 
-    const payload: ViolationRecordGetRequest = {
-      count: "10",
-      page: "1"
-    };
-
-    const response = await requestAPI
+    const pageOne = await requestAPI
       .get("/api/v1/violation-record/search")
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
-      .query(payload);
-    const responseBody = response.body as GetViolationRecordResponse;
+      .query({
+        count: "3",
+        page: "1"
+      });
+    const pageOneResponseBody = pageOne.body as GetViolationRecordResponse;
 
-    expect(response.status).toBe(200);
-    expect(responseBody.violation.length).toBe(10);
-    expect(responseBody.hasNextPage).toBe(true);
-    expect(responseBody.hasPreviousPage).toBe(false);
-    expect(responseBody.totalPages).toBe(2);
-  });
+    expect(pageOne.status).toBe(200);
+    expect(pageOneResponseBody.violation.length).toBe(3);
+    expect(pageOneResponseBody.hasNextPage).toBe(true);
+    expect(pageOneResponseBody.hasPreviousPage).toBe(false);
+    expect(pageOneResponseBody.totalPages).toBe(2);
 
-  it("should return status 200 and paginated users with correct metadata on first page", async () => {
-    const seededAuthenticatedUser = await seedAuthenticatedUser({
-      role: "SECURITY",
-      expiration: "1h"
-    });
-
-    const user = await seedUser({});
-    await Promise.all(
-      Array.from({ length: 15 }).map(() => seedViolationRecord({ userId: user.id }))
-    );
-
-    const payload: ViolationRecordGetRequest = {
-      count: "10",
-      page: "2"
-    };
-
-    const response = await requestAPI
+    const pageTwo = await requestAPI
       .get("/api/v1/violation-record/search")
       .set("Authorization", `Bearer ${seededAuthenticatedUser.accessToken}`)
-      .query(payload);
-    const responseBody = response.body as GetViolationRecordResponse;
+      .query({
+        count: "3",
+        page: "2"
+      });
+    const pageTwoResponseBody = pageTwo.body as GetViolationRecordResponse;
 
-    expect(response.status).toBe(200);
-    expect(responseBody.violation.length).toBe(5);
-    expect(responseBody.hasNextPage).toBe(false);
-    expect(responseBody.hasPreviousPage).toBe(true);
-    expect(responseBody.totalPages).toBe(2);
+    expect(pageTwo.status).toBe(200);
+    expect(pageTwoResponseBody.violation.length).toBe(3);
+    expect(pageTwoResponseBody.hasNextPage).toBe(false);
+    expect(pageTwoResponseBody.hasPreviousPage).toBe(true);
+    expect(pageTwoResponseBody.totalPages).toBe(2);
   });
 
   it("should return status 200 and return violationRecord when filtering with searchKey(userId)", async () => {
@@ -433,7 +451,7 @@ describe("GET /api/v1/violation-record/search", () => {
     });
 
     const seededReporter = await seedUser({});
-    const seededViolationRecord = await seedViolationRecord({ reportedById: seededReporter.id });
+    await seedViolationRecord({ reportedById: seededReporter.id });
 
     const payload: ViolationRecordGetRequest = {
       searchKey: seededReporter.id.slice(0, 5),

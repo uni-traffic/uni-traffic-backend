@@ -1,19 +1,21 @@
 import { Router } from "express";
 import { validateRequest } from "zod-express-middleware";
 import {
+  GetViolationRequestSchema,
   UpdateViolationRequestSchema,
   ViolationCreateRequestSchema,
   ViolationDeleteRequestSchema
 } from "../../../dtos/violationRequestSchema";
 import { CreateViolationController } from "../controllers/createViolationController";
 import { DeleteViolationController } from "../controllers/deleteViolationController";
-import { GetViolationsController } from "../controllers/getViolationController";
+import { GetNonDeletedViolationController } from "../controllers/getNonDeletedViolationController";
+import { GetViolationController } from "../controllers/getViolationController";
 import { UpdateViolationController } from "../controllers/updateViolationController";
 
 const violationRouter = Router();
 
 violationRouter.get("/", (req, res) => {
-  new GetViolationsController().execute(req, res);
+  new GetNonDeletedViolationController().execute(req, res);
 });
 
 violationRouter.post(
@@ -37,6 +39,14 @@ violationRouter.post(
   validateRequest({ body: ViolationDeleteRequestSchema }),
   (req, res) => {
     new DeleteViolationController().execute(req, res);
+  }
+);
+
+violationRouter.get(
+  "/search",
+  validateRequest({ query: GetViolationRequestSchema }),
+  (req, res) => {
+    new GetViolationController().execute(req, res);
   }
 );
 

@@ -66,3 +66,8 @@ export const UpdateUserRoleSchema = z.object({
   })
 });
 export type UpdateRoleRequest = z.infer<typeof UpdateUserRoleSchema>;
+
+export const GetTotalUserCountRequestSchema = z.object({
+  type: z.enum(["ALL", "MANAGEMENT", "APP_USERS"]).optional()
+});
+export type GetTotalUserCountRequest = z.infer<typeof GetTotalUserCountRequestSchema>;
