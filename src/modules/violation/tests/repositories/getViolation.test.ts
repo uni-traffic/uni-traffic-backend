@@ -1,13 +1,13 @@
 import { faker } from "@faker-js/faker";
 import { db } from "../../../../shared/infrastructure/database/prisma";
-import { GetViolationUseCase } from "../../src/useCases/getViolationUseCase";
+import { ViolationRepository } from "../../src/repositories/violationRepository";
 import { seedViolation } from "../utils/violation/seedViolation";
 
-describe("GetViolationsUseCase", () => {
-  let getViolationsUseCase: GetViolationUseCase;
+describe("ViolationRepository.getViolation", () => {
+  let repository: ViolationRepository;
 
   beforeAll(() => {
-    getViolationsUseCase = new GetViolationUseCase();
+    repository = new ViolationRepository();
   });
 
   beforeEach(async () => {
@@ -21,17 +21,14 @@ describe("GetViolationsUseCase", () => {
   it("should return violation with the matched id", async () => {
     const [seededViolation1] = await Promise.all([seedViolation({}), seedViolation({})]);
 
-    const result = await getViolationsUseCase.execute({
+    const result = await repository.getViolation({
       id: seededViolation1.id,
-      count: "5",
-      page: "1"
+      count: 5,
+      page: 1
     });
 
-    expect(result.violation.length).toBe(1);
-    expect(result.hasNextPage).toBe(false);
-    expect(result.hasPreviousPage).toBe(false);
-    expect(result.totalPages).toBe(1);
-    expect(result.violation[0].id).toBe(seededViolation1.id);
+    expect(result.length).toBe(1);
+    expect(result[0].id).toBe(seededViolation1.id);
   });
 
   it("should return violation that match the category", async () => {
@@ -46,17 +43,14 @@ describe("GetViolationsUseCase", () => {
       seedViolation({})
     ]);
 
-    const result = await getViolationsUseCase.execute({
+    const result = await repository.getViolation({
       category: category,
-      count: "5",
-      page: "1"
+      count: 5,
+      page: 1
     });
 
-    expect(result.violation.length).toBe(2);
-    expect(result.hasNextPage).toBe(false);
-    expect(result.hasPreviousPage).toBe(false);
-    expect(result.totalPages).toBe(1);
-    expect(result.violation).toEqual(
+    expect(result.length).toBe(2);
+    expect(result).toEqual(
       expect.arrayContaining([expect.objectContaining({ category: category })])
     );
   });
@@ -72,17 +66,14 @@ describe("GetViolationsUseCase", () => {
       seedViolation({})
     ]);
 
-    const result = await getViolationsUseCase.execute({
+    const result = await repository.getViolation({
       searchKey: "parking",
-      count: "5",
-      page: "1"
+      count: 5,
+      page: 1
     });
 
-    expect(result.violation.length).toBe(2);
-    expect(result.hasNextPage).toBe(false);
-    expect(result.hasPreviousPage).toBe(false);
-    expect(result.totalPages).toBe(1);
-    expect(result.violation).toEqual(
+    expect(result.length).toBe(2);
+    expect(result).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ id: seededViolation1.id }),
         expect.objectContaining({ id: seededViolation2.id })
@@ -101,17 +92,14 @@ describe("GetViolationsUseCase", () => {
       seedViolation({})
     ]);
 
-    const result = await getViolationsUseCase.execute({
+    const result = await repository.getViolation({
       searchKey: seededViolation1.id.substring(0, Math.ceil(seededViolation1.id.length / 2)),
-      count: "5",
-      page: "1"
+      count: 5,
+      page: 1
     });
 
-    expect(result.violation.length).toBe(1);
-    expect(result.hasNextPage).toBe(false);
-    expect(result.hasPreviousPage).toBe(false);
-    expect(result.totalPages).toBe(1);
-    expect(result.violation).toEqual(
+    expect(result.length).toBe(1);
+    expect(result).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: seededViolation1.id })])
     );
   });

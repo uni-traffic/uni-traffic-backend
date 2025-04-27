@@ -36,8 +36,10 @@ export class CreateViolationController extends BaseController {
     const accessToken = this._getAccessToken(req);
     const { id: tokenUserId } = this._jsonWebToken.verify<{ id: string }>(accessToken);
 
-    const hasRequiredRole = await this._userRoleService.hasGivenRoles(tokenUserId, ["SECURITY"]);
-
+    const hasRequiredRole = await this._userRoleService.hasGivenRoles(tokenUserId, [
+      "ADMIN",
+      "SUPERADMIN"
+    ]);
     if (!hasRequiredRole) {
       throw new ForbiddenError("You do not have required permission to perform this action.");
     }

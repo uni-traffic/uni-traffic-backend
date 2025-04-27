@@ -116,20 +116,24 @@ export const seedVehicleAndOwnerData = async () => {
       }
     ]);
 
+    const violationList = await db.violation.findMany();
+    if (violationList.length < 2) {
+      throw new Error("No violations found.");
+    }
+
     const seededReporter = await seedUser({ role: "SECURITY" });
     await seedViolationRecord({
-      violationId: "1",
+      violationId: violationList[0].id,
       reportedById: seededReporter.id,
-      remarks: "Driving without VVP or VPS",
+      remarks: violationList[0].violationName,
       vehicleId: seededVehicles[0].id,
       userId: seededUsers[0].id,
       status: "UNPAID"
     });
     await seedViolationRecord({
-      violationId: "3",
+      violationId: violationList[1].id,
       reportedById: seededReporter.id,
-      remarks:
-        "Parking in inappropriate locations, such as driveways, walkways, pathways, and main roadways",
+      remarks: violationList[1].violationName,
       vehicleId: seededVehicles[0].id,
       userId: seededUsers[0].id,
       status: "PAID"

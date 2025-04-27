@@ -9,7 +9,7 @@ import {
 } from "../../../src/repositories/violationRecordRepository";
 import { seedViolationRecord } from "../../utils/violationRecord/seedViolationRecord";
 
-describe("ViolationRecordRepository.getViolationRecordByProperty", () => {
+describe("ViolationRecordRepository.getViolationRecord", () => {
   let violationRecordRepository: IViolationRecordRepository;
 
   beforeAll(async () => {
@@ -39,9 +39,12 @@ describe("ViolationRecordRepository.getViolationRecordByProperty", () => {
 
   it("should return record that match the given vehicle id", async () => {
     const seededVehicle = await seedVehicle({});
-    const seededViolationRecord1 = await seedViolationRecord({ vehicleId: seededVehicle.id });
-    const seededViolationRecord2 = await seedViolationRecord({ vehicleId: seededVehicle.id });
-    const seededViolationRecord3 = await seedViolationRecord({ vehicleId: seededVehicle.id });
+    const [seededViolationRecord1, seededViolationRecord2, seededViolationRecord3] =
+      await Promise.all([
+        seedViolationRecord({ vehicleId: seededVehicle.id }),
+        seedViolationRecord({ vehicleId: seededVehicle.id }),
+        seedViolationRecord({ vehicleId: seededVehicle.id })
+      ]);
 
     const result = await violationRecordRepository.getViolationRecord({
       vehicleId: seededVehicle.id,
@@ -59,9 +62,12 @@ describe("ViolationRecordRepository.getViolationRecordByProperty", () => {
 
   it("should return record that match the given user id", async () => {
     const seededUser = await seedUser({});
-    const seededViolationRecord1 = await seedViolationRecord({ userId: seededUser.id });
-    const seededViolationRecord2 = await seedViolationRecord({ userId: seededUser.id });
-    const seededViolationRecord3 = await seedViolationRecord({ userId: seededUser.id });
+    const [seededViolationRecord1, seededViolationRecord2, seededViolationRecord3] =
+      await Promise.all([
+        seedViolationRecord({ userId: seededUser.id }),
+        seedViolationRecord({ userId: seededUser.id }),
+        seedViolationRecord({ userId: seededUser.id })
+      ]);
 
     const result = await violationRecordRepository.getViolationRecord({
       userId: seededUser.id,
@@ -78,9 +84,12 @@ describe("ViolationRecordRepository.getViolationRecordByProperty", () => {
 
   it("should return record that match the given violation id", async () => {
     const seededViolation = await seedViolation({});
-    const seededViolationRecord1 = await seedViolationRecord({ violationId: seededViolation.id });
-    const seededViolationRecord2 = await seedViolationRecord({ violationId: seededViolation.id });
-    const seededViolationRecord3 = await seedViolationRecord({ violationId: seededViolation.id });
+    const [seededViolationRecord1, seededViolationRecord2, seededViolationRecord3] =
+      await Promise.all([
+        seedViolationRecord({ violationId: seededViolation.id }),
+        seedViolationRecord({ violationId: seededViolation.id }),
+        seedViolationRecord({ violationId: seededViolation.id })
+      ]);
 
     const result = await violationRecordRepository.getViolationRecord({
       violationId: seededViolation.id,
@@ -96,10 +105,17 @@ describe("ViolationRecordRepository.getViolationRecordByProperty", () => {
   });
 
   it("should only retrieve record by the given status", async () => {
-    const seededViolationRecord1 = await seedViolationRecord({ status: "PAID" });
-    const seededViolationRecord2 = await seedViolationRecord({ status: "PAID" });
-    const seededViolationRecord3 = await seedViolationRecord({ status: "PAID" });
-    const seededViolationRecord4 = await seedViolationRecord({ status: "UNPAID" });
+    const [
+      seededViolationRecord1,
+      seededViolationRecord2,
+      seededViolationRecord3,
+      seededViolationRecord4
+    ] = await Promise.all([
+      seedViolationRecord({ status: "PAID" }),
+      seedViolationRecord({ status: "PAID" }),
+      seedViolationRecord({ status: "PAID" }),
+      seedViolationRecord({ status: "UNPAID" })
+    ]);
 
     const result = await violationRecordRepository.getViolationRecord({
       status: "PAID",
@@ -118,26 +134,33 @@ describe("ViolationRecordRepository.getViolationRecordByProperty", () => {
   it("should return record that match the given parameters", async () => {
     const seededUser = await seedUser({});
     const seededViolation = await seedViolation({});
-    const seededViolationRecord1 = await seedViolationRecord({
-      status: "UNPAID",
-      userId: seededUser.id,
-      violationId: seededViolation.id
-    });
-    const seededViolationRecord2 = await seedViolationRecord({
-      status: "UNPAID",
-      userId: seededUser.id,
-      violationId: seededViolation.id
-    });
-    const seededViolationRecord3 = await seedViolationRecord({
-      status: "UNPAID",
-      userId: seededUser.id,
-      violationId: seededViolation.id
-    });
-    const seededViolationRecord4 = await seedViolationRecord({
-      status: "PAID",
-      userId: seededUser.id,
-      violationId: seededViolation.id
-    });
+    const [
+      seededViolationRecord1,
+      seededViolationRecord2,
+      seededViolationRecord3,
+      seededViolationRecord4
+    ] = await Promise.all([
+      seedViolationRecord({
+        status: "UNPAID",
+        userId: seededUser.id,
+        violationId: seededViolation.id
+      }),
+      seedViolationRecord({
+        status: "UNPAID",
+        userId: seededUser.id,
+        violationId: seededViolation.id
+      }),
+      seedViolationRecord({
+        status: "UNPAID",
+        userId: seededUser.id,
+        violationId: seededViolation.id
+      }),
+      seedViolationRecord({
+        status: "PAID",
+        userId: seededUser.id,
+        violationId: seededViolation.id
+      })
+    ]);
 
     const result = await violationRecordRepository.getViolationRecord({
       userId: seededUser.id,
@@ -158,26 +181,33 @@ describe("ViolationRecordRepository.getViolationRecordByProperty", () => {
   it("should return record that match the given parameters", async () => {
     const seededVehicle = await seedVehicle({});
     const seededViolation = await seedViolation({});
-    const seededViolationRecord1 = await seedViolationRecord({
-      status: "UNPAID",
-      vehicleId: seededVehicle.id,
-      violationId: seededViolation.id
-    });
-    const seededViolationRecord2 = await seedViolationRecord({
-      status: "UNPAID",
-      vehicleId: seededVehicle.id,
-      violationId: seededViolation.id
-    });
-    const seededViolationRecord3 = await seedViolationRecord({
-      status: "UNPAID",
-      vehicleId: seededVehicle.id,
-      violationId: seededViolation.id
-    });
-    const seededViolationRecord4 = await seedViolationRecord({
-      status: "PAID",
-      vehicleId: seededVehicle.id,
-      violationId: seededViolation.id
-    });
+    const [
+      seededViolationRecord1,
+      seededViolationRecord2,
+      seededViolationRecord3,
+      seededViolationRecord4
+    ] = await Promise.all([
+      seedViolationRecord({
+        status: "UNPAID",
+        vehicleId: seededVehicle.id,
+        violationId: seededViolation.id
+      }),
+      seedViolationRecord({
+        status: "UNPAID",
+        vehicleId: seededVehicle.id,
+        violationId: seededViolation.id
+      }),
+      seedViolationRecord({
+        status: "UNPAID",
+        vehicleId: seededVehicle.id,
+        violationId: seededViolation.id
+      }),
+      seedViolationRecord({
+        status: "PAID",
+        vehicleId: seededVehicle.id,
+        violationId: seededViolation.id
+      })
+    ]);
 
     const result = await violationRecordRepository.getViolationRecord({
       vehicleId: seededVehicle.id,

@@ -43,9 +43,12 @@ describe("GetViolationRecordUseCase", () => {
 
   it("should return record that match the given vehicle id", async () => {
     const seededVehicle = await seedVehicle({});
-    const seededViolationRecord1 = await seedViolationRecord({ vehicleId: seededVehicle.id });
-    const seededViolationRecord2 = await seedViolationRecord({ vehicleId: seededVehicle.id });
-    const seededViolationRecord3 = await seedViolationRecord({ vehicleId: seededVehicle.id });
+    const [seededViolationRecord1, seededViolationRecord2, seededViolationRecord3] =
+      await Promise.all([
+        seedViolationRecord({ vehicleId: seededVehicle.id }),
+        seedViolationRecord({ vehicleId: seededVehicle.id }),
+        seedViolationRecord({ vehicleId: seededVehicle.id })
+      ]);
 
     const result = await getViolationRecordUseCase.execute({
       vehicleId: seededVehicle.id,
@@ -62,9 +65,12 @@ describe("GetViolationRecordUseCase", () => {
 
   it("should return record that match the given user id", async () => {
     const seededUser = await seedUser({});
-    const seededViolationRecord1 = await seedViolationRecord({ userId: seededUser.id });
-    const seededViolationRecord2 = await seedViolationRecord({ userId: seededUser.id });
-    const seededViolationRecord3 = await seedViolationRecord({ userId: seededUser.id });
+    const [seededViolationRecord1, seededViolationRecord2, seededViolationRecord3] =
+      await Promise.all([
+        seedViolationRecord({ userId: seededUser.id }),
+        seedViolationRecord({ userId: seededUser.id }),
+        seedViolationRecord({ userId: seededUser.id })
+      ]);
 
     const result = await getViolationRecordUseCase.execute({
       userId: seededUser.id,
@@ -81,9 +87,12 @@ describe("GetViolationRecordUseCase", () => {
 
   it("should return record that match the given violation id", async () => {
     const seededViolation = await seedViolation({});
-    const seededViolationRecord1 = await seedViolationRecord({ violationId: seededViolation.id });
-    const seededViolationRecord2 = await seedViolationRecord({ violationId: seededViolation.id });
-    const seededViolationRecord3 = await seedViolationRecord({ violationId: seededViolation.id });
+    const [seededViolationRecord1, seededViolationRecord2, seededViolationRecord3] =
+      await Promise.all([
+        seedViolationRecord({ violationId: seededViolation.id }),
+        seedViolationRecord({ violationId: seededViolation.id }),
+        seedViolationRecord({ violationId: seededViolation.id })
+      ]);
 
     const result = await getViolationRecordUseCase.execute({
       violationId: seededViolation.id,
@@ -121,26 +130,33 @@ describe("GetViolationRecordUseCase", () => {
   it("should return record that match the given parameters", async () => {
     const seededUser = await seedUser({});
     const seededViolation = await seedViolation({});
-    const seededViolationRecord1 = await seedViolationRecord({
-      status: "UNPAID",
-      userId: seededUser.id,
-      violationId: seededViolation.id
-    });
-    const seededViolationRecord2 = await seedViolationRecord({
-      status: "UNPAID",
-      userId: seededUser.id,
-      violationId: seededViolation.id
-    });
-    const seededViolationRecord3 = await seedViolationRecord({
-      status: "UNPAID",
-      userId: seededUser.id,
-      violationId: seededViolation.id
-    });
-    const seededViolationRecord4 = await seedViolationRecord({
-      status: "PAID",
-      userId: seededUser.id,
-      violationId: seededViolation.id
-    });
+    const [
+      seededViolationRecord1,
+      seededViolationRecord2,
+      seededViolationRecord3,
+      seededViolationRecord4
+    ] = await Promise.all([
+      seedViolationRecord({
+        status: "UNPAID",
+        userId: seededUser.id,
+        violationId: seededViolation.id
+      }),
+      seedViolationRecord({
+        status: "UNPAID",
+        userId: seededUser.id,
+        violationId: seededViolation.id
+      }),
+      seedViolationRecord({
+        status: "UNPAID",
+        userId: seededUser.id,
+        violationId: seededViolation.id
+      }),
+      seedViolationRecord({
+        status: "PAID",
+        userId: seededUser.id,
+        violationId: seededViolation.id
+      })
+    ]);
 
     const result = await getViolationRecordUseCase.execute({
       userId: seededUser.id,
@@ -161,26 +177,33 @@ describe("GetViolationRecordUseCase", () => {
   it("should return record that match the given parameters", async () => {
     const seededVehicle = await seedVehicle({});
     const seededViolation = await seedViolation({});
-    const seededViolationRecord1 = await seedViolationRecord({
-      status: "UNPAID",
-      vehicleId: seededVehicle.id,
-      violationId: seededViolation.id
-    });
-    const seededViolationRecord2 = await seedViolationRecord({
-      status: "UNPAID",
-      vehicleId: seededVehicle.id,
-      violationId: seededViolation.id
-    });
-    const seededViolationRecord3 = await seedViolationRecord({
-      status: "UNPAID",
-      vehicleId: seededVehicle.id,
-      violationId: seededViolation.id
-    });
-    const seededViolationRecord4 = await seedViolationRecord({
-      status: "PAID",
-      vehicleId: seededVehicle.id,
-      violationId: seededViolation.id
-    });
+    const [
+      seededViolationRecord1,
+      seededViolationRecord2,
+      seededViolationRecord3,
+      seededViolationRecord4
+    ] = await Promise.all([
+      seedViolationRecord({
+        status: "UNPAID",
+        vehicleId: seededVehicle.id,
+        violationId: seededViolation.id
+      }),
+      seedViolationRecord({
+        status: "UNPAID",
+        vehicleId: seededVehicle.id,
+        violationId: seededViolation.id
+      }),
+      seedViolationRecord({
+        status: "UNPAID",
+        vehicleId: seededVehicle.id,
+        violationId: seededViolation.id
+      }),
+      seedViolationRecord({
+        status: "PAID",
+        vehicleId: seededVehicle.id,
+        violationId: seededViolation.id
+      })
+    ]);
 
     const result = await getViolationRecordUseCase.execute({
       vehicleId: seededVehicle.id,
@@ -201,37 +224,30 @@ describe("GetViolationRecordUseCase", () => {
   it("should return paginated audit logs with correct metadata on first page", async () => {
     const user = await seedUser({});
     await Promise.all(
-      Array.from({ length: 15 }).map(() => seedViolationRecord({ userId: user.id }))
+      Array.from({ length: 6 }).map(() => seedViolationRecord({ userId: user.id }))
     );
 
-    const result = await getViolationRecordUseCase.execute({
+    const page1 = await getViolationRecordUseCase.execute({
       userId: user.id,
-      count: "10",
+      count: "3",
       page: "1"
     });
 
-    expect(result.violation).toHaveLength(10);
-    expect(result.hasNextPage).toBe(true);
-    expect(result.totalPages).toBe(2);
-    expect(result.hasPreviousPage).toBe(false);
-  });
+    expect(page1.violation).toHaveLength(3);
+    expect(page1.hasNextPage).toBe(true);
+    expect(page1.totalPages).toBe(2);
+    expect(page1.hasPreviousPage).toBe(false);
 
-  it("should return second page with correct hasPreviousPage and hasNextPage flags", async () => {
-    const user = await seedUser({});
-    await Promise.all(
-      Array.from({ length: 15 }).map(() => seedViolationRecord({ userId: user.id }))
-    );
-
-    const result = await getViolationRecordUseCase.execute({
+    const pageTwo = await getViolationRecordUseCase.execute({
       userId: user.id,
-      count: "10",
+      count: "3",
       page: "2"
     });
 
-    expect(result.violation).toHaveLength(5);
-    expect(result.hasNextPage).toBe(false);
-    expect(result.totalPages).toBe(2);
-    expect(result.hasPreviousPage).toBe(true);
+    expect(pageTwo.violation).toHaveLength(3);
+    expect(pageTwo.hasNextPage).toBe(false);
+    expect(pageTwo.totalPages).toBe(2);
+    expect(pageTwo.hasPreviousPage).toBe(true);
   });
 
   it("should filter violation using strict matching for status, userId, vehicleId, and reportedById", async () => {

@@ -3,22 +3,21 @@ import { ForbiddenError } from "../../../../../../shared/core/errors";
 import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
 import { type IJSONWebToken, JSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
 import { UserRoleService } from "../../../../../user/src/shared/service/userRoleService";
-import type { GetViolationResponse } from "../../../dtos/violationDTO";
-import type { GetViolationRequest } from "../../../dtos/violationRequestSchema";
-import { GetViolationUseCase } from "../../../useCases/getViolationUseCase";
+import type { IViolationDTO } from "../../../dtos/violationDTO";
+import { GetNonDeletedViolationUseCase } from "../../../useCases/getNonDeletedViolationUseCase";
 
-export class GetViolationController extends BaseController {
-  private _getViolationsUseCase: GetViolationUseCase;
+export class GetNonDeletedViolationController extends BaseController {
+  private _getNonDeletedViolationUseCase: GetNonDeletedViolationUseCase;
   private _jsonWebToken: IJSONWebToken;
   private _userRoleService: UserRoleService;
 
   public constructor(
-    getViolationsUseCase = new GetViolationUseCase(),
+    getViolationsUseCase = new GetNonDeletedViolationUseCase(),
     jsonWebToken = new JSONWebToken(),
     userRoleService = new UserRoleService()
   ) {
     super();
-    this._getViolationsUseCase = getViolationsUseCase;
+    this._getNonDeletedViolationUseCase = getViolationsUseCase;
     this._jsonWebToken = jsonWebToken;
     this._userRoleService = userRoleService;
   }
@@ -26,22 +25,18 @@ export class GetViolationController extends BaseController {
   protected async executeImpl(req: Request, res: Response) {
     await this._verifyPermission(req);
 
-    const requestParams = req.query as GetViolationRequest;
-    const result = await this._getViolationsUseCase.execute(requestParams);
+    const violationsDTO = await this._getNonDeletedViolationUseCase.execute();
 
-    this.ok<GetViolationResponse>(res, result);
+    this.ok<IViolationDTO[]>(res, violationsDTO);
   }
 
   private async _verifyPermission(req: Request): Promise<string> {
     const accessToken = this._getAccessToken(req);
     const { id: userId } = this._jsonWebToken.verify<{ id: string }>(accessToken);
 
-    const hasStaffRoles = await this._userRoleService.hasGivenRoles(userId, [
-      "SUPERADMIN",
-      "ADMIN",
-      "SECURITY"
-    ]);
-    if (!hasStaffRoles) {
+    const hasAdminRole = await this._userRoleService.hasAdminRole(userId);
+    const hasSecurityRole = await this._userRoleService.hasSecurityRole(userId);
+    if (!hasAdminRole && !hasSecurityRole) {
       throw new ForbiddenError("You do not have the required permissions to perform this action.");
     }
 

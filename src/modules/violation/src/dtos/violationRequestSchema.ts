@@ -21,3 +21,31 @@ export const ViolationDeleteRequestSchema = z.object({
   id: z.string().min(1, "Violation ID is required")
 });
 export type ViolationDeleteRequest = z.infer<typeof ViolationDeleteRequestSchema>;
+
+export const GetViolationRequestSchema = z.object({
+  id: z.string().optional(),
+  category: z.string().optional(),
+  violationName: z.string().optional(),
+  isDeleted: z.enum(["true", "false"]).optional(),
+  sort: z.enum(["1", "2"]).optional(),
+  searchKey: z.string().optional(),
+  count: z.string().refine(
+    (val) => {
+      const num = Number(val);
+      return !Number.isNaN(num) && Number.isInteger(num) && num > 0;
+    },
+    {
+      message: '"count" must be a valid positive whole number'
+    }
+  ),
+  page: z.string().refine(
+    (val) => {
+      const num = Number(val);
+      return !Number.isNaN(num) && Number.isInteger(num) && num > 0;
+    },
+    {
+      message: '"page" must be a valid positive whole number'
+    }
+  )
+});
+export type GetViolationRequest = z.infer<typeof GetViolationRequestSchema>;
