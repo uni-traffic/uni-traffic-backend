@@ -4,6 +4,7 @@ import request from "supertest";
 import type TestAgent from "supertest/lib/agent";
 import app from "../../../../../../../api";
 import { db } from "../../../../../../shared/infrastructure/database/prisma";
+import { FileService } from "../../../../../file/src/service/fileService";
 import { seedAuthenticatedUser } from "../../../../../user/tests/utils/user/seedAuthenticatedUser";
 import type { VehicleApplicationCreateRequest } from "../../../../src/dtos/vehicleApplicationRequestSchema";
 
@@ -16,6 +17,10 @@ describe("POST api/v1/vehicle-application/create", () => {
 
   beforeAll(() => {
     requestAPI = request.agent(app);
+
+    jest.spyOn(FileService.prototype, "moveFile").mockResolvedValue({
+      path: "/mocked/path/file.jpg"
+    });
   });
 
   afterAll(async () => {

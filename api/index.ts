@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import { v1Router } from "../src/shared/infrastructure/http/api/versions/v1";
+import { EnvValidator } from "../src/shared/lib/envValidator";
 
 dotenv.config();
 
@@ -18,6 +19,16 @@ app.use(
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use("/api/v1", v1Router);
 app.get("/", (req, res) => {
+  const keyValidator = new EnvValidator();
+  const missingKeys = keyValidator.validate();
+  if (missingKeys.length > 0) {
+    res.status(500).json({
+      message: "System configuration is incomplete. Required setup values are missing.",
+      code: missingKeys
+    });
+    return;
+  }
+
   res.status(200).json({ message: "Uni-traffic Backend API" });
 });
 

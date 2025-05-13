@@ -25,6 +25,7 @@ export interface IVehicleApplicationRepository {
     statusFilter?: string
   ): Promise<VehicleApplicationCountByStatus>;
   getTotalVehicleApplication(params: VehicleApplicationWhereClauseParams): Promise<number>;
+  countUserPendingVehicleApplication(userId: string): Promise<{ count: number }>;
 }
 
 export class VehicleApplicationRepository implements IVehicleApplicationRepository {
@@ -35,12 +36,6 @@ export class VehicleApplicationRepository implements IVehicleApplicationReposito
     this._database = database;
     this._vehicleApplicationMapper = vehicleApplicationMapper;
   }
-
-  /** TODO:
-   * Implement a search that matches records where:
-   *   - If the given license plate is '145', return all records where the license plate contains '145' (e.g., '145TAW', 'XYZ145').
-   *   - If the given id is '123', return all records where the id contains '123' (e.g., '123ABC', 'XYZ123').
-   */
 
   public async getTotalVehicleApplication(
     params: VehicleApplicationWhereClauseParams
@@ -191,5 +186,18 @@ export class VehicleApplicationRepository implements IVehicleApplicationReposito
     } catch {
       return [];
     }
+  }
+
+  public async countUserPendingVehicleApplication(userId: string): Promise<{ count: number }> {
+    const countOfPendingApplication = await this._database.vehicleApplication.count({
+      where: {
+        status: {
+          notIn: ["APPROVED", "REJECTED"]
+        },
+        applicantId: userId
+      }
+    });
+
+    return { count: countOfPendingApplication };
   }
 }

@@ -10,11 +10,22 @@ import { vehicleApplicationPaymentRouter } from "../../../../../modules/vehicleA
 import { violationRouter } from "../../../../../modules/violation/src/infrastracture/http/routes/violationRouter";
 import { violationRecordRouter } from "../../../../../modules/violationRecord/src/infrastructure/http/routes/violationRecordRouter";
 import { paymentRouter } from "../../../../../modules/violationRecordPayment/src/infrastracture/http/routes/paymentRouter";
+import { EnvValidator } from "../../../../lib/envValidator";
 
 const v1Router = Router();
 
 v1Router.get("/", (req: Request, res: Response) => {
-  res.status(200).json({ message: "Uni-traffic Backend API v1" });
+  const keyValidator = new EnvValidator();
+  const missingKeys = keyValidator.validate();
+  if (missingKeys.length > 0) {
+    res.status(500).json({
+      message: "System configuration is incomplete. Required setup values are missing.",
+      code: missingKeys
+    });
+    return;
+  }
+
+  res.status(200).json({ message: "Uni-traffic API v1" });
 });
 v1Router.use("/auth", authRouter);
 v1Router.use("/vehicle", vehicleRouter);

@@ -71,7 +71,7 @@ export abstract class BaseController {
     return res.status(code).json({ message });
   }
 
-  protected _getAccessToken(req: Request) {
+  protected _getAccessToken(req: Request): string {
     const accessTokenFromCookie = req.signedCookies.accessToken;
     const accessTokenFromHeaders = req.headers["authorization"];
     if (
