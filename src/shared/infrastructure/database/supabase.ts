@@ -11,6 +11,11 @@ dotenv.config();
 export interface IStorageService {
   uploadFile(bucket: string, path: string, fileBuffer: Buffer, mimeType: string): Promise<string>;
   getSignedUrl(bucket: string, path: string): Promise<string>;
+  moveFile(
+    bucketName: string,
+    { currentPath, newPath }: { currentPath: string; newPath: string }
+  ): Promise<string>;
+  deleteFolder(bucket: string, folder: string): Promise<string>;
 }
 
 export class SupabaseStorageService implements IStorageService {
@@ -55,5 +60,28 @@ export class SupabaseStorageService implements IStorageService {
     }
 
     return data.signedUrl;
+  }
+
+  public async moveFile(
+    bucketName: string,
+    { currentPath, newPath }: { currentPath: string; newPath: string }
+  ): Promise<string> {
+    const { error } = await this.supabase.storage.from(bucketName).move(currentPath, newPath);
+    if (error) {
+      throw new UnexpectedError("Error occurred in managing uploaded fies");
+    }
+
+    return newPath;
+  }
+
+  public async deleteFolder(bucket: string, folder: string): Promise<string> {
+    const { data: list } = await this.supabase.storage.from(bucket).list(`${folder}/`);
+    const filesToRemove = list ? list.map((x) => `${folder}/${x.name}`) : [];
+
+    this.supabase.storage.from(bucket).remove(filesToRemove);
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    return `Cleanup Performed: ${new Date().toISOString()}`;
   }
 }

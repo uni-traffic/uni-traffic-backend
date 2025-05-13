@@ -9,6 +9,7 @@ import type { VehicleRequest } from "../dtos/vehicleRequestSchema";
 export interface IVehicleRepository {
   getVehicleById(vehicleId: string): Promise<IVehicle | null>;
   getVehiclesByIds(vehicleIds: string[]): Promise<IVehicle[]>;
+  getVehicleByLicensePlate(licensePlate: string): Promise<IVehicle | null>;
   getVehicleByProperty(params: VehicleRequest): Promise<IVehicle | null>;
   createVehicle(vehicle: IVehicle): Promise<IVehicle | null>;
   createVehicles(vehicles: IVehicle[]): Promise<IVehicle[]>;
@@ -118,6 +119,20 @@ export class VehicleRepository implements IVehicleRepository {
     return this._database.vehicle.count({
       where: this._generateWhereClause(params)
     });
+  }
+
+  public async getVehicleByLicensePlate(licensePlate: string): Promise<IVehicle | null> {
+    try {
+      const vehicleRaw = await this._database.vehicle.findUniqueOrThrow({
+        where: {
+          licensePlate: licensePlate
+        }
+      });
+
+      return this._vehicleMapper.toDomain(vehicleRaw);
+    } catch {
+      return null;
+    }
   }
 
   private _generateWhereClause(params: VehicleWhereClauseParams): Prisma.VehicleWhereInput {

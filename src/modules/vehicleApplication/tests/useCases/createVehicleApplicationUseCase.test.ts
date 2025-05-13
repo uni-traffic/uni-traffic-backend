@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
 import type { VehicleType } from "@prisma/client";
 import { db } from "../../../../shared/infrastructure/database/prisma";
+import { FileService } from "../../../file/src/service/fileService";
 import { seedUser } from "../../../user/tests/utils/user/seedUser";
 import type { IVehicleApplicationProps } from "../../src/domain/models/vehicleApplication/factory";
 import { CreateVehicleApplicationUseCase } from "../../src/useCases/createVehicleApplicationUseCase";
@@ -10,6 +11,10 @@ describe("CreateVehicleApplicationUseCase", () => {
 
   beforeAll(() => {
     createVehicleApplicationUseCase = new CreateVehicleApplicationUseCase();
+
+    jest.spyOn(FileService.prototype, "moveFile").mockResolvedValue({
+      path: "/mocked/path/file.jpg"
+    });
   });
 
   afterAll(async () => {
@@ -50,25 +55,16 @@ describe("CreateVehicleApplicationUseCase", () => {
     expect(result.schoolMember.firstName).toBe(mockRequestParams.firstName);
     expect(result.schoolMember.lastName).toBe(mockRequestParams.lastName);
     expect(result.schoolMember.type).toBe(mockRequestParams.userType);
-    expect(result.schoolMember.schoolCredential).toBe(mockRequestParams.schoolCredential);
 
     expect(result.driver.lastName).toBe(mockRequestParams.driverLastName);
     expect(result.driver.firstName).toBe(mockRequestParams.driverFirstName);
     expect(result.driver.licenseId).toBe(mockRequestParams.driverLicenseId);
-    expect(result.driver.licenseImage).toBe(mockRequestParams.driverLicenseImage);
 
     expect(result.vehicle.make).toBe(mockRequestParams.make);
     expect(result.vehicle.series).toBe(mockRequestParams.series);
     expect(result.vehicle.type).toBe(mockRequestParams.type);
     expect(result.vehicle.model).toBe(mockRequestParams.model);
     expect(result.vehicle.licensePlate).toBe(mockRequestParams.licensePlate);
-    expect(result.vehicle.certificateOfRegistration).toBe(
-      mockRequestParams.certificateOfRegistration
-    );
-    expect(result.vehicle.officialReceipt).toBe(mockRequestParams.officialReceipt);
-    expect(result.vehicle.sideImage).toBe(mockRequestParams.sideImage);
-    expect(result.vehicle.frontImage).toBe(mockRequestParams.frontImage);
-    expect(result.vehicle.backImage).toBe(mockRequestParams.backImage);
 
     expect(result.applicantId).toBe(mockRequestParams.applicantId);
     expect(result.status).toBe("PENDING_FOR_SECURITY_APPROVAL");

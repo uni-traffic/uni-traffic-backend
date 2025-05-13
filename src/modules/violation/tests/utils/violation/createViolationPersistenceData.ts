@@ -6,12 +6,14 @@ export const createViolationPersistenceData = ({
   id = uuid(),
   category = faker.helpers.arrayElement(["A", "B", "C"]),
   violationName = faker.lorem.words(3),
-  penalty = faker.helpers.arrayElement([250, 500, 1000])
+  penalty = faker.helpers.arrayElement([250, 500, 1000]),
+  isDeleted = false
 }: Partial<IViolationRawObject>): IViolationRawObject => {
   return {
     id,
     category,
     violationName,
+    isDeleted: isDeleted,
     penalty
   };
 };

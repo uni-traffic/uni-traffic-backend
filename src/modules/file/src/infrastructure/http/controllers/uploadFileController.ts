@@ -2,16 +2,13 @@ import type { Request, Response } from "express";
 import { BadRequest, UnauthorizedError } from "../../../../../../shared/core/errors";
 import { BaseController } from "../../../../../../shared/infrastructure/http/core/baseController";
 import { JSONWebToken } from "../../../../../../shared/lib/jsonWebToken";
-import { UploadFileUseCase } from "../../../useCases/uploadFileUseCase";
+import { FileService, type IFileService } from "../../../service/fileService";
 
 export class UploadFileController extends BaseController {
   private _jsonWebToken: JSONWebToken;
-  private _useCase: UploadFileUseCase;
+  private _useCase: IFileService;
 
-  public constructor(
-    jsonWebToken = new JSONWebToken(),
-    useCase: UploadFileUseCase = new UploadFileUseCase()
-  ) {
+  public constructor(jsonWebToken = new JSONWebToken(), useCase: IFileService = new FileService()) {
     super();
     this._jsonWebToken = jsonWebToken;
     this._useCase = useCase;
@@ -21,7 +18,7 @@ export class UploadFileController extends BaseController {
     await this._verifyPermission(req);
 
     const file = this._getFileFromRequest(req);
-    const result = await this._useCase.execute({
+    const result = await this._useCase.uploadFile({
       buffer: file.buffer,
       mimeType: file.mimetype
     });
