@@ -12,6 +12,7 @@ export interface IViolationRecordDTO {
   status: string;
   remarks: string;
   date: string;
+  penalty: number;
   user: IUserDTO | null;
   reporter: IUserDTO | null;
   violation: IViolationDTO | null;

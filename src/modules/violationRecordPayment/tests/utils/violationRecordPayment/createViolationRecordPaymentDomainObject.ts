@@ -10,8 +10,6 @@ export const createViolationRecordPaymentDomainObject = ({
   id = uuid(),
   cashierId = uuid(),
   violationRecordId = uuid(),
-  amountPaid = faker.number.int({ min: 250, max: 1000 }),
-  remarks = faker.lorem.sentence({ min: 1, max: 15 }),
   timePaid = faker.date.past(),
   cashier = createUserPersistenceData({}),
   violationRecord = createViolationRecordPersistenceData({})
@@ -20,8 +18,10 @@ export const createViolationRecordPaymentDomainObject = ({
     id,
     cashierId,
     violationRecordId,
-    amountPaid,
-    remarks,
+    cashTendered: violationRecord.penalty,
+    amountDue: violationRecord.penalty,
+    change: 0,
+    totalAmountPaid: violationRecord.penalty,
     timePaid,
     cashier,
     violationRecord

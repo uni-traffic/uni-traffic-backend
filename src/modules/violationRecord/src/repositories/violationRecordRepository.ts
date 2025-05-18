@@ -89,10 +89,6 @@ export class ViolationRecordRepository implements IViolationRecordRepository {
     );
   }
 
-  /** TODO:
-   * Implement a search that matches records where:
-   * - The given id matches any record containing the provided value in the corresponding property.
-   */
   public async getViolationRecord(params: GetViolationRecord): Promise<IViolationRecord[]> {
     try {
       const violationRecordRaw = await this._database.violationRecord.findMany({
@@ -155,16 +151,10 @@ export class ViolationRecordRepository implements IViolationRecordRepository {
     violationRecord: IViolationRecord
   ): Promise<IViolationRecord | null> {
     try {
+      const violationPersistence = this._violationRecordMapper.toPersistence(violationRecord);
       const updatedViolationRecord = await this._database.violationRecord.update({
         where: { id: violationRecord.id },
-        data: {
-          status: violationRecord.status.value as PrismaViolationRecordStatus,
-          remarks: violationRecord.remarks.value,
-          userId: violationRecord.userId,
-          reportedById: violationRecord.reportedById,
-          violationId: violationRecord.violationId,
-          vehicleId: violationRecord.vehicleId
-        }
+        data: violationPersistence
       });
 
       return this._violationRecordMapper.toDomain(updatedViolationRecord);
@@ -203,11 +193,9 @@ export class ViolationRecordRepository implements IViolationRecordRepository {
         { unpaidTotal: number | null; paidTotal: number | null }[]
       >(Prisma.sql`
       SELECT 
-        SUM(CASE WHEN vr."status" = 'PAID' THEN vrp."amountPaid" ELSE 0 END) AS "paidTotal",
-        SUM(CASE WHEN vr."status" = 'UNPAID' THEN v."penalty" ELSE 0 END) AS "unpaidTotal"
+        SUM(CASE WHEN vr."status" = 'PAID' THEN vr."penalty" ELSE 0 END) AS "paidTotal",
+        SUM(CASE WHEN vr."status" = 'UNPAID' THEN vr."penalty" ELSE 0 END) AS "unpaidTotal"
       FROM "ViolationRecord" vr
-      LEFT JOIN "Violation" v ON vr."violationId" = v.id
-      LEFT JOIN "ViolationRecordPayment" vrp ON vrp."violationRecordId" = vr.id;
     `);
 
       return {

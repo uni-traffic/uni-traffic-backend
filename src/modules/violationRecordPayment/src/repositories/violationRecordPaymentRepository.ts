@@ -37,7 +37,7 @@ export class ViolationRecordPaymentRepository implements IViolationRecordPayment
       const newPayment = await this._database.violationRecordPayment.create({
         data: {
           ...paymentPersistence,
-          amountPaid: Number(paymentPersistence.amountPaid)
+          totalAmountPaid: Number(paymentPersistence.totalAmountPaid)
         },
         include: {
           cashier: true
@@ -63,7 +63,7 @@ export class ViolationRecordPaymentRepository implements IViolationRecordPayment
         },
         select: {
           timePaid: true,
-          amountPaid: true
+          totalAmountPaid: true
         },
         orderBy: {
           timePaid: "asc"

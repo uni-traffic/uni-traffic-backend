@@ -29,7 +29,7 @@ export class AddViolationRecordPaymentController extends BaseController {
     const paymentDTO = await this._addViolationRecordPaymentUseCase.execute(
       {
         violationRecordId: requestBody.violationRecordId,
-        amountPaid: requestBody.amountPaid
+        cashTendered: requestBody.cashTendered
       },
       cashierId
     );

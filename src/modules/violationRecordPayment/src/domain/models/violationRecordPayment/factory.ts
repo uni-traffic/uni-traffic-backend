@@ -13,19 +13,19 @@ import {
   type IViolationRecordPayment,
   ViolationRecordPayment
 } from "./classes/violationRecordPayment";
-import { ViolationRecordPaymentRemarks } from "./classes/violationRecordPaymentRemarks";
-
-/** TODO:
- * 1. Merge in single Payment object (Optional).
- * 2. Add cashTendered and change.
- */
+import { ViolationRecordPaymentAmountDue } from "./classes/violationRecordPaymentAmountDue";
+import { ViolationRecordPaymentCashTendered } from "./classes/violationRecordPaymentCashTendered";
 
 export interface IViolationRecordPaymentFactoryProps {
   id?: string;
   cashierId: string;
   violationRecordId: string;
-  amountPaid: number;
-  remarks?: string | null;
+
+  amountDue: number;
+  cashTendered: number;
+  change?: number;
+  totalAmountPaid?: number;
+
   timePaid?: Date;
   cashier?: User;
   violationRecord?: ViolationRecord;
@@ -35,13 +35,6 @@ export class ViolationRecordPaymentFactory {
   public static create(
     props: IViolationRecordPaymentFactoryProps
   ): Result<IViolationRecordPayment> {
-    const violationRecordPaymentRemarksOrError = ViolationRecordPaymentRemarks.create(
-      defaultTo("", props.remarks ?? "")
-    );
-    if (violationRecordPaymentRemarksOrError.isFailure) {
-      return Result.fail(violationRecordPaymentRemarksOrError.getErrorMessage()!);
-    }
-
     const cashierOrUndefined = props.cashier
       ? ViolationRecordPaymentFactory._getUserDTOFromPersistence(props.cashier)
       : undefined;
@@ -50,11 +43,31 @@ export class ViolationRecordPaymentFactory {
       ? ViolationRecordPaymentFactory._getViolationRecordDTOFromPersistence(props.violationRecord)
       : undefined;
 
+    const amountDueOrError = ViolationRecordPaymentAmountDue.create(props.amountDue);
+    if (amountDueOrError.isFailure) {
+      return Result.fail(amountDueOrError.getErrorMessage()!);
+    }
+
+    const cashTenderedOrError = ViolationRecordPaymentCashTendered.create(
+      props.cashTendered,
+      amountDueOrError.getValue()
+    );
+    if (cashTenderedOrError.isFailure) {
+      return Result.fail(cashTenderedOrError.getErrorMessage()!);
+    }
+
+    const change = props.change !== undefined ? props.change : props.cashTendered - props.amountDue;
+    const totalAmountPaid =
+      props.totalAmountPaid !== undefined ? props.totalAmountPaid : props.cashTendered - change;
+
     return Result.ok<IViolationRecordPayment>(
       ViolationRecordPayment.create({
         ...props,
         id: defaultTo(uniTrafficId(), props.id),
-        remarks: violationRecordPaymentRemarksOrError.getValue(),
+        amountDue: amountDueOrError.getValue(),
+        cashTendered: cashTenderedOrError.getValue(),
+        change: change,
+        totalAmountPaid: totalAmountPaid,
         timePaid: defaultTo(new Date(), props.timePaid),
         cashier: cashierOrUndefined,
         violationRecord: violationRecordOrUndefined

@@ -1,13 +1,18 @@
 import type { IUserDTO } from "../../../../../../user/src/dtos/userDTO";
 import type { IViolationRecordDTO } from "../../../../../../violationRecord/src/dtos/violationRecordDTO";
-import type { ViolationRecordPaymentRemarks } from "./violationRecordPaymentRemarks";
+import type { ViolationRecordPaymentAmountDue } from "./violationRecordPaymentAmountDue";
+import type { ViolationRecordPaymentCashTendered } from "./violationRecordPaymentCashTendered";
 
 export interface IViolationRecordPayment {
   id: string;
   cashierId: string;
   violationRecordId: string;
-  amountPaid: number;
-  remarks?: ViolationRecordPaymentRemarks;
+
+  amountDue: ViolationRecordPaymentAmountDue;
+  cashTendered: ViolationRecordPaymentCashTendered;
+  change: number;
+  totalAmountPaid: number;
+
   timePaid: Date;
   cashier: IUserDTO | undefined;
   violationRecord: IViolationRecordDTO | undefined;
@@ -17,8 +22,12 @@ export class ViolationRecordPayment implements IViolationRecordPayment {
   private readonly _id: string;
   private readonly _cashierId: string;
   private readonly _violationRecordId: string;
-  private readonly _amountPaid: number;
-  private readonly _remarks?: ViolationRecordPaymentRemarks;
+
+  private readonly _amountDue: ViolationRecordPaymentAmountDue;
+  private readonly _cashTendered: ViolationRecordPaymentCashTendered;
+  private readonly _change: number;
+  private readonly _totalAmountPaid: number;
+
   private readonly _timePaid: Date;
   private readonly _cashier: IUserDTO | undefined;
   private readonly _violationRecord: IViolationRecordDTO | undefined;
@@ -27,8 +36,10 @@ export class ViolationRecordPayment implements IViolationRecordPayment {
     id,
     cashierId,
     violationRecordId,
-    amountPaid,
-    remarks,
+    amountDue,
+    cashTendered,
+    change,
+    totalAmountPaid,
     timePaid,
     cashier,
     violationRecord
@@ -36,8 +47,12 @@ export class ViolationRecordPayment implements IViolationRecordPayment {
     this._id = id;
     this._cashierId = cashierId;
     this._violationRecordId = violationRecordId;
-    this._amountPaid = amountPaid;
-    this._remarks = remarks;
+
+    this._amountDue = amountDue;
+    this._cashTendered = cashTendered;
+    this._change = change;
+    this._totalAmountPaid = totalAmountPaid;
+
     this._timePaid = timePaid;
     this._cashier = cashier;
     this._violationRecord = violationRecord;
@@ -55,12 +70,20 @@ export class ViolationRecordPayment implements IViolationRecordPayment {
     return this._violationRecordId;
   }
 
-  get amountPaid(): number {
-    return this._amountPaid;
+  get amountDue(): ViolationRecordPaymentAmountDue {
+    return this._amountDue;
   }
 
-  get remarks(): ViolationRecordPaymentRemarks | undefined {
-    return this._remarks;
+  get cashTendered(): ViolationRecordPaymentCashTendered {
+    return this._cashTendered;
+  }
+
+  get change(): number {
+    return this._change;
+  }
+
+  get totalAmountPaid(): number {
+    return this._totalAmountPaid;
   }
 
   get timePaid(): Date {

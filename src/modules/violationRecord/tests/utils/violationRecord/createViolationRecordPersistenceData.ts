@@ -29,6 +29,7 @@ export const createViolationRecordPersistenceData = ({
     createdAt,
     updatedAt,
     remarks,
+    penalty: violation.penalty,
     status,
     user,
     reporter,

@@ -41,23 +41,23 @@ describe("GET /api/v1/payment/violation/total", () => {
     const seededViolationRecordPayment = await Promise.all([
       seedViolationRecordPayment({
         timePaid: new Date("2023-01-03T12:00:00Z"),
-        amountPaid: 100
+        totalAmountPaid: 100
       }),
       seedViolationRecordPayment({
         timePaid: new Date("2023-01-03T10:00:00Z"),
-        amountPaid: 200
+        totalAmountPaid: 200
       }),
       seedViolationRecordPayment({
         timePaid: new Date("2023-01-03T13:00:00Z"),
-        amountPaid: 300
+        totalAmountPaid: 300
       }),
       seedViolationRecordPayment({
         timePaid: new Date("2023-01-06T14:00:00Z"),
-        amountPaid: 150
+        totalAmountPaid: 150
       }),
       seedViolationRecordPayment({
         timePaid: new Date("2024-01-05T14:00:00Z"),
-        amountPaid: 150
+        totalAmountPaid: 150
       })
     ]);
 
@@ -74,8 +74,8 @@ describe("GET /api/v1/payment/violation/total", () => {
     expect(responseBody.length).toBe(2);
     expect(responseBody[0].timePaid).toContain(combinedDate[0]);
     expect(responseBody[1].timePaid).toContain(combinedDate[1]);
-    expect(responseBody[0].amountPaid).toBe(600);
-    expect(responseBody[1].amountPaid).toBe(150);
+    expect(responseBody[0].totalAmountPaid).toBe(600);
+    expect(responseBody[1].totalAmountPaid).toBe(150);
   });
 
   it("should return 400 if request body is invalid", async () => {

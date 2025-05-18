@@ -4,7 +4,6 @@ import type TestAgent from "supertest/lib/agent";
 import app from "../../../../../../../../api";
 import { db } from "../../../../../../../shared/infrastructure/database/prisma";
 import { seedAuthenticatedUser } from "../../../../../../user/tests/utils/user/seedAuthenticatedUser";
-import { seedViolation } from "../../../../../../violation/tests/utils/violation/seedViolation";
 import { seedViolationRecord } from "../../../../utils/violationRecord/seedViolationRecord";
 
 describe("GET /api/v1/violation-record/stats/totals", () => {
@@ -29,19 +28,16 @@ describe("GET /api/v1/violation-record/stats/totals", () => {
       expiration: "1h"
     });
 
-    const seededUnpaidViolation = await seedViolation({
-      penalty: faker.helpers.arrayElement<number>([250, 500, 1000])
-    });
-    const seededPaidViolation = await seedViolation({
-      penalty: faker.helpers.arrayElement<number>([250, 500, 1000])
-    });
+    const unpaidPenalty = faker.helpers.arrayElement<number>([250, 500, 1000]);
+    const paidPenalty = faker.helpers.arrayElement<number>([250, 500, 1000]);
+
     await Promise.all([
-      seedViolationRecord({ status: "PAID", violationId: seededPaidViolation.id }),
-      seedViolationRecord({ status: "UNPAID", violationId: seededUnpaidViolation.id }),
-      seedViolationRecord({ status: "PAID", violationId: seededPaidViolation.id }),
-      seedViolationRecord({ status: "UNPAID", violationId: seededUnpaidViolation.id }),
-      seedViolationRecord({ status: "PAID", violationId: seededPaidViolation.id }),
-      seedViolationRecord({ status: "UNPAID", violationId: seededUnpaidViolation.id })
+      seedViolationRecord({ status: "PAID", penalty: paidPenalty }),
+      seedViolationRecord({ status: "UNPAID", penalty: unpaidPenalty }),
+      seedViolationRecord({ status: "PAID", penalty: paidPenalty }),
+      seedViolationRecord({ status: "UNPAID", penalty: unpaidPenalty }),
+      seedViolationRecord({ status: "PAID", penalty: paidPenalty }),
+      seedViolationRecord({ status: "UNPAID", penalty: unpaidPenalty })
     ]);
 
     const response = await requestAPI
@@ -50,8 +46,8 @@ describe("GET /api/v1/violation-record/stats/totals", () => {
     const responseBody = response.body;
 
     expect(response.status).toBe(200);
-    expect(responseBody.paidTotal).toBe(seededPaidViolation.penalty * 3);
-    expect(responseBody.unpaidTotal).toBe(seededUnpaidViolation.penalty * 3);
+    expect(responseBody.paidTotal).toBe(paidPenalty * 3);
+    expect(responseBody.unpaidTotal).toBe(unpaidPenalty * 3);
   });
 
   it("should return status 403 status code and message when Authorization provided lacks permission", async () => {

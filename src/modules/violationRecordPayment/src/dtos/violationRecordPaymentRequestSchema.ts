@@ -2,9 +2,8 @@ import { z } from "zod";
 
 export const ViolationRecordPaymentRequestSchema = z.object({
   violationRecordId: z.string().min(1, { message: "Violation Record ID is required." }),
-  amountPaid: z.number().min(1, { message: "Amount paid must be greater than 0." })
+  cashTendered: z.number().min(1, { message: "Cash tendered must be greater than 0" })
 });
-
 export type ViolationRecordPaymentRequest = z.infer<typeof ViolationRecordPaymentRequestSchema>;
 
 export const ViolationRecordPaymentGetRequestSchema = z

@@ -30,7 +30,7 @@ describe("AddViolationRecordPaymentUseCase", () => {
 
     const mockRequestData = {
       violationRecordId: seededViolationRecord.id,
-      amountPaid: seededViolationRecord.violation.penalty
+      cashTendered: seededViolationRecord.violation.penalty
     };
 
     const result = await addViolationRecordPaymentUseCase.execute(
@@ -56,7 +56,7 @@ describe("AddViolationRecordPaymentUseCase", () => {
 
     const mockRequestData = {
       violationRecordId: invalidViolationRecordId,
-      amountPaid: 100
+      cashTendered: 100
     };
 
     await expect(
@@ -80,7 +80,7 @@ describe("AddViolationRecordPaymentUseCase", () => {
 
     const mockRequestData = {
       violationRecordId: seededViolationRecord.id,
-      amountPaid: 400
+      cashTendered: 400
     };
 
     await expect(

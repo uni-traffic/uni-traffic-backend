@@ -1,15 +1,13 @@
 import { faker } from "@faker-js/faker";
 import { v4 as uuid } from "uuid";
-import type { IViolationRecordPaymentRawObject } from "../../../src/domain/models/violationRecordPayment/constant";
 import { createUserPersistenceData } from "../../../../user/tests/utils/user/createUserPersistenceData";
 import { createViolationRecordPersistenceData } from "../../../../violationRecord/tests/utils/violationRecord/createViolationRecordPersistenceData";
+import type { IViolationRecordPaymentRawObject } from "../../../src/domain/models/violationRecordPayment/constant";
 
 export const createViolationRecordPaymentPersistenceData = ({
   id = uuid(),
   cashierId = uuid(),
   violationRecordId = uuid(),
-  amountPaid = faker.number.int({ min: 250, max: 1000 }),
-  remarks = faker.lorem.sentence({ min: 5, max: 15 }),
   timePaid = faker.date.past(),
   cashier = createUserPersistenceData({}),
   violationRecord = createViolationRecordPersistenceData({})
@@ -18,8 +16,10 @@ export const createViolationRecordPaymentPersistenceData = ({
     id,
     cashierId,
     violationRecordId,
-    amountPaid,
-    remarks,
+    cashTendered: violationRecord.penalty,
+    amountDue: violationRecord.penalty,
+    change: 0,
+    totalAmountPaid: violationRecord.penalty,
     timePaid,
     cashier,
     violationRecord

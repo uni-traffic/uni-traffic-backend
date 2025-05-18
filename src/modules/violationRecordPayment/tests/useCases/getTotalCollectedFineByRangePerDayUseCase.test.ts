@@ -26,23 +26,23 @@ describe("GetTotalCollectedFineByRangePerDayUseCase", () => {
     const seededViolationRecordPayment = await Promise.all([
       seedViolationRecordPayment({
         timePaid: new Date("2023-01-03T12:00:00Z"),
-        amountPaid: 100
+        totalAmountPaid: 100
       }),
       seedViolationRecordPayment({
         timePaid: new Date("2023-01-03T10:00:00Z"),
-        amountPaid: 200
+        totalAmountPaid: 200
       }),
       seedViolationRecordPayment({
         timePaid: new Date("2023-01-03T13:00:00Z"),
-        amountPaid: 300
+        totalAmountPaid: 300
       }),
       seedViolationRecordPayment({
         timePaid: new Date("2023-01-06T14:00:00Z"),
-        amountPaid: 150
+        totalAmountPaid: 150
       }),
       seedViolationRecordPayment({
         timePaid: new Date("2024-01-05T14:00:00Z"),
-        amountPaid: 150
+        totalAmountPaid: 150
       })
     ]);
 
@@ -56,8 +56,8 @@ describe("GetTotalCollectedFineByRangePerDayUseCase", () => {
     expect(result.length).toBe(2);
     expect(result[0].timePaid.toISOString()).toContain(combinedDate[0]);
     expect(result[1].timePaid.toISOString()).toContain(combinedDate[1]);
-    expect(result[0].amountPaid).toBe(600);
-    expect(result[1].amountPaid).toBe(150);
+    expect(result[0].totalAmountPaid).toBe(600);
+    expect(result[1].totalAmountPaid).toBe(150);
   });
 
   it("should return an empty array if no records are found within the specified date range", async () => {

@@ -1,17 +1,20 @@
-import type { User, Vehicle, Violation, ViolationRecordPayment } from "@prisma/client";
 import { defaultTo } from "rambda";
 import { UnexpectedError } from "../../../../../../shared/core/errors";
 import { Result } from "../../../../../../shared/core/result";
 import { uniTrafficId } from "../../../../../../shared/lib/uniTrafficId";
+import type { IUserRawObject } from "../../../../../user/src/domain/models/user/constant";
 import { UserFactory } from "../../../../../user/src/domain/models/user/factory";
 import { UserMapper } from "../../../../../user/src/domain/models/user/mapper";
 import type { IUserDTO } from "../../../../../user/src/dtos/userDTO";
+import type { IVehicleRawObject } from "../../../../../vehicle/src/domain/models/vehicle/constant";
 import { VehicleFactory } from "../../../../../vehicle/src/domain/models/vehicle/factory";
 import { VehicleMapper } from "../../../../../vehicle/src/domain/models/vehicle/mapper";
 import type { IVehicleDTO } from "../../../../../vehicle/src/dtos/vehicleDTO";
+import type { IViolationRawObject } from "../../../../../violation/src/domain/models/violation/constant";
 import { ViolationFactory } from "../../../../../violation/src/domain/models/violation/factory";
 import { ViolationMapper } from "../../../../../violation/src/domain/models/violation/mapper";
 import type { IViolationDTO } from "../../../../../violation/src/dtos/violationDTO";
+import type { IViolationRecordPaymentRawObject } from "../../../../../violationRecordPayment/src/domain/models/violationRecordPayment/constant";
 import { ViolationRecordPaymentFactory } from "../../../../../violationRecordPayment/src/domain/models/violationRecordPayment/factory";
 import { ViolationRecordPaymentMapper } from "../../../../../violationRecordPayment/src/domain/models/violationRecordPayment/mapper";
 import type { IViolationRecordPaymentDTO } from "../../../../../violationRecordPayment/src/dtos/violationRecordPaymentDTO";
@@ -26,13 +29,14 @@ export interface IViolationRecordFactoryProps {
   violationId: string;
   vehicleId: string;
   remarks: string;
+  penalty: number;
   createdAt?: Date;
   status?: string;
-  user?: User;
-  reporter?: User;
-  violation?: Violation;
-  vehicle?: Vehicle;
-  violationRecordPayment?: ViolationRecordPayment | null;
+  user?: IUserRawObject;
+  reporter?: IUserRawObject;
+  violation?: IViolationRawObject;
+  vehicle?: IVehicleRawObject;
+  violationRecordPayment?: IViolationRecordPaymentRawObject | null;
 }
 
 export class ViolationRecordFactory {
@@ -85,7 +89,7 @@ export class ViolationRecordFactory {
     );
   }
 
-  private static _getUserDTOFromPersistence(user: User): IUserDTO {
+  private static _getUserDTOFromPersistence(user: IUserRawObject): IUserDTO {
     const userDomainOrError = UserFactory.create(user);
     if (userDomainOrError.isFailure) {
       throw new UnexpectedError("Error converting User from persistence to Domain");
@@ -94,7 +98,7 @@ export class ViolationRecordFactory {
     return new UserMapper().toDTO(userDomainOrError.getValue());
   }
 
-  private static _getVehicleDTOFromPersistence(vehicle: Vehicle): IVehicleDTO {
+  private static _getVehicleDTOFromPersistence(vehicle: IVehicleRawObject): IVehicleDTO {
     const vehicleDomainOrError = VehicleFactory.create(vehicle);
     if (vehicleDomainOrError.isFailure) {
       throw new UnexpectedError("Error converting Vehicle from persistence to Domain");
@@ -103,7 +107,7 @@ export class ViolationRecordFactory {
     return new VehicleMapper().toDTO(vehicleDomainOrError.getValue());
   }
 
-  private static _getViolationDTOFromPersistence(violation: Violation): IViolationDTO {
+  private static _getViolationDTOFromPersistence(violation: IViolationRawObject): IViolationDTO {
     const vehicleDomainOrError = ViolationFactory.create(violation);
     if (vehicleDomainOrError.isFailure) {
       throw new UnexpectedError("Error converting Violation from persistence to Domain");
@@ -113,7 +117,7 @@ export class ViolationRecordFactory {
   }
 
   private static _getViolationPaymentDTOFromPersistence(
-    violationPayment: ViolationRecordPayment
+    violationPayment: IViolationRecordPaymentRawObject
   ): IViolationRecordPaymentDTO {
     const paymentOrError = ViolationRecordPaymentFactory.create(violationPayment);
     if (paymentOrError.isFailure) {
