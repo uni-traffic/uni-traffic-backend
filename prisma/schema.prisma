@@ -175,6 +175,7 @@ model ViolationRecord {
   vehicleId              String
   reportedById           String
   remarks                String
+  penalty                Float
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
   reporter               User                    @relation("ViolationReporter", fields: [reportedById], references: [id], onDelete: Cascade)
@@ -189,14 +190,18 @@ model ViolationRecord {
 }
 
 model ViolationRecordPayment {
-  id                String          @id @unique
+  id                String @id @unique
   cashierId         String
-  violationRecordId String          @unique
-  amountPaid        Float
-  remarks           String?
-  timePaid          DateTime        @default(now())
-  violationRecord   ViolationRecord @relation(fields: [violationRecordId], references: [id], onDelete: Cascade)
-  cashier           User            @relation(fields: [cashierId], references: [id], onDelete: Cascade)
+  violationRecordId String @unique
+
+  amountDue       Float
+  cashTendered    Float
+  change          Float
+  totalAmountPaid Float
+
+  timePaid        DateTime        @default(now())
+  violationRecord ViolationRecord @relation(fields: [violationRecordId], references: [id], onDelete: Cascade)
+  cashier         User            @relation(fields: [cashierId], references: [id], onDelete: Cascade)
 
   @@index([violationRecordId])
 }

@@ -27,8 +27,8 @@ export interface IVehicleApplicationPaymentFactoryProps {
   id?: string;
   amountDue: number;
   cashTendered: number;
-  change: number;
-  totalAmountPaid: number;
+  change?: number;
+  totalAmountPaid?: number;
   vehicleApplicationId: string;
   cashierId: string;
   date?: Date;
@@ -63,12 +63,18 @@ export class VehicleApplicationPaymentFactory {
         )
       : undefined;
 
+    const change = props.change !== undefined ? props.change : props.cashTendered - props.amountDue;
+    const totalAmountPaid =
+      props.totalAmountPaid !== undefined ? props.totalAmountPaid : props.cashTendered - change;
+
     return Result.ok<IVehicleApplicationPayment>(
       VehicleApplicationPayment.create({
         ...props,
         id: defaultTo(uniTrafficId(), props.id),
         amountDue: amountDueOrError.getValue(),
         cashTendered: cashTenderedOrError.getValue(),
+        change: change,
+        totalAmountPaid: totalAmountPaid,
         date: defaultTo(new Date(), props.date),
         cashier: cashierOrUndefined,
         vehicleApplication: vehicleApplicationOrUndefined

@@ -5,8 +5,12 @@ export interface IViolationRecordPaymentDTO {
   id: string;
   cashierId: string;
   violationRecordId: string;
-  amountPaid: number;
-  remarks: string | null;
+
+  amountDue: number;
+  cashTendered: number;
+  change: number;
+  totalAmountPaid: number;
+
   timePaid: Date;
   cashier: IUserDTO | null;
   violationRecord: IViolationRecordDTO | null;
@@ -18,6 +22,6 @@ export interface GetTotalFineCollectedPerDayByRangeUseCasePayload {
 }
 
 export type GetViolationRecordPaymentAmountAndTimePaid = {
-  amountPaid: number;
+  totalAmountPaid: number;
   timePaid: Date;
 };

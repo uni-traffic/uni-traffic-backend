@@ -6,6 +6,7 @@ import { ViolationRecordStatus } from "../../../../../src/domain/models/violatio
 
 describe("ViolationRecord", () => {
   it("should create a ViolationRecord", () => {
+    const penalty = faker.number.int({ min: 100, max: 1000 });
     const mockViolationRecordData = {
       id: faker.string.uuid(),
       userId: faker.string.uuid(),
@@ -13,6 +14,7 @@ describe("ViolationRecord", () => {
       violationId: faker.string.uuid(),
       createdAt: new Date(),
       vehicleId: faker.string.uuid(),
+      penalty: penalty,
       status: ViolationRecordStatus.create(
         faker.helpers.arrayElement(["UNPAID", "PAID"])
       ).getValue(),
@@ -37,7 +39,7 @@ describe("ViolationRecord", () => {
         id: faker.string.uuid(),
         category: faker.helpers.arrayElement(["A", "B", "C"]),
         violationName: faker.lorem.words(3),
-        penalty: faker.number.int({ min: 100, max: 1000 }),
+        penalty: penalty,
         isDeleted: false
       },
       vehicle: {

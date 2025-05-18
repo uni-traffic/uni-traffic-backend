@@ -18,8 +18,10 @@ export class ViolationRecordPaymentMapper implements IViolationRecordPaymentMapp
       id: violationRecordPayment.id,
       cashierId: violationRecordPayment.cashierId,
       violationRecordId: violationRecordPayment.violationRecordId,
-      amountPaid: violationRecordPayment.amountPaid,
-      remarks: violationRecordPayment.remarks ? violationRecordPayment.remarks.value : null,
+      amountDue: violationRecordPayment.amountDue.value,
+      cashTendered: violationRecordPayment.cashTendered.value,
+      change: violationRecordPayment.change,
+      totalAmountPaid: violationRecordPayment.totalAmountPaid,
       timePaid: violationRecordPayment.timePaid
     };
   }
@@ -33,8 +35,10 @@ export class ViolationRecordPaymentMapper implements IViolationRecordPaymentMapp
       id: violationRecordPayment.id,
       cashierId: violationRecordPayment.cashierId,
       violationRecordId: violationRecordPayment.violationRecordId,
-      amountPaid: violationRecordPayment.amountPaid,
-      remarks: violationRecordPayment.remarks ? violationRecordPayment.remarks.value : null,
+      amountDue: violationRecordPayment.amountDue.value,
+      cashTendered: violationRecordPayment.cashTendered.value,
+      change: violationRecordPayment.change,
+      totalAmountPaid: violationRecordPayment.totalAmountPaid,
       timePaid: violationRecordPayment.timePaid,
       cashier: defaultTo(null, violationRecordPayment.cashier),
       violationRecord: defaultTo(null, violationRecordPayment.violationRecord)

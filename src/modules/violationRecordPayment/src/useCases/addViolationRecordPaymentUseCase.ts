@@ -36,16 +36,16 @@ export class AddViolationRecordPaymentUseCase {
   ): Promise<IViolationRecordPaymentDTO> {
     const violationRecord = await this.getViolationRecordOrThrow(request.violationRecordId);
 
-    this.validateAmountPaid(request.amountPaid, violationRecord.violation!.penalty);
-    this.checkViolationRecordIsPaid(violationRecord);
+    this._ensureAmountPaidIsGreaterThanAmountDue(request.cashTendered, violationRecord.penalty);
+    this._ensureViolationRecordIsNotPaid(violationRecord);
 
-    const payment = this.createPayment(request, cashierId);
+    const payment = this.createPayment({
+      ...request,
+      amountDue: violationRecord.penalty,
+      cashierId: cashierId
+    });
     const newPayment = await this.savePayment(payment);
-
-    const updatedViolationRecord = await this.updateViolationRecordStatus(violationRecord);
-    if (!updatedViolationRecord) {
-      throw new BadRequest("Failed to update violation record status.");
-    }
+    await this.updateViolationRecordStatus(violationRecord);
 
     return this._violationRecordPaymentMapper.toDTO(newPayment);
   }
@@ -53,7 +53,6 @@ export class AddViolationRecordPaymentUseCase {
   private async getViolationRecordOrThrow(violationRecordId: string): Promise<IViolationRecord> {
     const violationRecords =
       await this._violationRecordRepository.getViolationRecordById(violationRecordId);
-
     if (!violationRecords) {
       throw new NotFoundError("Violation record not found.");
     }
@@ -61,13 +60,13 @@ export class AddViolationRecordPaymentUseCase {
     return violationRecords;
   }
 
-  private checkViolationRecordIsPaid(violationRecord: IViolationRecord): void {
+  private _ensureViolationRecordIsNotPaid(violationRecord: IViolationRecord): void {
     if (violationRecord.status.value === "PAID") {
       throw new BadRequest("Violation record is already paid.");
     }
   }
 
-  private validateAmountPaid(amountPaid: number, penalty: number): void {
+  private _ensureAmountPaidIsGreaterThanAmountDue(amountPaid: number, penalty: number): void {
     if (amountPaid < penalty) {
       throw new BadRequest("Amount paid is less than the required penalty.");
     }
@@ -91,11 +90,14 @@ export class AddViolationRecordPaymentUseCase {
     return updatedRecord;
   }
 
-  private createPayment(request: ViolationRecordPaymentRequest, cashierId: string) {
+  private createPayment(
+    request: ViolationRecordPaymentRequest & { cashierId: string; amountDue: number }
+  ) {
     const paymentResult = ViolationRecordPaymentFactory.create({
       violationRecordId: request.violationRecordId,
-      amountPaid: request.amountPaid,
-      cashierId
+      cashTendered: request.cashTendered,
+      cashierId: request.cashierId,
+      amountDue: request.amountDue
     });
 
     if (paymentResult.isFailure) {
@@ -114,27 +116,4 @@ export class AddViolationRecordPaymentUseCase {
 
     return savedPayment;
   }
-
-  /** TODO: Apply the new audit log
-   * private async createAuditLog(
-   *     cashierId: string,
-   *     violationRecordId: string,
-   *     oldStatus: string,
-   *     newStatus: string,
-   *     paymentId: string
-   *   ) {
-   *     const message = `Violation record payment status updated. Payment ID: ${paymentId}, Status changed from ${oldStatus} to ${newStatus} by cashier ID: ${cashierId}.`;
-   *
-   *     const auditLogResult = await this._auditLogService.createAndSaveViolationRecordAuditLog({
-   *       actorId: cashierId,
-   *       violationRecordId,
-   *       auditLogType: "UPDATE",
-   *       details: message
-   *     });
-   *
-   *     if (!auditLogResult) {
-   *       throw new UnexpectedError("Failed to create audit log.");
-   *     }
-   *   }
-   */
 }

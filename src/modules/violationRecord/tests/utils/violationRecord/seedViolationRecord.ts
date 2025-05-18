@@ -18,6 +18,7 @@ export const seedViolationRecord = async ({
   reportedById,
   violationId,
   vehicleId,
+  penalty = faker.helpers.arrayElement([250, 500, 1000]),
   status = faker.helpers.arrayElement(["UNPAID", "PAID"]),
   createdAt
 }: Partial<IViolationRecordFactoryProps> & {
@@ -27,17 +28,27 @@ export const seedViolationRecord = async ({
   vehicle?: Partial<IVehicleRawObject>;
   createdAt?: Date;
 }) => {
+  const violation =
+    violationId !== undefined
+      ? await db.violation.findUniqueOrThrow({
+          where: {
+            id: violationId
+          }
+        })
+      : await seedViolation({ penalty: penalty });
+
   const result = await db.violationRecord.create({
     data: {
       id,
       remarks: faker.lorem.sentence({ min: 1, max: 15 }),
       vehicleId: defaultTo((await seedVehicle({})).id, vehicleId),
-      violationId: defaultTo((await seedViolation({})).id, violationId),
+      violationId: defaultTo(violation.id, violationId),
       userId: defaultTo(
         (await seedUser({ role: faker.helpers.arrayElement(["STUDENT", "STAFF"]) })).id,
         userId
       ),
       reportedById: defaultTo((await seedUser({ role: "SECURITY" })).id, reportedById),
+      penalty: violation.penalty,
       status: status as ViolationRecordSchema,
       createdAt: createdAt ?? new Date()
     },
@@ -52,8 +63,7 @@ export const seedViolationRecord = async ({
   if (status === "PAID") {
     await seedViolationRecordPayment({
       violationRecordId: id,
-      amountPaid: result.violation.penalty,
-      remarks: "none"
+      amountDue: result.penalty
     });
   }
 

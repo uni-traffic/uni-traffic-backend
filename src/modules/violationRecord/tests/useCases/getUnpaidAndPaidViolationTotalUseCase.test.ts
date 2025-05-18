@@ -2,7 +2,6 @@ import { faker } from "@faker-js/faker";
 import { ForbiddenError } from "../../../../shared/core/errors";
 import { db } from "../../../../shared/infrastructure/database/prisma";
 import { seedUser } from "../../../user/tests/utils/user/seedUser";
-import { seedViolation } from "../../../violation/tests/utils/violation/seedViolation";
 import { GetUnpaidAndPaidViolationTotalUseCase } from "../../src/useCases/getUnpaidAndPaidViolationTotalUseCase";
 import { seedViolationRecord } from "../utils/violationRecord/seedViolationRecord";
 
@@ -24,25 +23,23 @@ describe("GetUnpaidAndPaidViolationTotalUseCase", () => {
 
   it("should successfully return the correct total for unpaid and paid violation record", async () => {
     const seededUser = await seedUser({ role: "SUPERADMIN" });
-    const seededUnpaidViolation = await seedViolation({
-      penalty: faker.helpers.arrayElement<number>([250, 500, 1000])
-    });
-    const seededPaidViolation = await seedViolation({
-      penalty: faker.helpers.arrayElement<number>([250, 500, 1000])
-    });
+
+    const unpaidPenalty = faker.helpers.arrayElement<number>([250, 500, 1000]);
+    const paidPenalty = faker.helpers.arrayElement<number>([250, 500, 1000]);
+
     await Promise.all([
-      seedViolationRecord({ status: "PAID", violationId: seededPaidViolation.id }),
-      seedViolationRecord({ status: "UNPAID", violationId: seededUnpaidViolation.id }),
-      seedViolationRecord({ status: "PAID", violationId: seededPaidViolation.id }),
-      seedViolationRecord({ status: "UNPAID", violationId: seededUnpaidViolation.id }),
-      seedViolationRecord({ status: "PAID", violationId: seededPaidViolation.id }),
-      seedViolationRecord({ status: "UNPAID", violationId: seededUnpaidViolation.id })
+      seedViolationRecord({ status: "PAID", penalty: paidPenalty }),
+      seedViolationRecord({ status: "UNPAID", penalty: unpaidPenalty }),
+      seedViolationRecord({ status: "PAID", penalty: paidPenalty }),
+      seedViolationRecord({ status: "UNPAID", penalty: unpaidPenalty }),
+      seedViolationRecord({ status: "PAID", penalty: paidPenalty }),
+      seedViolationRecord({ status: "UNPAID", penalty: unpaidPenalty })
     ]);
 
     const result = await useCase.execute({ actorId: seededUser.id });
 
-    expect(result.paidTotal).toBe(seededPaidViolation.penalty * 3);
-    expect(result.unpaidTotal).toBe(seededUnpaidViolation.penalty * 3);
+    expect(result.paidTotal).toBe(paidPenalty * 3);
+    expect(result.unpaidTotal).toBe(unpaidPenalty * 3);
   });
 
   it("should throw ForbiddenError when trying to execute the use case with invalid role", async () => {

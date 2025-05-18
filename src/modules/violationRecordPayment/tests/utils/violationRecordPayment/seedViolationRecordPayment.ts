@@ -12,8 +12,7 @@ export const seedViolationRecordPayment = async ({
   id = uniTrafficId(),
   cashierId,
   violationRecordId,
-  amountPaid = faker.number.int({ min: 100, max: 1000 }),
-  remarks = faker.lorem.sentence({ min: 1, max: 15 }),
+  totalAmountPaid = faker.number.int({ min: 100, max: 1000 }),
   timePaid = new Date()
 }: Partial<IViolationRecordPaymentFactoryProps> & {
   cashier?: Partial<IUserRawObject>;
@@ -27,8 +26,10 @@ export const seedViolationRecordPayment = async ({
   return db.violationRecordPayment.create({
     data: {
       id,
-      amountPaid,
-      remarks,
+      cashTendered: totalAmountPaid,
+      amountDue: totalAmountPaid,
+      change: 0,
+      totalAmountPaid: totalAmountPaid,
       timePaid,
       cashierId: defaultTo(seededCashier.id, cashierId),
       violationRecordId: seededViolationRecordId

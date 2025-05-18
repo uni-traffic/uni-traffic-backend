@@ -20,20 +20,17 @@ describe("ViolationRecordPaymentRepository.createPayment", () => {
     const seededViolationRecord = await seedViolationRecord({ status: "UNPAID" });
     const createdPayment = createViolationRecordPaymentDomainObject({
       violationRecordId: seededViolationRecord.id,
-      amountPaid: 500,
       cashierId: seededCashier.id
     });
 
     const savedPayment = await violationRecordPaymentRepository.createPayment(createdPayment);
 
     expect(savedPayment).not.toBeNull();
-    expect(savedPayment?.amountPaid).toBe(500);
   });
 
   it("should fail to create a violation record payment when given references don’t exist", async () => {
     const createdPayment = createViolationRecordPaymentDomainObject({
       violationRecordId: "non-existent-id",
-      amountPaid: 500,
       cashierId: "non-existent-id"
     });
 

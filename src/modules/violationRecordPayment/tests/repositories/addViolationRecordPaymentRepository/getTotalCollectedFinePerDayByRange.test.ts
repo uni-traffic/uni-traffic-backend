@@ -26,19 +26,19 @@ describe("ViolationRecordPaymentRepository.getTotalFineCollectedPerDayByRange", 
 
     const seededViolationRecordPayment1 = await seedViolationRecordPayment({
       timePaid: new Date("2023-01-03T12:00:00Z"),
-      amountPaid: 100
+      totalAmountPaid: 100
     });
     const seededViolationRecordPayment2 = await seedViolationRecordPayment({
       timePaid: new Date("2023-01-03T10:00:00Z"),
-      amountPaid: 200
+      totalAmountPaid: 200
     });
     const seededViolationRecordPayment3 = await seedViolationRecordPayment({
       timePaid: new Date("2023-01-05T14:00:00Z"),
-      amountPaid: 150
+      totalAmountPaid: 150
     });
     const seededViolationRecordPayment4 = await seedViolationRecordPayment({
       timePaid: new Date("2024-01-03T13:00:00Z"),
-      amountPaid: 300
+      totalAmountPaid: 300
     });
 
     const result = await violationRecordPaymentRepository.getTotalFineCollectedPerDayByRange({

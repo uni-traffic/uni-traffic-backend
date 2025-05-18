@@ -16,9 +16,11 @@ describe("ViolationRecordRepository.getViolationRecord", () => {
     violationRecordRepository = new ViolationRecordRepository();
   });
 
-  beforeEach(async () => {
-    await db.violationRecord.deleteMany();
-  });
+  // beforeEach(async () => {
+  //   await db.user.deleteMany();
+  //   await db.violation.deleteMany();
+  //   await db.violationRecord.deleteMany();
+  // });
 
   afterAll(async () => {
     await db.$disconnect();

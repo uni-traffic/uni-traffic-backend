@@ -16,8 +16,10 @@ describe("ViolationRecordPaymentMapper", () => {
     expect(domainObject.id).toBe(persistenceData.id);
     expect(domainObject.cashierId).toBe(persistenceData.cashierId);
     expect(domainObject.violationRecordId).toBe(persistenceData.violationRecordId);
-    expect(domainObject.amountPaid).toBe(persistenceData.amountPaid);
-    expect(domainObject.remarks?.value).toBe(persistenceData.remarks);
+    expect(domainObject.amountDue.value).toBe(persistenceData.amountDue);
+    expect(domainObject.cashTendered.value).toBe(persistenceData.cashTendered);
+    expect(domainObject.change).toBe(persistenceData.change);
+    expect(domainObject.totalAmountPaid).toBe(persistenceData.totalAmountPaid);
   });
 
   it("should map to persistence from domain", () => {
@@ -27,8 +29,10 @@ describe("ViolationRecordPaymentMapper", () => {
     expect(persistenceData.id).toBe(domainObject.id);
     expect(persistenceData.cashierId).toBe(domainObject.cashierId);
     expect(persistenceData.violationRecordId).toBe(domainObject.violationRecordId);
-    expect(persistenceData.amountPaid).toBe(domainObject.amountPaid);
-    expect(persistenceData.remarks).toBe(domainObject.remarks?.value);
+    expect(persistenceData.amountDue).toBe(domainObject.amountDue.value);
+    expect(persistenceData.cashTendered).toBe(domainObject.cashTendered.value);
+    expect(persistenceData.change).toBe(domainObject.change);
+    expect(persistenceData.totalAmountPaid).toBe(domainObject.totalAmountPaid);
   });
 
   it("should map to DTO from domain", () => {
@@ -38,7 +42,9 @@ describe("ViolationRecordPaymentMapper", () => {
     expect(dto.id).toBe(domainObject.id);
     expect(dto.cashierId).toBe(domainObject.cashierId);
     expect(dto.violationRecordId).toBe(domainObject.violationRecordId);
-    expect(dto.amountPaid).toBe(domainObject.amountPaid);
-    expect(dto.remarks).toBe(domainObject.remarks?.value);
+    expect(dto.amountDue).toBe(domainObject.amountDue.value);
+    expect(dto.cashTendered).toBe(domainObject.cashTendered.value);
+    expect(dto.change).toBe(domainObject.change);
+    expect(dto.totalAmountPaid).toBe(domainObject.totalAmountPaid);
   });
 });

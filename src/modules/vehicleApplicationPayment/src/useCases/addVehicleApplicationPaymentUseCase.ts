@@ -93,8 +93,6 @@ export class AddVehicleApplicationPaymentUseCase {
       vehicleApplicationId: request.vehicleApplicationId,
       amountDue: request.amountDue,
       cashTendered: request.cashTendered,
-      change: request.cashTendered - request.amountDue,
-      totalAmountPaid: request.cashTendered,
       cashierId
     });
 

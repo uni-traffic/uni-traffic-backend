@@ -30,7 +30,7 @@ describe("POST /api/v1/payment/violation", () => {
 
     const payload = {
       violationRecordId: violationRecord.id,
-      amountPaid: violationRecord.violation.penalty
+      cashTendered: violationRecord.violation.penalty
     };
 
     const response = await requestAPI
@@ -58,7 +58,7 @@ describe("POST /api/v1/payment/violation", () => {
 
     const payload = {
       violationRecordId: violationRecord.id,
-      amountPaid: violationRecord.violation.penalty
+      cashTendered: violationRecord.violation.penalty
     };
 
     const response = await requestAPI
@@ -78,7 +78,7 @@ describe("POST /api/v1/payment/violation", () => {
 
     const payload = {
       violationRecordId: "some-id",
-      amountPaid: 1000
+      cashTendered: 1000
     };
 
     const response = await requestAPI

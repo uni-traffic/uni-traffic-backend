@@ -76,7 +76,7 @@ export class GetTotalFineCollectedPerDayByRangeUseCase {
     const sumByDay = params.reduce(
       (acc, payment) => {
         const date = payment.timePaid.toISOString().split("T")[0];
-        acc[date] = (acc[date] || 0) + payment.amountPaid;
+        acc[date] = (acc[date] || 0) + payment.totalAmountPaid;
         return acc;
       },
       {} as Record<string, number>
@@ -84,7 +84,7 @@ export class GetTotalFineCollectedPerDayByRangeUseCase {
 
     return Object.keys(sumByDay).map((date) => ({
       timePaid: new Date(date),
-      amountPaid: sumByDay[date]
+      totalAmountPaid: sumByDay[date]
     }));
   }
 }

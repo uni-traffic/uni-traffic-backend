@@ -83,8 +83,7 @@ export class CreateVehicleApplicationUseCase {
     id: string,
     params: IVehicleApplicationProps
   ): Promise<IVehicleApplicationProps> {
-    let vehicleApplication = params;
-    const fileKeys: string[] = [
+    const fileKeys: (keyof IVehicleApplicationProps)[] = [
       "schoolCredential",
       "driverLicenseImage",
       "certificateOfRegistration",
@@ -94,24 +93,25 @@ export class CreateVehicleApplicationUseCase {
       "backImage"
     ];
 
-    for (const fileKey of fileKeys) {
-      const oldPath = params[fileKey as keyof IVehicleApplicationProps];
+    const moveFilePromises = fileKeys.map(async (key) => {
+      const oldPath = params[key] as string;
       if (!oldPath) {
-        throw new NotFoundError("File not found!");
+        throw new NotFoundError(`File not found for key: ${key}`);
       }
 
       const { path: newPath } = await this._fileService.moveFile(
-        oldPath as string,
-        `applications/${id}/${fileKey}`
+        oldPath,
+        `applications/${id}/${key}`
       );
 
-      vehicleApplication = {
-        ...vehicleApplication,
-        [fileKey]: newPath
-      };
-    }
+      return { key, newPath };
+    });
+    const movedFiles = await Promise.all(moveFilePromises);
 
-    return vehicleApplication;
+    return {
+      ...params,
+      ...Object.fromEntries(movedFiles.map(({ key, newPath }) => [key, newPath]))
+    };
   }
 
   private _createVehicleApplicationDomainObject(

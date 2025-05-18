@@ -28,6 +28,7 @@ export const createViolationRecordDomainObject = ({
     vehicleId,
     status,
     remarks,
+    penalty: violation.penalty,
     user,
     reporter,
     violation,
