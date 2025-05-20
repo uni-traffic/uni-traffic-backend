@@ -42,6 +42,7 @@ describe("POST api/v1/vehicle-application/create", () => {
       driverLastName: faker.person.lastName(),
       driverLicenseId: faker.string.uuid(),
       driverLicenseImage: faker.image.url(),
+      driverSelfiePicture: faker.image.url(),
 
       make: faker.vehicle.manufacturer(),
       series: faker.vehicle.model(),

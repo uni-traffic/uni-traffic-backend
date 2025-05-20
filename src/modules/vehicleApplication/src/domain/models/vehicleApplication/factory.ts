@@ -39,6 +39,7 @@ export interface IVehicleApplicationProps {
   frontImage: string;
   sideImage: string;
   backImage: string;
+  driverSelfiePicture: string;
 
   status?: string;
   stickerNumber?: string | null;
@@ -71,7 +72,8 @@ export class VehicleApplicationFactory {
       lastName: params.driverLastName,
       firstName: params.driverFirstName,
       licenseId: params.driverLicenseId,
-      licenseImage: params.driverLicenseImage
+      licenseImage: params.driverLicenseImage,
+      selfiePicture: params.driverSelfiePicture
     });
     if (driverOrError.isFailure) {
       return Result.fail(driverOrError.getErrorMessage()!);
@@ -104,9 +106,6 @@ export class VehicleApplicationFactory {
       ? VehicleApplicationFactory._getUserDTOFromPersistence(params.applicant)
       : undefined;
 
-    /**
-     * TODO: convert VehicleApplicationPayment to DTO here
-     */
     const payment = params.payment
       ? VehicleApplicationFactory._getVehicleApplicationPaymentDTOFromPersistence(params.payment)
       : undefined;

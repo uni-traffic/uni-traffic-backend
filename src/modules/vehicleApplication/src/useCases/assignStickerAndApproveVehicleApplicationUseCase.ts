@@ -95,11 +95,27 @@ export class AssignStickerAndApproveVehicleApplicationUseCase extends ProtectedU
       ownerId: vehicleApplication.applicantId,
       type: vehicleApplication.vehicle.type,
       color: "",
-      images: [
-        vehicleApplication.vehicle.frontImage,
-        vehicleApplication.vehicle.backImage,
-        vehicleApplication.vehicle.sideImage
-      ],
+      images: {
+        front: vehicleApplication.vehicle.frontImage,
+        side: vehicleApplication.vehicle.sideImage,
+        back: vehicleApplication.vehicle.backImage,
+        receipt: vehicleApplication.vehicle.officialReceipt,
+        registration: vehicleApplication.vehicle.certificateOfRegistration
+      },
+      driver: {
+        lastName: vehicleApplication.driver.lastName,
+        firstName: vehicleApplication.driver.firstName,
+        licenseId: vehicleApplication.driver.licenseId,
+        licenseImage: vehicleApplication.driver.licenseImage,
+        selfiePicture: vehicleApplication.driver.selfiePicture
+      },
+      schoolMember: {
+        schoolId: vehicleApplication.schoolMember.schoolId,
+        lastName: vehicleApplication.schoolMember.lastName,
+        firstName: vehicleApplication.schoolMember.firstName,
+        type: vehicleApplication.schoolMember.type,
+        schoolCredential: vehicleApplication.schoolMember.schoolCredential
+      },
       licensePlate: vehicleApplication.vehicle.licensePlate,
       make: vehicleApplication.vehicle.make,
       model: vehicleApplication.vehicle.model,

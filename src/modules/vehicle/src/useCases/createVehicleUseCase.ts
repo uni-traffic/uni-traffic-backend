@@ -17,32 +17,10 @@ export class CreateVehicleUseCase {
     this._vehicleRepository = vehicleRepository;
   }
 
-  public async execute({
-    ownerId,
-    licensePlate,
-    make,
-    model,
-    series,
-    color,
-    type,
-    images,
-    stickerNumber,
-    status = "REGISTERED"
-  }: IVehicleFactoryProps): Promise<IVehicleDTO> {
-    await this._ensureVehicleDoesNotExist(licensePlate);
+  public async execute(vehicleData: IVehicleFactoryProps): Promise<IVehicleDTO> {
+    await this._ensureVehicleDoesNotExist(vehicleData.licensePlate);
 
-    const vehicle = this._createVehicleDomain({
-      ownerId,
-      licensePlate,
-      make,
-      model,
-      series,
-      color,
-      type,
-      images,
-      stickerNumber,
-      status
-    });
+    const vehicle = this._createVehicleDomain(vehicleData);
     const savedVehicle = await this._saveVehicleToDatabase(vehicle);
 
     return this._vehicleMapper.toDTO(savedVehicle);
@@ -55,30 +33,8 @@ export class CreateVehicleUseCase {
     }
   }
 
-  private _createVehicleDomain({
-    ownerId,
-    licensePlate,
-    make,
-    model,
-    series,
-    color,
-    type,
-    images,
-    stickerNumber,
-    status
-  }: IVehicleFactoryProps): IVehicle {
-    const vehicleOrError = VehicleFactory.create({
-      ownerId,
-      licensePlate,
-      make,
-      model,
-      series,
-      color,
-      type,
-      images,
-      stickerNumber,
-      status
-    });
+  private _createVehicleDomain(vehicleData: IVehicleFactoryProps): IVehicle {
+    const vehicleOrError = VehicleFactory.create(vehicleData);
     if (vehicleOrError.isFailure) {
       throw new BadRequest(vehicleOrError.getErrorMessage()!);
     }

@@ -1,3 +1,4 @@
+import type { JSONObject } from "../../../../shared/lib/types";
 import type { IUserDTO } from "../../../user/src/dtos/userDTO";
 
 export interface IVehicleDTO {
@@ -9,7 +10,9 @@ export interface IVehicleDTO {
   series: string;
   color: string;
   type: string;
-  images: string[];
+  images: JSONObject;
+  driver: JSONObject;
+  schoolMember: JSONObject;
   status: string;
   stickerNumber: string;
   owner: IUserDTO | null;

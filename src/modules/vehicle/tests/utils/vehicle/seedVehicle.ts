@@ -20,11 +20,31 @@ export const seedVehicle = async ({
   series = faker.vehicle.model(),
   color = faker.vehicle.color(),
   type = faker.helpers.arrayElement(VehicleType.validVehicleTypes),
-  images = Array.from({ length: 3 }).map(() => faker.image.url()),
   stickerNumber = faker.number.bigInt({ min: 10_000_000, max: 99_999_999 }).toString(),
   status = faker.helpers.arrayElement(VehicleStatus.validVehicleStatus),
   createdAt = new Date(),
   updatedAt = new Date(),
+  images = {
+    front: faker.image.url(),
+    side: faker.image.url(),
+    back: faker.image.url(),
+    receipt: faker.image.url(),
+    registration: faker.image.url()
+  },
+  driver = {
+    firstName: faker.person.firstName(),
+    lastName: faker.person.lastName(),
+    licenseId: faker.string.uuid(),
+    licenseImage: faker.image.url(),
+    selfiePicture: faker.image.url()
+  },
+  schoolMember = {
+    schoolId: uuid(),
+    lastName: faker.person.lastName(),
+    firstName: faker.person.firstName(),
+    type: faker.helpers.arrayElement(["STUDENT", "STAFF"]),
+    schoolCredential: faker.string.uuid()
+  },
   ownerId
 }: Partial<IVehicleFactoryProps> & { owner?: Partial<IUserRawObject> }) => {
   return db.vehicle.create({
@@ -38,6 +58,8 @@ export const seedVehicle = async ({
       color,
       type: type as VehicleTypeSchema,
       images: images,
+      driver: driver,
+      schoolMember: schoolMember,
       stickerNumber,
       status: status as VehicleStatusEnum,
       createdAt,

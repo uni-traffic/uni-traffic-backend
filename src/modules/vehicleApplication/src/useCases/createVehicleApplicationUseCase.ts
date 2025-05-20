@@ -86,6 +86,7 @@ export class CreateVehicleApplicationUseCase {
     const fileKeys: (keyof IVehicleApplicationProps)[] = [
       "schoolCredential",
       "driverLicenseImage",
+      "driverSelfiePicture",
       "certificateOfRegistration",
       "officialReceipt",
       "frontImage",

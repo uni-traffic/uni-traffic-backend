@@ -14,11 +14,31 @@ export const createVehiclePersistenceData = ({
   series = faker.vehicle.model(),
   color = faker.vehicle.color(),
   type = faker.helpers.arrayElement(["CAR", "MOTORCYCLE"]),
-  images = Array.from({ length: 3 }).map(() => faker.image.url()),
   stickerNumber = faker.number.bigInt({ min: 10_000_000, max: 99_999_999 }).toString(),
   status = faker.helpers.arrayElement(VehicleStatus.validVehicleStatus) as VehicleStatusEnum,
   createdAt = faker.date.past(),
   updatedAt = faker.date.past(),
+  images = {
+    front: faker.image.url(),
+    side: faker.image.url(),
+    back: faker.image.url(),
+    receipt: faker.image.url(),
+    registration: faker.image.url()
+  },
+  driver = {
+    firstName: faker.person.firstName(),
+    lastName: faker.person.lastName(),
+    licenseId: faker.string.uuid(),
+    licenseImage: faker.image.url(),
+    selfiePicture: faker.image.url()
+  },
+  schoolMember = {
+    schoolId: uuid(),
+    lastName: faker.person.lastName(),
+    firstName: faker.person.firstName(),
+    type: faker.helpers.arrayElement(["STUDENT", "STAFF"]),
+    schoolCredential: faker.string.uuid()
+  },
   owner
 }: Partial<IVehicleRawObject>): IVehicleRawObject => {
   const mockOwner = createUserPersistenceData({ id: ownerId });
@@ -32,6 +52,8 @@ export const createVehiclePersistenceData = ({
     series,
     color,
     type,
+    schoolMember,
+    driver,
     images,
     stickerNumber,
     status,

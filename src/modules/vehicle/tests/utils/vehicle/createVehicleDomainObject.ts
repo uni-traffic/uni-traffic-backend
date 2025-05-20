@@ -16,11 +16,45 @@ export const createVehicleDomainObject = ({
   series = faker.vehicle.model(),
   color = faker.vehicle.color(),
   type = faker.helpers.arrayElement(["CAR", "MOTORCYCLE"]),
-  images = Array.from({ length: 3 }).map(() => faker.image.url()),
   stickerNumber = faker.number.bigInt({ min: 10_000_000, max: 99_999_999 }).toString(),
   status = faker.helpers.arrayElement(VehicleStatus.validVehicleStatus),
   createdAt = faker.date.past(),
-  updatedAt = faker.date.past()
+  updatedAt = faker.date.past(),
+  images = {
+    front: faker.image.url(),
+    side: faker.image.url(),
+    back: faker.image.url(),
+    receipt: faker.image.url(),
+    registration: faker.image.url()
+  },
+  driver = {
+    firstName: faker.person.firstName(),
+    lastName: faker.person.lastName(),
+    licenseId: faker.string.uuid(),
+    licenseImage: faker.image.url(),
+    selfiePicture: faker.image.url()
+  },
+  schoolMember = {
+    schoolId: uuid(),
+    lastName: faker.person.lastName(),
+    firstName: faker.person.firstName(),
+    type: faker.helpers.arrayElement(["STUDENT", "STAFF"]),
+    schoolCredential: faker.string.uuid()
+  },
+  owner = {
+    id: ownerId,
+    username: faker.word.sample({ length: 15 }),
+    firstName: faker.person.firstName(),
+    lastName: faker.person.lastName(),
+    email: faker.internet.email(),
+    password: faker.internet.password(),
+    role: faker.helpers.arrayElement(["STUDENT", "STAFF"]),
+    isSuperAdmin: false,
+    isDeleted: false,
+    deletedAt: null,
+    createdAt: faker.date.past(),
+    updatedAt: faker.date.past()
+  }
 }: Partial<IVehicleFactoryProps>): IVehicle => {
   const vehicleOrError = VehicleFactory.create({
     id,
@@ -36,20 +70,9 @@ export const createVehicleDomainObject = ({
     stickerNumber,
     createdAt,
     updatedAt,
-    owner: {
-      id: ownerId,
-      username: faker.word.sample({ length: 15 }),
-      firstName: faker.person.firstName(),
-      lastName: faker.person.lastName(),
-      email: faker.internet.email(),
-      password: faker.internet.password(),
-      role: faker.helpers.arrayElement(["STUDENT", "STAFF"]),
-      isSuperAdmin: false,
-      isDeleted: false,
-      deletedAt: null,
-      createdAt: faker.date.past(),
-      updatedAt: faker.date.past()
-    }
+    driver,
+    schoolMember,
+    owner
   });
 
   return vehicleOrError.getValue();

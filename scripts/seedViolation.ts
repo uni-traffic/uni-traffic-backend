@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { v4 as uuid } from "uuid";
 import { db } from "../src/shared/infrastructure/database/prisma";
+import { uniTrafficId } from "../src/shared/lib/uniTrafficId";
 
 interface IViolationJSON {
   id: number;
@@ -31,7 +31,7 @@ export const seedViolations = async () => {
       (violation) => {
         return {
           ...violation,
-          id: uuid()
+          id: uniTrafficId("P")
         };
       }
     );

@@ -1,5 +1,7 @@
+import type { Driver } from "../../../../../../../shared/domain/classes/vehicle/driver";
+import type { SchoolMember } from "../../../../../../../shared/domain/classes/vehicle/schoolMember";
+import type { VehicleImages } from "../../../../../../../shared/domain/classes/vehicle/vehicleImages";
 import type { IUserDTO } from "../../../../../../user/src/dtos/userDTO";
-import type { VehicleImages } from "./vehicleImages";
 import type { VehicleLicensePlateNumber } from "./vehicleLicensePlate";
 import type { VehicleStatus } from "./vehicleStatus";
 import type { VehicleStickerNumber } from "./vehicleStickerNumber";
@@ -13,9 +15,11 @@ export interface IVehicle {
   model: string;
   series: string;
   color: string;
+  driver: Driver;
+  schoolMember: SchoolMember;
+  images: VehicleImages;
   status: VehicleStatus;
   type: VehicleType;
-  images: VehicleImages;
   stickerNumber: VehicleStickerNumber;
   createdAt: Date;
   updatedAt: Date;
@@ -30,9 +34,11 @@ export class Vehicle implements IVehicle {
   private readonly _model: string;
   private readonly _series: string;
   private readonly _color: string;
-  private readonly _status: VehicleStatus;
-  private readonly _type: VehicleType;
+  private readonly _driver: Driver;
+  private readonly _schoolMember: SchoolMember;
   private readonly _images: VehicleImages;
+  private readonly _type: VehicleType;
+  private readonly _status: VehicleStatus;
   private readonly _stickerNumber: VehicleStickerNumber;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date;
@@ -48,6 +54,8 @@ export class Vehicle implements IVehicle {
     color,
     type,
     stickerNumber,
+    driver,
+    schoolMember,
     status,
     images,
     createdAt,
@@ -68,6 +76,9 @@ export class Vehicle implements IVehicle {
     this._createdAt = createdAt;
     this._updatedAt = updatedAt;
     this._owner = owner;
+    this._schoolMember = schoolMember;
+    this._images = images;
+    this._driver = driver;
   }
 
   get id(): string {
@@ -104,6 +115,14 @@ export class Vehicle implements IVehicle {
 
   get images(): VehicleImages {
     return this._images;
+  }
+
+  get driver(): Driver {
+    return this._driver;
+  }
+
+  get schoolMember(): SchoolMember {
+    return this._schoolMember;
   }
 
   get stickerNumber(): VehicleStickerNumber {

@@ -20,6 +20,7 @@ export interface IViolationRecord {
   violation: IViolationDTO | undefined;
   vehicle: IVehicleDTO | undefined;
   payment: IViolationRecordPaymentDTO | undefined;
+  evidence: string[];
   updateStatus(newStatus: ViolationRecordStatus): void;
 }
 
@@ -37,6 +38,7 @@ export class ViolationRecord implements IViolationRecord {
   private readonly _reporter: IUserDTO | undefined;
   private readonly _violation: IViolationDTO | undefined;
   private readonly _vehicle: IVehicleDTO | undefined;
+  private readonly _evidence: string[];
   private readonly _payment: IViolationRecordPaymentDTO | undefined;
 
   private constructor(props: {
@@ -49,6 +51,7 @@ export class ViolationRecord implements IViolationRecord {
     remarks: ViolationRecordRemarks;
     penalty: number;
     status: ViolationRecordStatus;
+    evidence: string[];
     user?: IUserDTO;
     reporter?: IUserDTO;
     violation?: IViolationDTO;
@@ -65,6 +68,7 @@ export class ViolationRecord implements IViolationRecord {
     this._createdAt = props.createdAt;
     this._status = props.status;
     this._user = props.user;
+    this._evidence = props.evidence;
     this._reporter = props.reporter;
     this._violation = props.violation;
     this._vehicle = props.vehicle;
@@ -107,6 +111,10 @@ export class ViolationRecord implements IViolationRecord {
     return this._remarks;
   }
 
+  get evidence(): string[] {
+    return this._evidence;
+  }
+
   get user(): IUserDTO | undefined {
     return this._user;
   }
@@ -138,6 +146,7 @@ export class ViolationRecord implements IViolationRecord {
     violationId: string;
     vehicleId: string;
     penalty: number;
+    evidence: string[];
     createdAt: Date;
     remarks: ViolationRecordRemarks;
     status: ViolationRecordStatus;

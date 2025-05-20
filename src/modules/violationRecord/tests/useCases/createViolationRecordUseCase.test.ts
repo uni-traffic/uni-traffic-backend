@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { NotFoundError } from "../../../../shared/core/errors";
 import { db } from "../../../../shared/infrastructure/database/prisma";
+import { FileService } from "../../../file/src/service/fileService";
 import { seedUser } from "../../../user/tests/utils/user/seedUser";
 import { seedVehicle } from "../../../vehicle/tests/utils/vehicle/seedVehicle";
 import { seedViolation } from "../../../violation/tests/utils/violation/seedViolation";
@@ -12,6 +13,10 @@ describe("CreateViolationRecordUseCase", () => {
 
   beforeAll(() => {
     createViolationRecordUseCase = new CreateViolationRecordUseCase();
+
+    jest.spyOn(FileService.prototype, "moveFile").mockResolvedValue({
+      path: "/mocked/path/file.jpg"
+    });
   });
 
   beforeEach(async () => {
@@ -33,12 +38,14 @@ describe("CreateViolationRecordUseCase", () => {
       remarks: faker.lorem.sentence({ min: 3, max: 15 }),
       vehicleId: seededVehicle.id,
       reportedById: seededSecurityUser.id,
+      evidence: [faker.image.url()],
       violationId: "1"
     };
 
     const violationRecordDTO = await createViolationRecordUseCase.execute(mockRequestData);
 
     expect(violationRecordDTO).toBeDefined();
+    expect(violationRecordDTO.evidence.length).toBeGreaterThan(0);
   });
 
   it("should successfully create a ViolationRecord when only licensePlate is provided", async () => {
@@ -50,12 +57,14 @@ describe("CreateViolationRecordUseCase", () => {
       remarks: faker.lorem.sentence({ min: 3, max: 15 }),
       licensePlate: seededVehicle.licensePlate,
       reportedById: seededSecurityUser.id,
+      evidence: [faker.image.url()],
       violationId: "1"
     };
 
     const violationRecordDTO = await createViolationRecordUseCase.execute(mockRequestData);
 
     expect(violationRecordDTO).toBeDefined();
+    expect(violationRecordDTO.evidence.length).toBeGreaterThan(0);
   });
 
   it("should successfully create a ViolationRecord when only stickerNumber is provided", async () => {
@@ -67,12 +76,14 @@ describe("CreateViolationRecordUseCase", () => {
       remarks: faker.lorem.sentence({ min: 3, max: 15 }),
       stickerNumber: seededVehicle.stickerNumber,
       reportedById: seededSecurityUser.id,
+      evidence: [faker.image.url()],
       violationId: "1"
     };
 
     const violationRecordDTO = await createViolationRecordUseCase.execute(mockRequestData);
 
     expect(violationRecordDTO).toBeDefined();
+    expect(violationRecordDTO.evidence.length).toBeGreaterThan(0);
   });
 
   it("should fail when the provided vehicleId doesn't exist on the system", async () => {
@@ -82,6 +93,7 @@ describe("CreateViolationRecordUseCase", () => {
       remarks: faker.lorem.sentence({ min: 3, max: 15 }),
       stickerNumber: faker.string.uuid(),
       reportedById: seededSecurityUser.id,
+      evidence: [faker.image.url()],
       violationId: "1"
     };
 
@@ -99,6 +111,7 @@ describe("CreateViolationRecordUseCase", () => {
       remarks: faker.lorem.sentence({ min: 3, max: 15 }),
       licensePlate: faker.vehicle.vrm(),
       reportedById: seededSecurityUser.id,
+      evidence: [faker.image.url()],
       violationId: "1"
     };
 
@@ -116,6 +129,7 @@ describe("CreateViolationRecordUseCase", () => {
       remarks: faker.lorem.sentence({ min: 3, max: 15 }),
       stickerNumber: faker.vehicle.vin(),
       reportedById: seededSecurityUser.id,
+      evidence: [faker.image.url()],
       violationId: "1"
     };
 

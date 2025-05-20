@@ -36,6 +36,7 @@ export class VehicleApplicationMapper implements IVehicleApplicationMapper {
       driverFirstName: vehicleApplication.driver.firstName,
       driverLicenseId: vehicleApplication.driver.licenseId,
       driverLicenseImage: vehicleApplication.driver.licenseImage,
+      driverSelfiePicture: vehicleApplication.driver.selfiePicture,
 
       make: vehicleApplication.vehicle.make,
       series: vehicleApplication.vehicle.series,
@@ -74,7 +75,8 @@ export class VehicleApplicationMapper implements IVehicleApplicationMapper {
         firstName: vehicleApplication.driver.firstName,
         lastName: vehicleApplication.driver.lastName,
         licenseId: vehicleApplication.driver.licenseId,
-        licenseImage: vehicleApplication.driver.licenseImage
+        licenseImage: vehicleApplication.driver.licenseImage,
+        selfiePicture: vehicleApplication.driver.selfiePicture
       },
       vehicle: {
         make: vehicleApplication.vehicle.make,

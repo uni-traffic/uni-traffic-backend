@@ -142,7 +142,10 @@ export class VehicleRepository implements IVehicleRepository {
             { id: { contains: params.searchKey, mode: "insensitive" } },
             { ownerId: { contains: params.searchKey, mode: "insensitive" } },
             { licensePlate: { contains: params.searchKey, mode: "insensitive" } },
-            { stickerNumber: { contains: params.searchKey, mode: "insensitive" } }
+            { stickerNumber: { contains: params.searchKey, mode: "insensitive" } },
+            { make: { contains: params.searchKey, mode: "insensitive" } },
+            { model: { contains: params.searchKey, mode: "insensitive" } },
+            { series: { contains: params.searchKey, mode: "insensitive" } }
           ]
         }
       : {

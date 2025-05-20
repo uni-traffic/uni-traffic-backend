@@ -3,11 +3,14 @@ import { defaultTo } from "rambda";
 import { v4 as uuid } from "uuid";
 import { UnexpectedError } from "../../../../../../shared/core/errors";
 import { Result } from "../../../../../../shared/core/result";
+import { Driver } from "../../../../../../shared/domain/classes/vehicle/driver";
+import { SchoolMember } from "../../../../../../shared/domain/classes/vehicle/schoolMember";
+import { VehicleImages } from "../../../../../../shared/domain/classes/vehicle/vehicleImages";
+import type { JSONObject } from "../../../../../../shared/lib/types";
 import { UserFactory } from "../../../../../user/src/domain/models/user/factory";
 import { UserMapper } from "../../../../../user/src/domain/models/user/mapper";
 import type { IUserDTO } from "../../../../../user/src/dtos/userDTO";
 import { type IVehicle, Vehicle } from "./classes/vehicle";
-import { VehicleImages } from "./classes/vehicleImages";
 import { VehicleLicensePlateNumber } from "./classes/vehicleLicensePlate";
 import { VehicleStatus } from "./classes/vehicleStatus";
 import { VehicleStickerNumber } from "./classes/vehicleStickerNumber";
@@ -22,7 +25,9 @@ export interface IVehicleFactoryProps {
   series: string;
   color: string;
   type: string;
-  images: string[];
+  driver: JSONObject;
+  images: JSONObject;
+  schoolMember: JSONObject;
   stickerNumber: string;
   status?: string;
   createdAt?: Date;
@@ -42,17 +47,16 @@ export class VehicleFactory {
       return Result.fail<IVehicle>(vehicleTypeOrError.getErrorMessage()!);
     }
 
-    const vehicleImagesOrError = VehicleImages.create(props.images);
-    if (vehicleImagesOrError.isFailure) {
-      return Result.fail<IVehicle>(vehicleImagesOrError.getErrorMessage()!);
-    }
+    const driver = new Driver(props.driver);
+    const schoolMember = new SchoolMember(props.schoolMember);
+    const vehicleImages = new VehicleImages(props.images);
 
     const stickerNumberOrError = VehicleStickerNumber.create(props.stickerNumber);
     if (stickerNumberOrError.isFailure) {
       return Result.fail<IVehicle>(stickerNumberOrError.getErrorMessage()!);
     }
 
-    const vehicleStatusOrError = VehicleStatus.create(defaultTo("PENDING", props.status));
+    const vehicleStatusOrError = VehicleStatus.create(defaultTo("REGISTERED", props.status));
     if (vehicleStatusOrError.isFailure) {
       return Result.fail<IVehicle>(vehicleStatusOrError.getErrorMessage()!);
     }
@@ -67,7 +71,9 @@ export class VehicleFactory {
         id: defaultTo(uuid(), props.id),
         licensePlate: licenseNumberOrError.getValue(),
         type: vehicleTypeOrError.getValue(),
-        images: vehicleImagesOrError.getValue(),
+        images: vehicleImages,
+        driver: driver,
+        schoolMember: schoolMember,
         status: vehicleStatusOrError.getValue(),
         stickerNumber: stickerNumberOrError.getValue(),
         createdAt: defaultTo(new Date(), props.createdAt),
