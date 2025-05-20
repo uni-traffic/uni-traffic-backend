@@ -1,4 +1,6 @@
 import { BadRequest, NotFoundError, UnexpectedError } from "../../../../shared/core/errors";
+import { uniTrafficId } from "../../../../shared/lib/uniTrafficId";
+import { FileService, type IFileService } from "../../../file/src/service/fileService";
 import type { IVehicle } from "../../../vehicle/src/domain/models/vehicle/classes/vehicle";
 import {
   type IVehicleRepository,
@@ -29,13 +31,16 @@ export class CreateViolationRecordUseCase {
   private _violationRepository: IViolationRepository;
   private _violationRecordRepository: IViolationRecordRepository;
   private _vehicleRepository: IVehicleRepository;
+  private _fileService: IFileService;
 
   public constructor(
     violationRepository = new ViolationRepository(),
     violationRecordRepository = new ViolationRecordRepository(),
     violationRecordMapper = new ViolationRecordMapper(),
-    vehicleRepository = new VehicleRepository()
+    vehicleRepository = new VehicleRepository(),
+    fileService: IFileService = new FileService()
   ) {
+    this._fileService = fileService;
     this._violationRepository = violationRepository;
     this._violationRecordMapper = violationRecordMapper;
     this._vehicleRepository = vehicleRepository;
@@ -48,21 +53,39 @@ export class CreateViolationRecordUseCase {
     reportedById,
     licensePlate,
     stickerNumber,
+    evidence,
     remarks
   }: ICreateViolationRecordInputUseCase): Promise<IViolationRecordDTO> {
     const violation = await this._getViolationFromDatabase(violationId);
     const vehicle = await this._getVehicleFromDatabase({ vehicleId, licensePlate, stickerNumber });
+    const generatedViolationId = uniTrafficId("V");
+    const movedFilesPath = await this._moveFilesToEvidenceFolder(generatedViolationId, evidence);
     const violationRecord = this._createViolationRecordObject({
+      id: generatedViolationId,
       userId: vehicle.ownerId,
       vehicleId: vehicle.id,
       penalty: violation.penalty,
-      reportedById,
+      evidence: movedFilesPath,
+      reportedById: reportedById,
       violationId,
       remarks
     });
     const savedViolationRecord = await this._saveViolationRecord(violationRecord);
 
     return this._violationRecordMapper.toDTO(savedViolationRecord);
+  }
+
+  private async _moveFilesToEvidenceFolder(id: string, evidence: string[]): Promise<string[]> {
+    return await Promise.all(
+      evidence.map(async (file, index) => {
+        const { path: newPath } = await this._fileService.moveFile(
+          file,
+          `evidences/${id}/${index}`
+        );
+
+        return newPath;
+      })
+    );
   }
 
   private async _getViolationFromDatabase(violationId: string): Promise<IViolation> {
@@ -94,10 +117,12 @@ export class CreateViolationRecordUseCase {
   }
 
   private _createViolationRecordObject(props: {
+    id: string;
     userId: string;
     vehicleId: string;
     violationId: string;
     penalty: number;
+    evidence: string[];
     reportedById: string;
     remarks: string;
   }): IViolationRecord {

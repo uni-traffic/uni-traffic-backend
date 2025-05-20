@@ -1,6 +1,7 @@
 import { defaultTo } from "rambda";
 import { UnexpectedError } from "../../../../../../shared/core/errors";
 import { Result } from "../../../../../../shared/core/result";
+import type { JSONObject } from "../../../../../../shared/lib/types";
 import { uniTrafficId } from "../../../../../../shared/lib/uniTrafficId";
 import type { IUserRawObject } from "../../../../../user/src/domain/models/user/constant";
 import { UserFactory } from "../../../../../user/src/domain/models/user/factory";
@@ -30,6 +31,7 @@ export interface IViolationRecordFactoryProps {
   vehicleId: string;
   remarks: string;
   penalty: number;
+  evidence: string[];
   createdAt?: Date;
   status?: string;
   user?: IUserRawObject;
@@ -99,7 +101,12 @@ export class ViolationRecordFactory {
   }
 
   private static _getVehicleDTOFromPersistence(vehicle: IVehicleRawObject): IVehicleDTO {
-    const vehicleDomainOrError = VehicleFactory.create(vehicle);
+    const vehicleDomainOrError = VehicleFactory.create({
+      ...vehicle,
+      images: vehicle.images as JSONObject,
+      schoolMember: vehicle.schoolMember as JSONObject,
+      driver: vehicle.driver as JSONObject
+    });
     if (vehicleDomainOrError.isFailure) {
       throw new UnexpectedError("Error converting Vehicle from persistence to Domain");
     }

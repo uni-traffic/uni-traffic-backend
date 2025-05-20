@@ -3,7 +3,7 @@ import { Result } from "../../../../../../../shared/core/result";
 export class VehicleLicensePlateNumber {
   private readonly _value: string;
   private static readonly MIN_LICENSE_REGEX = 1;
-  private static readonly MAX_LICENSE_REGEX = 11;
+  private static readonly MAX_LICENSE_REGEX = 15;
 
   private constructor(value: string) {
     this._value = value;

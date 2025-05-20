@@ -49,6 +49,7 @@ export const VehicleApplicationCreateRequestSchema = z.object({
   driverLastName: z.string(),
   driverLicenseId: z.string(),
   driverLicenseImage: z.string(),
+  driverSelfiePicture: z.string(),
 
   make: z.string(),
   series: z.string(),

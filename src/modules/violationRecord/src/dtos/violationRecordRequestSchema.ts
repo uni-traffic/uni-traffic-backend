@@ -7,6 +7,7 @@ export const ViolationRecordCreateSchema = z
     vehicleId: z.string().optional(),
     licensePlate: z.string().optional(),
     stickerNumber: z.string().optional(),
+    evidence: z.array(z.string()).min(1, { message: "At least one evidence item is required." }),
     remarks: z.string().max(150, "Maximum remarks would be 150").optional()
   })
   .refine((data) => data.vehicleId || data.licensePlate || data.stickerNumber, {

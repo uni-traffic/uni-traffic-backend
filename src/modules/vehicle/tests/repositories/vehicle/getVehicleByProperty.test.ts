@@ -1,4 +1,5 @@
 import { db } from "../../../../../shared/infrastructure/database/prisma";
+import type { JSONObject } from "../../../../../shared/lib/types";
 import { type IVehicle, Vehicle } from "../../../src/domain/models/vehicle/classes/vehicle";
 import type { IVehicleDTO } from "../../../src/dtos/vehicleDTO";
 import type { VehicleRequest } from "../../../src/dtos/vehicleRequestSchema";
@@ -18,7 +19,7 @@ const assertVehicle = (received: IVehicle, expected: IVehicleDTO) => {
   expect(received.series).toBe(expected.series);
   expect(received.color).toBe(expected.color);
   expect(received.type.value).toBe(expected.type);
-  expect(received.images.value).toStrictEqual(expected.images);
+  expect(received.images.toJSON()).toMatchObject(expected.images);
   expect(received.stickerNumber.value).toBe(expected.stickerNumber);
   expect(received.owner).toBeDefined();
 };
@@ -43,7 +44,12 @@ describe("VehicleRepository.getVehicleByProperty", () => {
     const vehicle = await vehicleRepository.getVehicleByProperty(mockRequest);
 
     expect(vehicle).not.toBeNull();
-    assertVehicle(vehicle!, seededVehicle);
+    assertVehicle(vehicle!, {
+      ...seededVehicle,
+      images: seededVehicle.images as JSONObject,
+      driver: seededVehicle.driver as JSONObject,
+      schoolMember: seededVehicle.schoolMember as JSONObject
+    });
   });
 
   it("should return Vehicle when the parameter is licensePlate", async () => {
@@ -55,7 +61,12 @@ describe("VehicleRepository.getVehicleByProperty", () => {
     const vehicle = await vehicleRepository.getVehicleByProperty(mockRequest);
 
     expect(vehicle).not.toBeNull();
-    assertVehicle(vehicle!, seededVehicle);
+    assertVehicle(vehicle!, {
+      ...seededVehicle,
+      images: seededVehicle.images as JSONObject,
+      driver: seededVehicle.driver as JSONObject,
+      schoolMember: seededVehicle.schoolMember as JSONObject
+    });
   });
 
   it("should return Vehicle when the parameter is stickerNumber", async () => {
@@ -67,7 +78,12 @@ describe("VehicleRepository.getVehicleByProperty", () => {
     const vehicle = await vehicleRepository.getVehicleByProperty(mockRequest);
 
     expect(vehicle).not.toBeNull();
-    assertVehicle(vehicle!, seededVehicle);
+    assertVehicle(vehicle!, {
+      ...seededVehicle,
+      images: seededVehicle.images as JSONObject,
+      driver: seededVehicle.driver as JSONObject,
+      schoolMember: seededVehicle.schoolMember as JSONObject
+    });
   });
 
   it("should return null when no property is provided", async () => {

@@ -63,7 +63,9 @@ model Vehicle {
   make            String
   series          String
   model           String
-  images          String[]
+  schoolMember    Json
+  driver          Json
+  images          Json
   stickerNumber   String            @unique
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
@@ -92,10 +94,11 @@ model VehicleApplication {
   userType         UserType
   schoolCredential String
 
-  driverFirstName    String
-  driverLastName     String
-  driverLicenseId    String
-  driverLicenseImage String
+  driverFirstName     String
+  driverLastName      String
+  driverLicenseId     String
+  driverLicenseImage  String
+  driverSelfiePicture String
 
   make                      String
   series                    String
@@ -176,6 +179,7 @@ model ViolationRecord {
   reportedById           String
   remarks                String
   penalty                Float
+  evidence               String[]
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
   reporter               User                    @relation("ViolationReporter", fields: [reportedById], references: [id], onDelete: Cascade)

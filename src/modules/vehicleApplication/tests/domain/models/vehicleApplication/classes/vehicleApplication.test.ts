@@ -20,7 +20,8 @@ describe("VehicleApplication", () => {
         firstName: faker.person.firstName(),
         lastName: faker.person.lastName(),
         licenseId: faker.string.uuid(),
-        licenseImage: faker.image.url()
+        licenseImage: faker.image.url(),
+        selfiePicture: faker.image.url()
       }).getValue(),
       vehicle: VehicleApplicationVehicle.create({
         make: faker.vehicle.manufacturer(),
@@ -73,7 +74,8 @@ describe("VehicleApplication", () => {
         firstName: faker.person.firstName(),
         lastName: faker.person.lastName(),
         licenseId: faker.string.uuid(),
-        licenseImage: faker.image.url()
+        licenseImage: faker.image.url(),
+        selfiePicture: faker.image.url()
       }).getValue(),
       vehicle: VehicleApplicationVehicle.create({
         make: faker.vehicle.manufacturer(),

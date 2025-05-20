@@ -3,6 +3,7 @@ import request from "supertest";
 import type TestAgent from "supertest/lib/agent";
 import app from "../../../../../../../api";
 import { db } from "../../../../../../shared/infrastructure/database/prisma";
+import { FileService } from "../../../../../file/src/service/fileService";
 import { seedAuthenticatedUser } from "../../../../../user/tests/utils/user/seedAuthenticatedUser";
 import { seedUser } from "../../../../../user/tests/utils/user/seedUser";
 import { seedVehicle } from "../../../../../vehicle/tests/utils/vehicle/seedVehicle";
@@ -14,6 +15,10 @@ describe("POST /api/v1/violation-record/create", () => {
 
   beforeAll(() => {
     requestAPI = request.agent(app);
+
+    jest.spyOn(FileService.prototype, "moveFile").mockResolvedValue({
+      path: "/mocked/path/file.jpg"
+    });
   });
 
   beforeEach(async () => {
@@ -34,6 +39,7 @@ describe("POST /api/v1/violation-record/create", () => {
 
     const payload: ViolationRecordCreateRequest = {
       violationId: "1",
+      evidence: [faker.image.url()],
       vehicleId: seededVehicle.id
     };
     const response = await requestAPI
@@ -56,6 +62,7 @@ describe("POST /api/v1/violation-record/create", () => {
 
     const payload: ViolationRecordCreateRequest = {
       violationId: "1",
+      evidence: [faker.image.url()],
       licensePlate: seededVehicle.licensePlate
     };
     const response = await requestAPI
@@ -78,6 +85,7 @@ describe("POST /api/v1/violation-record/create", () => {
 
     const payload: ViolationRecordCreateRequest = {
       violationId: "1",
+      evidence: [faker.image.url()],
       stickerNumber: seededVehicle.stickerNumber
     };
     const response = await requestAPI
@@ -98,6 +106,7 @@ describe("POST /api/v1/violation-record/create", () => {
 
     const payload: ViolationRecordCreateRequest = {
       violationId: "1",
+      evidence: [faker.image.url()],
       stickerNumber: faker.vehicle.vin()
     };
     const response = await requestAPI
@@ -115,7 +124,8 @@ describe("POST /api/v1/violation-record/create", () => {
     const payload = {
       userId: "ownerId",
       vehicleId: "vehicleId",
-      violationId: "violationId"
+      violationId: "violationId",
+      evidence: [faker.image.url()]
     };
     const response = await requestAPI.post("/api/v1/violation-record/create").send(payload);
 

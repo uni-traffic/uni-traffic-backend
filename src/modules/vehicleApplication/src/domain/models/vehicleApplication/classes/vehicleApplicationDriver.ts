@@ -5,17 +5,20 @@ export class VehicleApplicationDriver {
   private readonly _lastName: string;
   private readonly _licenseId: string;
   private readonly _licenseImage: string;
+  private readonly _selfiePicture: string;
 
   private constructor(props: {
     firstName: string;
     lastName: string;
     licenseId: string;
     licenseImage: string;
+    selfiePicture: string;
   }) {
     this._firstName = props.firstName;
     this._lastName = props.lastName;
     this._licenseId = props.licenseId;
     this._licenseImage = props.licenseImage;
+    this._selfiePicture = props.selfiePicture;
   }
 
   public static create(props: {
@@ -23,6 +26,7 @@ export class VehicleApplicationDriver {
     lastName: string;
     licenseId: string;
     licenseImage: string;
+    selfiePicture: string;
   }): Result<VehicleApplicationDriver> {
     return Result.ok(new VehicleApplicationDriver(props));
   }
@@ -41,5 +45,9 @@ export class VehicleApplicationDriver {
 
   get licenseImage(): string {
     return this._licenseImage;
+  }
+
+  get selfiePicture(): string {
+    return this._selfiePicture;
   }
 }

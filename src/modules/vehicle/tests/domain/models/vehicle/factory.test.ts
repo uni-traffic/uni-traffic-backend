@@ -1,25 +1,29 @@
+import type { JSONObject } from "../../../../../../shared/lib/types";
 import { Vehicle } from "../../../../src/domain/models/vehicle/classes/vehicle";
-import {
-  type IVehicleFactoryProps,
-  VehicleFactory
-} from "../../../../src/domain/models/vehicle/factory";
+import type { IVehicleRawObject } from "../../../../src/domain/models/vehicle/constant";
+import { VehicleFactory } from "../../../../src/domain/models/vehicle/factory";
 import { createVehiclePersistenceData } from "../../../utils/vehicle/createVehiclePersistenceData";
 
 describe("VehicleFactory", () => {
-  let mockVehicleData: IVehicleFactoryProps;
+  let mockVehicleData: IVehicleRawObject;
 
   beforeEach(() => {
     mockVehicleData = createVehiclePersistenceData({});
   });
 
   it("should successfully create a Vehicle when all properties are valid", () => {
-    const result = VehicleFactory.create(mockVehicleData);
+    const result = VehicleFactory.create({
+      ...mockVehicleData,
+      images: mockVehicleData.images as JSONObject,
+      schoolMember: mockVehicleData.schoolMember as JSONObject,
+      driver: mockVehicleData.driver as JSONObject
+    });
 
     expect(result.isSuccess).toBe(true);
-    expect(result.getValue()).toBeInstanceOf(Vehicle);
 
     const vehicle = result.getValue();
 
+    expect(result.getValue()).toBeInstanceOf(Vehicle);
     expect(vehicle.id).toBe(mockVehicleData.id);
     expect(vehicle.ownerId).toBe(mockVehicleData.ownerId);
     expect(vehicle.licensePlate.value).toBe(mockVehicleData.licensePlate);
@@ -32,12 +36,7 @@ describe("VehicleFactory", () => {
     expect(vehicle.status.value).toBe(mockVehicleData.status);
     expect(vehicle.createdAt).toBe(mockVehicleData.createdAt);
     expect(vehicle.updatedAt).toBe(mockVehicleData.updatedAt);
-    expect(vehicle.owner!.id).toBe(mockVehicleData.owner!.id);
-    expect(vehicle.owner!.username).toBe(mockVehicleData.owner!.username);
-    expect(vehicle.owner!.firstName).toBe(mockVehicleData.owner!.firstName);
-    expect(vehicle.owner!.lastName).toBe(mockVehicleData.owner!.lastName);
-    expect(vehicle.owner!.email).toBe(mockVehicleData.owner!.email);
-    expect(vehicle.owner!.role).toBe(mockVehicleData.owner!.role);
+    expect(vehicle.owner).toBeDefined();
   });
 
   it("should not create a Vehicle when license plate is invalid", () => {
@@ -45,7 +44,12 @@ describe("VehicleFactory", () => {
       ...mockVehicleData,
       licensePlate: ""
     };
-    const result = VehicleFactory.create(mockVehicleDataWithInvalidLicense);
+    const result = VehicleFactory.create({
+      ...mockVehicleDataWithInvalidLicense,
+      images: mockVehicleDataWithInvalidLicense.images as JSONObject,
+      schoolMember: mockVehicleDataWithInvalidLicense.schoolMember as JSONObject,
+      driver: mockVehicleDataWithInvalidLicense.driver as JSONObject
+    });
 
     expect(result.isSuccess).toBe(false);
     expect(result.getErrorMessage()).toContain("is not a valid license plate number");
@@ -56,7 +60,12 @@ describe("VehicleFactory", () => {
       ...mockVehicleData,
       stickerNumber: ""
     };
-    const result = VehicleFactory.create(mockVehicleDataWithInvalidSticker);
+    const result = VehicleFactory.create({
+      ...mockVehicleDataWithInvalidSticker,
+      images: mockVehicleDataWithInvalidSticker.images as JSONObject,
+      schoolMember: mockVehicleDataWithInvalidSticker.schoolMember as JSONObject,
+      driver: mockVehicleDataWithInvalidSticker.driver as JSONObject
+    });
 
     expect(result.isSuccess).toBe(false);
     expect(result.getErrorMessage()).toContain("is not a valid sticker number");

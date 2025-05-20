@@ -11,6 +11,7 @@ dotenv.config();
 export interface IStorageService {
   uploadFile(bucket: string, path: string, fileBuffer: Buffer, mimeType: string): Promise<string>;
   getSignedUrl(bucket: string, path: string): Promise<string>;
+  getSignedUrls(bucket: string, paths: string[]): Promise<string[]>;
   moveFile(
     bucketName: string,
     { currentPath, newPath }: { currentPath: string; newPath: string }
@@ -60,6 +61,16 @@ export class SupabaseStorageService implements IStorageService {
     }
 
     return data.signedUrl;
+  }
+
+  public async getSignedUrls(bucket: string, paths: string[]): Promise<string[]> {
+    const { data, error } = await this.supabase.storage.from(bucket).createSignedUrls(paths, 3600);
+
+    if (error || !data) {
+      return paths.map(() => this._image_placeholder);
+    }
+
+    return data.map((item) => item.signedUrl || this._image_placeholder);
   }
 
   public async moveFile(

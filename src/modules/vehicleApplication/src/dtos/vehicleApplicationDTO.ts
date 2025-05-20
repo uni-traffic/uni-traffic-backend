@@ -19,6 +19,7 @@ export interface IVehicleApplicationDTO {
     lastName: string;
     licenseId: string;
     licenseImage: string;
+    selfiePicture: string;
   };
   vehicle: {
     make: string;

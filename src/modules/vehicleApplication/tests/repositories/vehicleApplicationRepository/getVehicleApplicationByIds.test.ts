@@ -8,17 +8,17 @@ import {
 import { seedVehicleApplication } from "../../utils/seedVehicleApplication";
 
 const assertVehicleApplication = (
-  vehicleApplcation: IVehicleApplication,
+  vehicleApplication: IVehicleApplication,
   expectedUserValue: IVehicleApplicationRawObject
 ) => {
-  expect(vehicleApplcation?.id).toBe(expectedUserValue.id);
-  expect(vehicleApplcation?.applicantId).toBe(expectedUserValue.applicantId);
-  expect(vehicleApplcation?.status.value).toBe(expectedUserValue.status);
-  expect(vehicleApplcation?.schoolMember.schoolId).toBe(expectedUserValue.schoolId);
-  expect(vehicleApplcation?.driver.licenseId).toBe(expectedUserValue.driverLicenseId);
-  expect(vehicleApplcation?.vehicle.licensePlate).toBe(expectedUserValue.licensePlate);
-  expect(vehicleApplcation?.stickerNumber).toBe(expectedUserValue.stickerNumber);
-  expect(vehicleApplcation?.remarks).toBe(expectedUserValue.remarks);
+  expect(vehicleApplication?.id).toBe(expectedUserValue.id);
+  expect(vehicleApplication?.applicantId).toBe(expectedUserValue.applicantId);
+  expect(vehicleApplication?.status.value).toBe(expectedUserValue.status);
+  expect(vehicleApplication?.schoolMember.schoolId).toBe(expectedUserValue.schoolId);
+  expect(vehicleApplication?.driver.licenseId).toBe(expectedUserValue.driverLicenseId);
+  expect(vehicleApplication?.vehicle.licensePlate).toBe(expectedUserValue.licensePlate);
+  expect(vehicleApplication?.stickerNumber).toBe(expectedUserValue.stickerNumber);
+  expect(vehicleApplication?.remarks).toBe(expectedUserValue.remarks);
 };
 
 describe("VehicleApplicationRepository.getUserByIds", () => {
@@ -40,13 +40,13 @@ describe("VehicleApplicationRepository.getUserByIds", () => {
     const seededVehicleApplication1 = await seedVehicleApplication({});
     const seededVehicleApplication2 = await seedVehicleApplication({});
 
-    const vehicleApplcation = await vehicleApplicationRepository.getVehicleApplicationByIds([
+    const vehicleApplication = await vehicleApplicationRepository.getVehicleApplicationByIds([
       seededVehicleApplication1.id,
       seededVehicleApplication2.id
     ]);
 
-    assertVehicleApplication(vehicleApplcation[0], seededVehicleApplication1);
-    assertVehicleApplication(vehicleApplcation[1], seededVehicleApplication2);
+    assertVehicleApplication(vehicleApplication[0], seededVehicleApplication1);
+    assertVehicleApplication(vehicleApplication[1], seededVehicleApplication2);
   });
 
   it("should retrieve existing vehicle application by id", async () => {
@@ -54,23 +54,23 @@ describe("VehicleApplicationRepository.getUserByIds", () => {
     const seededVehicleApplication2 = await seedVehicleApplication({});
     const seededVehicleApplication3 = "non-existing id";
 
-    const vehicleApplcation = await vehicleApplicationRepository.getVehicleApplicationByIds([
+    const vehicleApplication = await vehicleApplicationRepository.getVehicleApplicationByIds([
       seededVehicleApplication1.id,
       seededVehicleApplication2.id,
       seededVehicleApplication3
     ]);
 
-    assertVehicleApplication(vehicleApplcation[0], seededVehicleApplication1);
-    assertVehicleApplication(vehicleApplcation[1], seededVehicleApplication2);
-    expect(vehicleApplcation[2]).toBeUndefined();
-    expect(vehicleApplcation.length).toBe(2);
+    assertVehicleApplication(vehicleApplication[0], seededVehicleApplication1);
+    assertVehicleApplication(vehicleApplication[1], seededVehicleApplication2);
+    expect(vehicleApplication[2]).toBeUndefined();
+    expect(vehicleApplication.length).toBe(2);
   });
 
   it("should return empty array when given non-existing id", async () => {
-    const vehicleApplcation = await vehicleApplicationRepository.getVehicleApplicationByIds([
+    const vehicleApplication = await vehicleApplicationRepository.getVehicleApplicationByIds([
       "non-existing id"
     ]);
 
-    expect(vehicleApplcation).toStrictEqual([]);
+    expect(vehicleApplication).toStrictEqual([]);
   });
 });

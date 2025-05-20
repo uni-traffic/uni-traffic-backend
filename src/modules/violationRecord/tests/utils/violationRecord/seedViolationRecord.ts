@@ -18,6 +18,7 @@ export const seedViolationRecord = async ({
   reportedById,
   violationId,
   vehicleId,
+  evidence = [faker.image.url(), faker.image.url()],
   penalty = faker.helpers.arrayElement([250, 500, 1000]),
   status = faker.helpers.arrayElement(["UNPAID", "PAID"]),
   createdAt
@@ -48,6 +49,7 @@ export const seedViolationRecord = async ({
         userId
       ),
       reportedById: defaultTo((await seedUser({ role: "SECURITY" })).id, reportedById),
+      evidence: evidence,
       penalty: violation.penalty,
       status: status as ViolationRecordSchema,
       createdAt: createdAt ?? new Date()
